@@ -75,7 +75,18 @@ form.nova input[type=text]:focus{border-color:var(--verde)}
 .tag.atrasada{background:#fbe6e8;color:var(--alta)}
 .tag.hoje{background:#fbf0d6;color:#8a6210}
 select.mover{font:500 11px Poppins;color:var(--sub);background:var(--creme);border:0;border-radius:999px;padding:2px 6px;cursor:pointer;max-width:150px}
-.prio{width:4px;align-self:stretch;border-radius:4px;flex:none}
+.prio{width:5px;align-self:stretch;border-radius:4px;flex:none}
+.lista{overflow:hidden}
+.item.pr-alta{background:#fdf0f1}
+.item.pr-media{background:#fdf7e8}
+.item.pr-baixa{background:#eef7f0}
+.item.feito{background:#fff;opacity:.75}
+.tag.tp-alta{background:#f8d3d7;color:#a32637}
+.tag.tp-media{background:#f7e4b5;color:#7a5408}
+.tag.tp-baixa{background:#cfe8d6;color:#2a6a3e}
+.feito .tag.tp-alta,.feito .tag.tp-media,.feito .tag.tp-baixa{background:var(--creme);color:var(--sub)}
+.legenda{display:flex;gap:14px;font-size:12px;color:var(--sub);margin:0 0 10px 4px}
+.legenda i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .p-alta{background:var(--alta)}.p-media{background:var(--media)}.p-baixa{background:var(--baixa)}
 .del{border:0;background:none;color:#c2bba9;font-size:20px;cursor:pointer;padding:4px 6px;border-radius:8px;line-height:1}
 .del:hover{color:var(--alta);background:#fbe6e8}
@@ -170,9 +181,9 @@ select.mover{font:500 11px Poppins;color:var(--sub);background:var(--creme);bord
     <div class="opts">
       <select id="tQuadro" title="Quadro"></select>
       <select id="tPrio" title="Prioridade">
-        <option value="media">Prioridade média</option>
-        <option value="alta">Prioridade alta</option>
-        <option value="baixa">Prioridade baixa</option>
+        <option value="media">🟡 Prioridade média</option>
+        <option value="alta">🔴 Prioridade alta</option>
+        <option value="baixa">🟢 Prioridade baixa</option>
       </select>
       <input type="date" id="tData" title="Prazo">
       <input type="text" id="tCat" list="cats" placeholder="Categoria" maxlength="40" style="flex:1;min-width:130px">
@@ -189,6 +200,7 @@ select.mover{font:500 11px Poppins;color:var(--sub);background:var(--creme);bord
     <input class="busca" id="busca" placeholder="Buscar…">
   </div>
 
+  <div class="legenda"><span><i style="background:var(--alta)"></i>Alta</span><span><i style="background:var(--media)"></i>Média</span><span><i style="background:var(--baixa)"></i>Baixa</span></div>
   <ul class="lista card" id="lista"></ul>
 
   <div class="rodape">
@@ -224,6 +236,7 @@ select.mover{font:500 11px Poppins;color:var(--sub);background:var(--creme);bord
   let col = null;
 
   const QUADROS_PADRAO = [
+    {id:"q-hoje", nome:"Hoje"},
     {id:"q-agora", nome:"Esta semana"},
     {id:"q-semana", nome:"Para semana que vem"},
     {id:"q-mes", nome:"Para mês que vem"},
@@ -330,14 +343,15 @@ select.mover{font:500 11px Poppins;color:var(--sub);background:var(--creme);bord
   });
 
   // ---------- quadros ----------
+  const noQuadro = (t,id) => id==="todos" || t.quadro===id || (id==="q-hoje" && t.data===hojeISO());
   const nomeQuadro = id => (quadros.find(q=>q.id===id)||{}).nome || "Sem quadro";
   async function salvarQuadros(){ guardar(LSQ, quadros); if(col){ try{ await col.doc("_quadros").set({lista:quadros}); }catch(e){} } }
 
   function renderQuadros(){
-    const pend = id => tarefas.filter(t=>!t.feito && (id==="todos" || t.quadro===id)).length;
+    const pend = id => tarefas.filter(t=>!t.feito && noQuadro(t,id)).length;
     let html = `<button class="quadro ${quadroSel==="todos"?"on":""}" data-q="todos"><strong>Tudo</strong><small>${pend("todos")} pendentes</small></button>`;
     html += quadros.map(q=>`<button class="quadro ${quadroSel===q.id?"on":""}" data-q="${q.id}">
-      <span class="qmenu"><span data-qa="ren" title="Renomear">✎</span><span data-qa="del" title="Apagar quadro">🗑</span></span>
+      <span class="qmenu"><span data-qa="ren" title="Renomear">✎</span>${q.id==="q-hoje"?"":`<span data-qa="del" title="Apagar quadro">🗑</span>`}</span>
       <strong>${esc(q.nome)}</strong><small>${pend(q.id)} pendentes</small></button>`).join("");
     html += `<button class="quadro novo" data-q="novo">+ Novo quadro</button>`;
     $("#quadros").innerHTML = html;
@@ -372,7 +386,7 @@ select.mover{font:500 11px Poppins;color:var(--sub);background:var(--creme);bord
     if(qa && qa.dataset.qa==="del"){
       const q=quadros.find(x=>x.id===id); const n=tarefas.filter(t=>t.quadro===id).length;
       if(quadros.length<=1){ abrirModal("Não dá pra apagar", `<p>Você precisa ter pelo menos um quadro.</p>`, "Ok", null); return; }
-      const destino = quadros.find(x=>x.id!==id);
+      const destino = quadros.find(x=>x.id!==id && x.id!=="q-hoje") || quadros.find(x=>x.id!==id);
       abrirModal(`Apagar "${q.nome}"?`, `<p>${n?`As ${n} tarefa(s) desse quadro vão para "${esc(destino.nome)}".`:"O quadro está vazio."}</p>`, "Apagar", ()=>{
         tarefas.filter(t=>t.quadro===id).forEach(t=>{ t.quadro=destino.id; gravar(t); });
         quadros=quadros.filter(x=>x.id!==id); quadroSel="todos"; salvarQuadros(); render();
@@ -395,7 +409,7 @@ select.mover{font:500 11px Poppins;color:var(--sub);background:var(--creme);bord
     if(!liberado) return;
 
     $("#cats").innerHTML=[...new Set(tarefas.map(t=>t.cat).filter(Boolean))].map(c=>`<option value="${esc(c)}">`).join("");
-    let v=tarefas.filter(t=>quadroSel==="todos"||t.quadro===quadroSel).filter(t=>{
+    let v=tarefas.filter(t=>noQuadro(t,quadroSel)).filter(t=>{
       if(filtro==="pendentes") return !t.feito;
       if(filtro==="hoje") return !t.feito&&t.data===h;
       if(filtro==="atrasadas") return !t.feito&&t.data&&t.data<h;
@@ -416,11 +430,11 @@ select.mover{font:500 11px Poppins;color:var(--sub);background:var(--creme);bord
         let dt="";
         if(t.data){ const cls=!t.feito&&t.data<h?"atrasada":(!t.feito&&t.data===h?"hoje":""); const [y,m,d]=t.data.split("-");
           dt=`<span class="tag ${cls}">${t.data===h?"Hoje":(cls==="atrasada"?"Atrasada · ":"")+d+"/"+m}</span>`; }
-        return `<li class="item ${t.feito?"feito":""}" data-id="${t.id}">
+        return `<li class="item pr-${t.prio} ${t.feito?"feito":""}" data-id="${t.id}">
           <span class="prio p-${t.prio}" title="Prioridade ${t.prio}"></span>
           <button class="check" data-a="toggle" aria-label="Concluir"></button>
           <div class="corpo"><div class="titulo" data-a="edit">${esc(t.titulo)}</div>
-          <div class="meta"><select class="mover" title="Mover para outro quadro">${opts(t.quadro)}</select>${t.cat?`<span class="tag cat">${esc(t.cat)}</span>`:""}${dt}</div></div>
+          <div class="meta"><span class="tag tp-${t.prio}">${{alta:"🔴 Alta",media:"🟡 Média",baixa:"🟢 Baixa"}[t.prio]}</span><select class="mover" title="Mover para outro quadro">${opts(t.quadro)}</select>${t.cat?`<span class="tag cat">${esc(t.cat)}</span>`:""}${dt}</div></div>
           <button class="del" data-a="del" title="Apagar">×</button></li>`;
       }).join("");
     }
@@ -473,6 +487,7 @@ select.mover{font:500 11px Poppins;color:var(--sub);background:var(--creme);bord
   // ---------- início ----------
   function ajustarQuadros(){
     if(!quadros || !quadros.length) quadros = QUADROS_PADRAO.map(q=>({...q}));
+    if(!quadros.some(q=>q.id==="q-hoje")) quadros.unshift({id:"q-hoje", nome:"Hoje"});
     const ids=new Set(quadros.map(q=>q.id)); let mudou=false;
     tarefas.forEach(t=>{ if(!ids.has(t.quadro)){ t.quadro=quadros[0].id; mudou=true; } });
     return mudou;
