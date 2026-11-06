@@ -172,6 +172,42 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
 .paleta button{width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--linha);cursor:pointer}
 .paleta button.on{box-shadow:0 0 0 2px var(--texto)}
 @media(max-width:560px){.visao{margin-left:0}}
+.titulo{cursor:pointer}
+.titulo:hover{text-decoration:underline;text-decoration-color:#cfc6b2}
+.tag.subt{cursor:pointer;background:#eef0ec;color:var(--texto)}
+.tag.subt.ok{background:#cfe8d6;color:#2a6a3e}
+#modal{z-index:30}
+.modal .box.det{max-width:560px!important;position:relative;border-top:6px solid var(--c);padding:22px 22px 16px;max-height:90vh;overflow:auto}
+.fechar{position:absolute;top:10px;right:12px;border:0;background:none;font-size:24px;color:var(--sub);cursor:pointer;line-height:1;padding:4px 8px;border-radius:8px}
+.fechar:hover{background:var(--creme)}
+.dtopo{display:flex;gap:12px;align-items:flex-start;padding-right:30px}
+.dtopo h3{font-size:21px;font-weight:700;margin:0 0 6px;line-height:1.3}
+.dtopo h3.riscado{text-decoration:line-through;color:var(--sub)}
+.check.grande{width:26px;height:26px;margin-top:2px}
+.check.grande.on{background:var(--verde);border-color:var(--verde)}
+.check.grande.on::after{content:"";width:6px;height:11px;border:solid var(--ouro);border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.dsec{display:flex;align-items:center;gap:12px;margin:22px 0 8px}
+.dsec strong{font-size:14px;font-weight:700;white-space:nowrap}
+.dprog{flex:1;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sub)}
+.dbar{flex:1;height:7px;background:var(--creme);border-radius:7px;overflow:hidden}
+.dbar i{display:block;height:100%;background:var(--c);transition:width .3s}
+.dlista{list-style:none}
+.sitem{display:flex;align-items:center;gap:10px;padding:8px 6px;border-radius:10px}
+.sitem:hover{background:var(--creme)}
+.scheck{width:20px;height:20px;border-radius:6px;border:2px solid var(--claro);background:#fff;cursor:pointer;flex:none;display:grid;place-items:center}
+.sitem.ok .scheck{background:var(--c);border-color:var(--c)}
+.sitem.ok .scheck::after{content:"";width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.stxt{flex:1;font-size:14px;word-break:break-word}
+.sitem.ok .stxt{text-decoration:line-through;color:var(--sub)}
+.sdel{border:0;background:none;color:#c2bba9;font-size:18px;cursor:pointer;opacity:0;padding:0 6px}
+.sitem:hover .sdel{opacity:1}
+.sdel:hover{color:var(--alta)}
+.svazio{font-size:13px;color:var(--sub);padding:8px 6px}
+.dadd{display:flex;gap:8px;margin-top:10px}
+.dadd input{flex:1;border:1.5px solid var(--linha);border-radius:12px;padding:11px 12px;font:inherit;font-size:14px;outline:none}
+.dadd input:focus{border-color:var(--c)}
+.dadd .btn{padding:0 16px;font-size:14px}
+.drodape{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--linha);font-size:12px;color:var(--sub)}
 @media(max-width:560px){h1{font-size:24px}.busca{margin-left:0;width:100%}}
 </style>
 </head>
@@ -257,10 +293,21 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     <span id="contagem"></span>
     <button class="link" id="limpar" type="button">Apagar concluídas</button>
   </div>
-  <p class="aviso">Clique duas vezes numa tarefa para editar.</p>
+  <p class="aviso">Clique numa tarefa para abrir o checklist.</p>
 </main>
 
 <div class="toast" id="toast"></div>
+
+<div class="modal" id="det">
+  <div class="box det" id="detBox">
+    <button type="button" class="fechar" data-d="fechar" title="Fechar">×</button>
+    <div class="dtopo" id="detTopo"></div>
+    <div class="dsec"><strong>☑ Checklist</strong><div class="dprog" id="detProg"></div></div>
+    <ul class="dlista" id="detLista"></ul>
+    <form id="detAdd" class="dadd"><input id="detNova" placeholder="+ Adicionar item" maxlength="200" autocomplete="off"><button class="btn" type="submit">Adicionar</button></form>
+    <div class="drodape"><span>Clique duas vezes num item para editar</span><button type="button" class="link" data-d="editar">✎ Editar tarefa</button></div>
+  </div>
+</div>
 
 <div class="modal" id="modal">
   <form class="box" id="mForm">
@@ -493,8 +540,8 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
       return `<li class="item pr-${t.prio} ${t.feito?"feito":""}" data-id="${t.id}">
         <span class="prio p-${t.prio}" title="Prioridade ${t.prio}"></span>
         <button class="check" data-a="toggle" aria-label="Concluir"></button>
-        <div class="corpo"><div class="titulo" data-a="edit">${esc(t.titulo)}</div>
-        <div class="meta"><span class="tag tp-${t.prio}">${{alta:"🔴 Alta",media:"🟡 Média",baixa:"🟢 Baixa"}[t.prio]}</span><select class="mover" title="Mover para outro quadro">${opts(t.quadro)}</select>${t.cat&&!semCat?`<span class="tag cat" style="background:${cc}1f;color:${cc}">● ${esc(t.cat)}</span>`:""}${dt}</div></div>
+        <div class="corpo"><div class="titulo" data-a="abrir" title="Abrir tarefa">${esc(t.titulo)}</div>
+        <div class="meta"><span class="tag tp-${t.prio}">${{alta:"🔴 Alta",media:"🟡 Média",baixa:"🟢 Baixa"}[t.prio]}</span>${(t.subs||[]).length?`<span class="tag subt ${t.subs.every(x=>x.ok)?"ok":""}" data-a="abrir">☑ ${t.subs.filter(x=>x.ok).length}/${t.subs.length}</span>`:""}<select class="mover" title="Mover para outro quadro">${opts(t.quadro)}</select>${t.cat&&!semCat?`<span class="tag cat" style="background:${cc}1f;color:${cc}">● ${esc(t.cat)}</span>`:""}${dt}</div></div>
         <button class="ed" data-a="editar" title="Editar">✎</button><button class="del" data-a="del" title="Apagar">×</button></li>`;
     };
     const ul=$("#lista"), cols=$("#colunas");
@@ -534,6 +581,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
       }
       cols.innerHTML = `<aside class="catnav"><small class="navtit">Categorias</small>${nav}</aside><div class="catpainel">${painel}</div>`;
     }
+    renderDet();
     $("#contagem").textContent=`${v.length} de ${tarefas.length} tarefa${tarefas.length===1?"":"s"}`;
   }
 
@@ -547,12 +595,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     const t={id:novoId("t"),titulo,prio:$("#tPrio").value,data:$("#tData").value||"",cat:$("#tCat").value.trim(),quadro:$("#tQuadro").value,feito:false,criado:Date.now()};
     tarefas.push(t); render(); gravar(t); $("#tTitulo").value=""; $("#tData").value=""; $("#tTitulo").focus();
   });
-  $("#area").addEventListener("click", e=>{
-    const a=e.target.closest("[data-a]"); if(!a) return;
-    const id=a.closest(".item").dataset.id; const t=tarefas.find(x=>x.id===id); if(!t) return;
-    if(a.dataset.a==="toggle"){ t.feito=!t.feito; render(); gravar(t); }
-    if(a.dataset.a==="del"){ tarefas=tarefas.filter(x=>x.id!==id); render(); apagar(id); }
-    if(a.dataset.a==="editar"){
+  function editar(t){
       const qo=quadros.map(q=>`<option value="${q.id}" ${q.id===t.quadro?"selected":""}>${esc(q.nome)}</option>`).join("");
       const po=[["alta","🔴 Alta"],["media","🟡 Média"],["baixa","🟢 Baixa"]].map(([v,n])=>`<option value="${v}" ${v===t.prio?"selected":""}>${n}</option>`).join("");
       abrirModal("Editar tarefa", `<div class="campos">
@@ -565,22 +608,66 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
           t.quadro=$("#eQuadro").value; t.prio=$("#ePrio").value; t.data=$("#eData").value||""; t.cat=$("#eCat").value.trim();
           render(); gravar(t);
         });
-    }
+  }
+  $("#area").addEventListener("click", e=>{
+    const a=e.target.closest("[data-a]"); if(!a) return;
+    const id=a.closest(".item").dataset.id; const t=tarefas.find(x=>x.id===id); if(!t) return;
+    if(a.dataset.a==="toggle"){ t.feito=!t.feito; render(); gravar(t); }
+    if(a.dataset.a==="del"){ tarefas=tarefas.filter(x=>x.id!==id); render(); apagar(id); }
+    if(a.dataset.a==="editar") editar(t);
+    if(a.dataset.a==="abrir") abrirDet(t.id);
   });
   $("#area").addEventListener("change", e=>{
     if(!e.target.classList.contains("mover")) return;
     const t=tarefas.find(x=>x.id===e.target.closest(".item").dataset.id); if(!t) return;
     t.quadro=e.target.value; render(); gravar(t);
   });
-  $("#area").addEventListener("dblclick", e=>{
-    const el=e.target.closest('[data-a="edit"]'); if(!el) return;
-    const t=tarefas.find(x=>x.id===el.closest(".item").dataset.id);
-    const inp=document.createElement("input"); inp.className="edit"; inp.value=t.titulo; inp.maxLength=200;
-    el.replaceWith(inp); inp.focus(); inp.select(); let ok=false;
-    const fim=s=>{ if(ok) return; ok=true; const nv=inp.value.trim(); if(s&&nv&&nv!==t.titulo){ t.titulo=nv; gravar(t); } render(); };
-    inp.addEventListener("keydown", ev=>{ if(ev.key==="Enter") fim(true); if(ev.key==="Escape") fim(false); });
-    inp.addEventListener("blur", ()=>fim(true));
+
+  // ---------- detalhe da tarefa (checklist) ----------
+  let detId=null;
+  function abrirDet(id){ detId=id; renderDet(); $("#det").classList.add("on"); setTimeout(()=>$("#detNova").focus(),50); }
+  function fecharDet(){ detId=null; $("#det").classList.remove("on"); }
+  function renderDet(){
+    if(!detId) return; const t=tarefas.find(x=>x.id===detId); if(!t){ fecharDet(); return; }
+    const subs=t.subs||[]; const ok=subs.filter(x=>x.ok).length; const pct=subs.length?Math.round(ok/subs.length*100):0;
+    const cor=t.cat?corCat(t.cat):"var(--verde)";
+    $("#detBox").style.setProperty("--c", cor);
+    $("#detTopo").innerHTML=`<button type="button" class="check grande ${t.feito?"on":""}" data-d="feito" title="Concluir tarefa"></button>
+      <div><h3 class="${t.feito?"riscado":""}">${esc(t.titulo)}</h3>
+      <div class="meta">${t.cat?`<span class="tag" style="background:${cor}1f;color:${cor}">● ${esc(t.cat)}</span>`:""}<span class="tag tp-${t.prio}">${{alta:"🔴 Alta",media:"🟡 Média",baixa:"🟢 Baixa"}[t.prio]}</span><span class="tag">${esc(nomeQuadro(t.quadro))}</span>${t.data?`<span class="tag">📅 ${t.data.split("-").reverse().slice(0,2).join("/")}</span>`:""}</div></div>`;
+    $("#detProg").innerHTML = subs.length ? `<span>${pct}%</span><div class="dbar"><i style="width:${pct}%"></i></div>` : "";
+    $("#detLista").innerHTML = subs.map(x=>`<li class="sitem ${x.ok?"ok":""}" data-s="${x.id}">
+      <button type="button" class="scheck" data-d="sub"></button><span class="stxt">${esc(x.txt)}</span><button type="button" class="sdel" data-d="sdel" title="Remover">×</button></li>`).join("")
+      || `<li class="svazio">Nenhum item ainda. Quebre essa tarefa em passos menores.</li>`;
+  }
+  $("#det").addEventListener("click", e=>{
+    if(e.target.id==="det" || e.target.closest("[data-d=fechar]")) return fecharDet();
+    const t=tarefas.find(x=>x.id===detId); if(!t) return;
+    const b=e.target.closest("[data-d]"); if(!b) return;
+    const d=b.dataset.d;
+    if(d==="feito"){ t.feito=!t.feito; }
+    else if(d==="editar"){ editar(t); return; }
+    else if(d==="sub"||d==="sdel"){
+      const sid=b.closest(".sitem").dataset.s; t.subs=t.subs||[];
+      if(d==="sub"){ const x=t.subs.find(y=>y.id===sid); if(x) x.ok=!x.ok; }
+      else t.subs=t.subs.filter(y=>y.id!==sid);
+    } else return;
+    render(); gravar(t);
   });
+  $("#det").addEventListener("dblclick", e=>{
+    const el=e.target.closest(".stxt"); if(!el) return;
+    const t=tarefas.find(x=>x.id===detId); const sid=el.closest(".sitem").dataset.s; const x=(t.subs||[]).find(y=>y.id===sid); if(!x) return;
+    const inp=document.createElement("input"); inp.className="edit"; inp.value=x.txt; inp.maxLength=200; el.replaceWith(inp); inp.focus(); inp.select();
+    let fim=false; const sair=salvar=>{ if(fim) return; fim=true; const nv=inp.value.trim(); if(salvar&&nv&&nv!==x.txt){ x.txt=nv; gravar(t); } render(); };
+    inp.addEventListener("keydown", ev=>{ if(ev.key==="Enter") sair(true); if(ev.key==="Escape") sair(false); });
+    inp.addEventListener("blur", ()=>sair(true));
+  });
+  $("#detAdd").addEventListener("submit", e=>{
+    e.preventDefault(); const inp=$("#detNova"); const txt=inp.value.trim(); if(!txt) return;
+    const t=tarefas.find(x=>x.id===detId); if(!t) return;
+    t.subs=(t.subs||[]).concat({id:novoId("s"),txt,ok:false}); inp.value=""; render(); gravar(t); inp.focus();
+  });
+  document.addEventListener("keydown", e=>{ if(e.key==="Escape" && detId && !$("#modal").classList.contains("on")) fecharDet(); });
   $("#filtros").addEventListener("click", e=>{
     const c=e.target.closest(".chip"); if(!c) return;
     document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===c)); filtro=c.dataset.f; render();
