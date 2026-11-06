@@ -133,31 +133,41 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
 .visao button{border:0;background:none;padding:6px 12px;border-radius:999px;font:500 12px Inter;color:var(--sub);cursor:pointer}
 .visao button.on{background:var(--creme);color:var(--verde)}
 .visao+.busca{margin-left:0}
-.colunas{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;align-items:start}
-.coluna{background:#fff;border-radius:16px;box-shadow:0 6px 24px rgba(30,58,47,.07);overflow:hidden;border-top:5px solid var(--c)}
-.chead{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 14px 8px}
-.chead strong{display:block;font-size:15px;font-weight:700;color:var(--c);text-transform:uppercase;letter-spacing:.3px}
-.chead small{font-size:12px;color:var(--sub)}
-.cmenu{display:flex;gap:2px;opacity:.35;transition:opacity .2s}
-.coluna:hover .cmenu{opacity:1}
-.cmenu button{border:0;background:none;cursor:pointer;font-size:13px;padding:3px 6px;border-radius:6px}
-.cmenu button:hover{background:var(--creme)}
-.cbar{height:4px;background:var(--creme);margin:0 14px;border-radius:4px;overflow:hidden}
-.cbar i{display:block;height:100%;background:var(--c)}
-.cadd{padding:10px 14px 6px}
-.cadd input{width:100%;border:0;border-bottom:1.5px dashed var(--linha);padding:8px 2px;font:inherit;font-size:14px;outline:none;background:none;color:var(--texto)}
-.cadd input:focus{border-bottom-color:var(--c)}
-.cadd input::placeholder{color:var(--c);opacity:.85;font-weight:500}
+.colunas{display:grid;grid-template-columns:230px 1fr;gap:16px;align-items:start}
+.catnav{background:#fff;border-radius:16px;padding:10px;box-shadow:0 6px 24px rgba(30,58,47,.07);position:sticky;top:12px;display:flex;flex-direction:column;gap:2px}
+.navtit{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--sub);padding:6px 10px 8px}
+.catitem{display:flex;align-items:center;gap:10px;border:0;background:none;padding:10px;border-radius:10px;cursor:pointer;font:500 14px Inter;color:var(--texto);text-align:left;width:100%}
+.catitem i{width:10px;height:10px;border-radius:3px;background:var(--c);flex:none}
+.catitem span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.catitem b{font-size:11px;font-weight:600;color:var(--sub);background:var(--creme);border-radius:999px;padding:1px 7px}
+.catitem b:empty{display:none}
+.catitem:hover{background:var(--creme)}
+.catitem.on{background:var(--c);color:#fff;font-weight:700}
+.catitem.on i{background:#fff}
+.catitem.on b{background:rgba(255,255,255,.25);color:#fff}
+.catitem.novo{color:var(--sub);border-top:1px solid var(--linha);border-radius:0 0 10px 10px;margin-top:6px;padding-top:12px}
+.catitem.novo:hover{color:var(--verde)}
+.coluna{background:#fff;border-radius:16px;box-shadow:0 6px 24px rgba(30,58,47,.07);overflow:hidden}
+.chead{position:relative;background:var(--c);color:#fff;padding:18px 20px 16px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+.chead h2{font-size:28px;font-weight:800;letter-spacing:-.5px;line-height:1.15;text-transform:uppercase;margin:2px 0 4px}
+.chead small{font-size:13px;opacity:.85}
+.chead .crot{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;opacity:.7}
+.cmenu{display:flex;gap:4px}
+.cmenu button{border:0;background:rgba(255,255,255,.18);color:#fff;cursor:pointer;font-size:13px;padding:6px 9px;border-radius:8px}
+.cmenu button:hover{background:rgba(255,255,255,.3)}
+.cbar{flex-basis:100%;height:5px;background:rgba(255,255,255,.25);margin-top:12px;border-radius:5px;overflow:hidden}
+.cbar i{display:block;height:100%;background:#fff}
+.cadd{padding:12px 16px 6px}
+.cadd input{width:100%;border:1.5px dashed var(--linha);border-radius:12px;padding:11px 12px;font:inherit;font-size:14px;outline:none;background:var(--creme);color:var(--texto)}
+.cadd input:focus{border-style:solid;border-color:var(--c);background:#fff}
 .clista{list-style:none}
-.clista .item{padding:10px 12px;gap:9px}
-.clista .titulo{font-size:14px}
-.clista .check{width:21px;height:21px;border-radius:50%}
-.clista select.mover{max-width:120px}
-.cvazio{padding:14px;font-size:13px;color:#b0a995;text-align:center}
-.cfeitas{border:0;background:none;width:100%;text-align:left;padding:10px 14px;font:500 13px Inter;color:var(--sub);cursor:pointer;border-top:1px solid var(--linha)}
+.clista .item{padding:11px 16px}
+.cvazio{padding:22px;font-size:13px;color:#b0a995;text-align:center}
+.cvaziog{background:#fff;border-radius:16px;padding:50px 20px;text-align:center;color:var(--sub)}
+.cvaziog div{font-size:34px;margin-bottom:8px}
+.cfeitas{border:0;background:none;width:100%;text-align:left;padding:12px 16px;font:500 13px Inter;color:var(--sub);cursor:pointer;border-top:1px solid var(--linha)}
 .cfeitas:hover{background:var(--creme)}
-.coluna.nova{border:2px dashed #d8cfba;background:transparent;box-shadow:none;min-height:120px;font:600 14px Inter;color:var(--sub);cursor:pointer}
-.coluna.nova:hover{border-color:var(--verde);color:var(--verde)}
+@media(max-width:720px){.colunas{grid-template-columns:1fr}.catnav{position:static;flex-direction:row;overflow-x:auto}.navtit{display:none}.catitem{width:auto;flex:none}.catitem.novo{border-top:0;margin-top:0;padding-top:10px}.chead h2{font-size:22px}}
 .paleta{display:flex;gap:8px;flex-wrap:wrap}
 .paleta button{width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--linha);cursor:pointer}
 .paleta button.on{box-shadow:0 0 0 2px var(--texto)}
@@ -278,6 +288,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
   let categorias = [];           // [{nome,cor}]
   let visao = "colunas";
   const abertas = new Set();
+  let catSel = null;
   const CORES = ["#2F6F4E","#C2410C","#1D4ED8","#7C3AED","#B45309","#0E7490","#BE185D","#4D7C0F","#475569"];
   const corCat = nome => (categorias.find(c=>c.nome===nome)||{}).cor || "#6f7a72";
   function ajustarCategorias(){
@@ -499,22 +510,29 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
       // colunas por categoria
       const base=tarefas.filter(t=>noQuadro(t,quadroSel)).filter(t=>!busca||(t.titulo+" "+(t.cat||"")).toLowerCase().includes(busca.toLowerCase()));
       const nomes=categorias.map(c=>c.nome); if(base.some(t=>!t.cat)) nomes.push("");
-      cols.innerHTML = nomes.map(nome=>{
-        const cor=nome?corCat(nome):"#8a8f88";
+      if(!nomes.includes(catSel)) catSel = nomes[0] ?? null;
+      const nav = nomes.map(nome=>{
+        const cor=nome?corCat(nome):"#8a8f88"; const n=base.filter(t=>(t.cat||"")===nome && !t.feito).length;
+        return `<button type="button" class="catitem ${nome===catSel?"on":""}" data-ca="sel" data-cat="${esc(nome)}" style="--c:${cor}"><i></i><span>${nome?esc(nome):"Sem categoria"}</span><b>${n||""}</b></button>`;
+      }).join("") + `<button type="button" class="catitem novo" data-ca="nova">+ Nova categoria</button>`;
+      let painel = `<div class="cvaziog"><div>🗂️</div>Crie sua primeira categoria pra começar.</div>`;
+      if(catSel!==null){
+        const nome=catSel, cor=nome?corCat(nome):"#8a8f88";
         const todas=base.filter(t=>(t.cat||"")===nome);
         const vis=v.filter(t=>(t.cat||"")===nome);
         const feitas=filtro==="pendentes"?todas.filter(t=>t.feito).sort((a,b)=>b.criado-a.criado):[];
         const pendN=todas.filter(t=>!t.feito).length, pct=todas.length?Math.round((todas.length-pendN)/todas.length*100):0;
         const aberto=abertas.has(nome);
-        return `<section class="coluna" data-cat="${esc(nome)}" style="--c:${cor}">
-          <div class="chead"><div><strong>${nome?esc(nome):"Sem categoria"}</strong><small>${pendN} pendente${pendN===1?"":"s"} · ${pct}% feito</small></div>
-            ${nome?`<span class="cmenu"><button type="button" data-ca="ren" title="Editar categoria">✎</button><button type="button" data-ca="del" title="Apagar categoria">🗑</button></span>`:""}</div>
-          <div class="cbar"><i style="width:${pct}%"></i></div>
-          <form class="cadd"><input placeholder="+ Adicionar tarefa" maxlength="200"></form>
+        painel = `<section class="coluna" data-cat="${esc(nome)}" style="--c:${cor}">
+          <div class="chead"><div><small class="crot">Categoria</small><h2>${nome?esc(nome):"Sem categoria"}</h2><small>${pendN} pendente${pendN===1?"":"s"} · ${pct}% concluído</small></div>
+            ${nome?`<span class="cmenu"><button type="button" data-ca="ren" title="Editar categoria">✎</button><button type="button" data-ca="del" title="Apagar categoria">🗑</button></span>`:""}
+            <div class="cbar"><i style="width:${pct}%"></i></div></div>
+          <form class="cadd"><input placeholder="+ Adicionar tarefa em ${nome?esc(nome):"Sem categoria"}" maxlength="200"></form>
           <ul class="clista">${vis.map(t=>itemHtml(t,true)).join("")||`<li class="cvazio">Nada por aqui</li>`}</ul>
           ${feitas.length?`<button type="button" class="cfeitas" data-ca="feitas">${aberto?"▾":"▸"} Concluídas (${feitas.length})</button>${aberto?`<ul class="clista">${feitas.map(t=>itemHtml(t,true)).join("")}</ul>`:""}`:""}
         </section>`;
-      }).join("") + `<button type="button" class="coluna nova" data-ca="nova">+ Nova categoria</button>`;
+      }
+      cols.innerHTML = `<aside class="catnav"><small class="navtit">Categorias</small>${nav}</aside><div class="catpainel">${painel}</div>`;
     }
     $("#contagem").textContent=`${v.length} de ${tarefas.length} tarefa${tarefas.length===1?"":"s"}`;
   }
@@ -592,18 +610,19 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
   });
   $("#colunas").addEventListener("click", e=>{
     const b=e.target.closest("[data-ca]"); if(!b) return;
-    const acao=b.dataset.ca, nome=b.closest(".coluna")?.dataset.cat;
+    const acao=b.dataset.ca, nome=b.dataset.cat ?? b.closest(".coluna")?.dataset.cat;
+    if(acao==="sel"){ catSel=nome; guardar("kaique-catsel",catSel); render(); return; }
     if(acao==="nova"){
       abrirModal("Nova categoria", `<div class="campos"><label>Nome</label><input maxlength="40" placeholder="Ex.: Site, La Prata, Kombi"><label>Cor</label>${paleta(CORES[categorias.length%CORES.length])}</div>`, "Criar", n=>{
         if(!n || categorias.some(c=>c.nome.toLowerCase()===n.toLowerCase())) return;
-        categorias.push({nome:n, cor:corEscolhida()||CORES[0]}); salvarCategorias(); render();
+        categorias.push({nome:n, cor:corEscolhida()||CORES[0]}); catSel=n; guardar("kaique-catsel",catSel); salvarCategorias(); render();
       });
     }
     if(acao==="ren"){
       const c=categorias.find(x=>x.nome===nome);
       abrirModal("Editar categoria", `<div class="campos"><label>Nome</label><input maxlength="40" value="${esc(c.nome)}"><label>Cor</label>${paleta(c.cor)}</div>`, "Salvar", n=>{
         const cor=corEscolhida(); if(cor) c.cor=cor;
-        if(n && n!==c.nome && !categorias.some(x=>x.nome===n)){ tarefas.filter(t=>t.cat===c.nome).forEach(t=>{ t.cat=n; gravar(t); }); c.nome=n; }
+        if(n && n!==c.nome && !categorias.some(x=>x.nome===n)){ tarefas.filter(t=>t.cat===c.nome).forEach(t=>{ t.cat=n; gravar(t); }); c.nome=n; catSel=n; guardar("kaique-catsel",catSel); }
         salvarCategorias(); render();
       });
     }
@@ -611,7 +630,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
       const n=tarefas.filter(t=>t.cat===nome).length;
       abrirModal(`Apagar "${nome}"?`, `<p>${n?`As ${n} tarefa(s) dela continuam no app, só ficam sem categoria.`:"A categoria está vazia."}</p>`, "Apagar", ()=>{
         tarefas.filter(t=>t.cat===nome).forEach(t=>{ t.cat=""; gravar(t); });
-        categorias=categorias.filter(c=>c.nome!==nome); salvarCategorias(); render();
+        categorias=categorias.filter(c=>c.nome!==nome); catSel=null; salvarCategorias(); render();
       });
     }
     if(acao==="feitas"){ abertas.has(nome)?abertas.delete(nome):abertas.add(nome); render(); }
@@ -625,7 +644,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     tarefas.forEach(t=>{ if(!ids.has(t.quadro)){ t.quadro=quadros[0].id; mudou=true; } });
     return mudou;
   }
-  tarefas=ler(LS,[]); quadros=ler(LSQ,null); acesso=ler(LSA,null); categorias=ler(LSC,[]); visao=ler(LSV,"colunas");
+  tarefas=ler(LS,[]); quadros=ler(LSQ,null); acesso=ler(LSA,null); categorias=ler(LSC,[]); visao=ler(LSV,"colunas"); catSel=ler("kaique-catsel",null);
   ajustarCategorias();
   ajustarQuadros();
   if(acesso && acesso.eh!==EMAIL_HASH) acesso=null;
