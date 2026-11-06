@@ -129,6 +129,39 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
 .login .erro{color:#ffb3bb;font-size:13px;min-height:18px;margin-top:10px;text-align:center}
 .login .frase{margin-top:30px}
 .login .frase p{font-size:16px;color:var(--claro)}
+.visao{display:flex;background:#fff;border-radius:999px;padding:3px;box-shadow:0 1px 3px rgba(0,0,0,.04);margin-left:auto}
+.visao button{border:0;background:none;padding:6px 12px;border-radius:999px;font:500 12px Inter;color:var(--sub);cursor:pointer}
+.visao button.on{background:var(--creme);color:var(--verde)}
+.visao+.busca{margin-left:0}
+.colunas{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;align-items:start}
+.coluna{background:#fff;border-radius:16px;box-shadow:0 6px 24px rgba(30,58,47,.07);overflow:hidden;border-top:5px solid var(--c)}
+.chead{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 14px 8px}
+.chead strong{display:block;font-size:15px;font-weight:700;color:var(--c);text-transform:uppercase;letter-spacing:.3px}
+.chead small{font-size:12px;color:var(--sub)}
+.cmenu{display:flex;gap:2px;opacity:.35;transition:opacity .2s}
+.coluna:hover .cmenu{opacity:1}
+.cmenu button{border:0;background:none;cursor:pointer;font-size:13px;padding:3px 6px;border-radius:6px}
+.cmenu button:hover{background:var(--creme)}
+.cbar{height:4px;background:var(--creme);margin:0 14px;border-radius:4px;overflow:hidden}
+.cbar i{display:block;height:100%;background:var(--c)}
+.cadd{padding:10px 14px 6px}
+.cadd input{width:100%;border:0;border-bottom:1.5px dashed var(--linha);padding:8px 2px;font:inherit;font-size:14px;outline:none;background:none;color:var(--texto)}
+.cadd input:focus{border-bottom-color:var(--c)}
+.cadd input::placeholder{color:var(--c);opacity:.85;font-weight:500}
+.clista{list-style:none}
+.clista .item{padding:10px 12px;gap:9px}
+.clista .titulo{font-size:14px}
+.clista .check{width:21px;height:21px;border-radius:50%}
+.clista select.mover{max-width:120px}
+.cvazio{padding:14px;font-size:13px;color:#b0a995;text-align:center}
+.cfeitas{border:0;background:none;width:100%;text-align:left;padding:10px 14px;font:500 13px Inter;color:var(--sub);cursor:pointer;border-top:1px solid var(--linha)}
+.cfeitas:hover{background:var(--creme)}
+.coluna.nova{border:2px dashed #d8cfba;background:transparent;box-shadow:none;min-height:120px;font:600 14px Inter;color:var(--sub);cursor:pointer}
+.coluna.nova:hover{border-color:var(--verde);color:var(--verde)}
+.paleta{display:flex;gap:8px;flex-wrap:wrap}
+.paleta button{width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--linha);cursor:pointer}
+.paleta button.on{box-shadow:0 0 0 2px var(--texto)}
+@media(max-width:560px){.visao{margin-left:0}}
 @media(max-width:560px){h1{font-size:24px}.busca{margin-left:0;width:100%}}
 </style>
 </head>
@@ -203,11 +236,12 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     <button class="chip" data-f="atrasadas">Atrasadas</button>
     <button class="chip" data-f="concluidas">Concluídas</button>
     <button class="chip" data-f="todas">Todas</button>
+    <div class="visao"><button type="button" data-v="colunas">▦ Por categoria</button><button type="button" data-v="lista">☰ Lista</button></div>
     <input class="busca" id="busca" placeholder="Buscar…">
   </div>
 
   <div class="legenda"><span><i style="background:var(--alta)"></i>Alta</span><span><i style="background:var(--media)"></i>Média</span><span><i style="background:var(--baixa)"></i>Baixa</span></div>
-  <ul class="lista card" id="lista"></ul>
+  <div id="area"><ul class="lista card" id="lista"></ul><div class="colunas" id="colunas"></div></div>
 
   <div class="rodape">
     <span id="contagem"></span>
@@ -240,6 +274,18 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
   let liberado = false;
   let filtro = "pendentes", busca = "", quadroSel = "todos";
   let col = null;
+  const LSC = "kaique-categorias", LSV = "kaique-visao";
+  let categorias = [];           // [{nome,cor}]
+  let visao = "colunas";
+  const abertas = new Set();
+  const CORES = ["#2F6F4E","#C2410C","#1D4ED8","#7C3AED","#B45309","#0E7490","#BE185D","#4D7C0F","#475569"];
+  const corCat = nome => (categorias.find(c=>c.nome===nome)||{}).cor || "#6f7a72";
+  function ajustarCategorias(){
+    let mudou=false;
+    tarefas.forEach(t=>{ if(t.cat && !categorias.some(c=>c.nome===t.cat)){ categorias.push({nome:t.cat, cor:CORES[categorias.length%CORES.length]}); mudou=true; } });
+    return mudou;
+  }
+  async function salvarCategorias(){ guardar(LSC, categorias); if(col){ try{ await col.doc("_categorias").set({lista:categorias}); }catch(e){} } }
 
   const QUADROS_PADRAO = [
     {id:"q-hoje", nome:"Hoje"},
@@ -414,7 +460,8 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     $("#prog").style.width=tarefas.length?((tarefas.length-pend.length)/tarefas.length*100)+"%":"0";
     if(!liberado) return;
 
-    $("#cats").innerHTML=[...new Set(tarefas.map(t=>t.cat).filter(Boolean))].map(c=>`<option value="${esc(c)}">`).join("");
+    if(ajustarCategorias()) salvarCategorias();
+    $("#cats").innerHTML=categorias.map(c=>c.nome).map(c=>`<option value="${esc(c)}">`).join("");
     let v=tarefas.filter(t=>noQuadro(t,quadroSel)).filter(t=>{
       if(filtro==="pendentes") return !t.feito;
       if(filtro==="hoje") return !t.feito&&t.data===h;
@@ -426,23 +473,48 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     const dk=t=>t.data||"9999";
     v.sort((a,b)=>(a.feito-b.feito)||(ordemPrio[a.prio]-ordemPrio[b.prio])||(dk(a)<dk(b)?-1:dk(a)>dk(b)?1:0)||(a.criado-b.criado));
 
-    const ul=$("#lista");
-    if(!v.length){
-      const msg={pendentes:"Nada pendente aqui. Bora adicionar!",hoje:"Nenhuma tarefa para hoje.",atrasadas:"Nada atrasado. 👏",concluidas:"Nenhuma tarefa concluída ainda.",todas:"Esse quadro está vazio."}[filtro];
-      ul.innerHTML=`<li class="vazio"><div>${filtro==="atrasadas"?"✅":"📝"}</div>${busca?"Nada encontrado.":msg}</li>`;
+    const opts=id=>quadros.map(q=>`<option value="${q.id}" ${q.id===id?"selected":""}>${esc(q.nome)}</option>`).join("");
+    const itemHtml=(t,semCat)=>{
+      let dt="";
+      if(t.data){ const cls=!t.feito&&t.data<h?"atrasada":(!t.feito&&t.data===h?"hoje":""); const [y,m,d]=t.data.split("-");
+        dt=`<span class="tag ${cls}">${t.data===h?"Hoje":(cls==="atrasada"?"Atrasada · ":"")+d+"/"+m}</span>`; }
+      const cc=corCat(t.cat);
+      return `<li class="item pr-${t.prio} ${t.feito?"feito":""}" data-id="${t.id}">
+        <span class="prio p-${t.prio}" title="Prioridade ${t.prio}"></span>
+        <button class="check" data-a="toggle" aria-label="Concluir"></button>
+        <div class="corpo"><div class="titulo" data-a="edit">${esc(t.titulo)}</div>
+        <div class="meta"><span class="tag tp-${t.prio}">${{alta:"🔴 Alta",media:"🟡 Média",baixa:"🟢 Baixa"}[t.prio]}</span><select class="mover" title="Mover para outro quadro">${opts(t.quadro)}</select>${t.cat&&!semCat?`<span class="tag cat" style="background:${cc}1f;color:${cc}">● ${esc(t.cat)}</span>`:""}${dt}</div></div>
+        <button class="ed" data-a="editar" title="Editar">✎</button><button class="del" data-a="del" title="Apagar">×</button></li>`;
+    };
+    const ul=$("#lista"), cols=$("#colunas");
+    ul.style.display = visao==="lista" ? "" : "none";
+    cols.style.display = visao==="colunas" ? "" : "none";
+    document.querySelectorAll(".visao button").forEach(b=>b.classList.toggle("on", b.dataset.v===visao));
+    if(visao==="lista"){
+      if(!v.length){
+        const msg={pendentes:"Nada pendente aqui. Bora adicionar!",hoje:"Nenhuma tarefa para hoje.",atrasadas:"Nada atrasado. 👏",concluidas:"Nenhuma tarefa concluída ainda.",todas:"Esse quadro está vazio."}[filtro];
+        ul.innerHTML=`<li class="vazio"><div>${filtro==="atrasadas"?"✅":"📝"}</div>${busca?"Nada encontrado.":msg}</li>`;
+      } else ul.innerHTML=v.map(t=>itemHtml(t,false)).join("");
     } else {
-      const opts=id=>quadros.map(q=>`<option value="${q.id}" ${q.id===id?"selected":""}>${esc(q.nome)}</option>`).join("");
-      ul.innerHTML=v.map(t=>{
-        let dt="";
-        if(t.data){ const cls=!t.feito&&t.data<h?"atrasada":(!t.feito&&t.data===h?"hoje":""); const [y,m,d]=t.data.split("-");
-          dt=`<span class="tag ${cls}">${t.data===h?"Hoje":(cls==="atrasada"?"Atrasada · ":"")+d+"/"+m}</span>`; }
-        return `<li class="item pr-${t.prio} ${t.feito?"feito":""}" data-id="${t.id}">
-          <span class="prio p-${t.prio}" title="Prioridade ${t.prio}"></span>
-          <button class="check" data-a="toggle" aria-label="Concluir"></button>
-          <div class="corpo"><div class="titulo" data-a="edit">${esc(t.titulo)}</div>
-          <div class="meta"><span class="tag tp-${t.prio}">${{alta:"🔴 Alta",media:"🟡 Média",baixa:"🟢 Baixa"}[t.prio]}</span><select class="mover" title="Mover para outro quadro">${opts(t.quadro)}</select>${t.cat?`<span class="tag cat">${esc(t.cat)}</span>`:""}${dt}</div></div>
-          <button class="ed" data-a="editar" title="Editar">✎</button><button class="del" data-a="del" title="Apagar">×</button></li>`;
-      }).join("");
+      // colunas por categoria
+      const base=tarefas.filter(t=>noQuadro(t,quadroSel)).filter(t=>!busca||(t.titulo+" "+(t.cat||"")).toLowerCase().includes(busca.toLowerCase()));
+      const nomes=categorias.map(c=>c.nome); if(base.some(t=>!t.cat)) nomes.push("");
+      cols.innerHTML = nomes.map(nome=>{
+        const cor=nome?corCat(nome):"#8a8f88";
+        const todas=base.filter(t=>(t.cat||"")===nome);
+        const vis=v.filter(t=>(t.cat||"")===nome);
+        const feitas=filtro==="pendentes"?todas.filter(t=>t.feito).sort((a,b)=>b.criado-a.criado):[];
+        const pendN=todas.filter(t=>!t.feito).length, pct=todas.length?Math.round((todas.length-pendN)/todas.length*100):0;
+        const aberto=abertas.has(nome);
+        return `<section class="coluna" data-cat="${esc(nome)}" style="--c:${cor}">
+          <div class="chead"><div><strong>${nome?esc(nome):"Sem categoria"}</strong><small>${pendN} pendente${pendN===1?"":"s"} · ${pct}% feito</small></div>
+            ${nome?`<span class="cmenu"><button type="button" data-ca="ren" title="Editar categoria">✎</button><button type="button" data-ca="del" title="Apagar categoria">🗑</button></span>`:""}</div>
+          <div class="cbar"><i style="width:${pct}%"></i></div>
+          <form class="cadd"><input placeholder="+ Adicionar tarefa" maxlength="200"></form>
+          <ul class="clista">${vis.map(t=>itemHtml(t,true)).join("")||`<li class="cvazio">Nada por aqui</li>`}</ul>
+          ${feitas.length?`<button type="button" class="cfeitas" data-ca="feitas">${aberto?"▾":"▸"} Concluídas (${feitas.length})</button>${aberto?`<ul class="clista">${feitas.map(t=>itemHtml(t,true)).join("")}</ul>`:""}`:""}
+        </section>`;
+      }).join("") + `<button type="button" class="coluna nova" data-ca="nova">+ Nova categoria</button>`;
     }
     $("#contagem").textContent=`${v.length} de ${tarefas.length} tarefa${tarefas.length===1?"":"s"}`;
   }
@@ -457,7 +529,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     const t={id:novoId("t"),titulo,prio:$("#tPrio").value,data:$("#tData").value||"",cat:$("#tCat").value.trim(),quadro:$("#tQuadro").value,feito:false,criado:Date.now()};
     tarefas.push(t); render(); gravar(t); $("#tTitulo").value=""; $("#tData").value=""; $("#tTitulo").focus();
   });
-  $("#lista").addEventListener("click", e=>{
+  $("#area").addEventListener("click", e=>{
     const a=e.target.closest("[data-a]"); if(!a) return;
     const id=a.closest(".item").dataset.id; const t=tarefas.find(x=>x.id===id); if(!t) return;
     if(a.dataset.a==="toggle"){ t.feito=!t.feito; render(); gravar(t); }
@@ -477,12 +549,12 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
         });
     }
   });
-  $("#lista").addEventListener("change", e=>{
+  $("#area").addEventListener("change", e=>{
     if(!e.target.classList.contains("mover")) return;
     const t=tarefas.find(x=>x.id===e.target.closest(".item").dataset.id); if(!t) return;
     t.quadro=e.target.value; render(); gravar(t);
   });
-  $("#lista").addEventListener("dblclick", e=>{
+  $("#area").addEventListener("dblclick", e=>{
     const el=e.target.closest('[data-a="edit"]'); if(!el) return;
     const t=tarefas.find(x=>x.id===el.closest(".item").dataset.id);
     const inp=document.createElement("input"); inp.className="edit"; inp.value=t.titulo; inp.maxLength=200;
@@ -504,6 +576,47 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     (async()=>{ guardar(LS,tarefas); if(col) for(const t of feitas){ try{ await col.doc(t.id).delete(); }catch(e){} } })();
   });
 
+  // ---------- categorias (colunas) ----------
+  document.querySelector(".visao").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b) return; visao=b.dataset.v; guardar(LSV,visao); render(); });
+  function paleta(sel){ return `<div class="paleta">${CORES.map(c=>`<button type="button" data-cor="${c}" class="${c===sel?"on":""}" style="background:${c}"></button>`).join("")}</div>`; }
+  document.addEventListener("click", e=>{ const p=e.target.closest(".paleta button"); if(!p) return; p.parentNode.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===p)); });
+  const corEscolhida=()=>document.querySelector("#mCorpo .paleta button.on")?.dataset.cor;
+  $("#colunas").addEventListener("submit", e=>{
+    const f=e.target.closest(".cadd"); if(!f) return; e.preventDefault();
+    const inp=f.querySelector("input"); const titulo=inp.value.trim(); if(!titulo) return;
+    const cat=f.closest(".coluna").dataset.cat;
+    const quadro = quadroSel!=="todos" ? quadroSel : $("#tQuadro").value;
+    const t={id:novoId("t"),titulo,prio:"media",data:"",cat,quadro,feito:false,criado:Date.now()};
+    tarefas.push(t); render(); gravar(t);
+    const cn=[...document.querySelectorAll(".coluna[data-cat]")].find(c=>c.dataset.cat===cat); if(cn) cn.querySelector(".cadd input").focus();
+  });
+  $("#colunas").addEventListener("click", e=>{
+    const b=e.target.closest("[data-ca]"); if(!b) return;
+    const acao=b.dataset.ca, nome=b.closest(".coluna")?.dataset.cat;
+    if(acao==="nova"){
+      abrirModal("Nova categoria", `<div class="campos"><label>Nome</label><input maxlength="40" placeholder="Ex.: Site, La Prata, Kombi"><label>Cor</label>${paleta(CORES[categorias.length%CORES.length])}</div>`, "Criar", n=>{
+        if(!n || categorias.some(c=>c.nome.toLowerCase()===n.toLowerCase())) return;
+        categorias.push({nome:n, cor:corEscolhida()||CORES[0]}); salvarCategorias(); render();
+      });
+    }
+    if(acao==="ren"){
+      const c=categorias.find(x=>x.nome===nome);
+      abrirModal("Editar categoria", `<div class="campos"><label>Nome</label><input maxlength="40" value="${esc(c.nome)}"><label>Cor</label>${paleta(c.cor)}</div>`, "Salvar", n=>{
+        const cor=corEscolhida(); if(cor) c.cor=cor;
+        if(n && n!==c.nome && !categorias.some(x=>x.nome===n)){ tarefas.filter(t=>t.cat===c.nome).forEach(t=>{ t.cat=n; gravar(t); }); c.nome=n; }
+        salvarCategorias(); render();
+      });
+    }
+    if(acao==="del"){
+      const n=tarefas.filter(t=>t.cat===nome).length;
+      abrirModal(`Apagar "${nome}"?`, `<p>${n?`As ${n} tarefa(s) dela continuam no app, só ficam sem categoria.`:"A categoria está vazia."}</p>`, "Apagar", ()=>{
+        tarefas.filter(t=>t.cat===nome).forEach(t=>{ t.cat=""; gravar(t); });
+        categorias=categorias.filter(c=>c.nome!==nome); salvarCategorias(); render();
+      });
+    }
+    if(acao==="feitas"){ abertas.has(nome)?abertas.delete(nome):abertas.add(nome); render(); }
+  });
+
   // ---------- início ----------
   function ajustarQuadros(){
     if(!quadros || !quadros.length) quadros = QUADROS_PADRAO.map(q=>({...q}));
@@ -512,7 +625,8 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     tarefas.forEach(t=>{ if(!ids.has(t.quadro)){ t.quadro=quadros[0].id; mudou=true; } });
     return mudou;
   }
-  tarefas=ler(LS,[]); quadros=ler(LSQ,null); acesso=ler(LSA,null);
+  tarefas=ler(LS,[]); quadros=ler(LSQ,null); acesso=ler(LSA,null); categorias=ler(LSC,[]); visao=ler(LSV,"colunas");
+  ajustarCategorias();
   ajustarQuadros();
   if(acesso && acesso.eh!==EMAIL_HASH) acesso=null;
   if(acesso && sessaoOk()) liberar();
@@ -535,7 +649,8 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
         if(primeira && snap.metadata.fromCache) return;
         const docs=snap.docs.filter(d=>d.exists);
         const remotas=docs.filter(d=>!d.id.startsWith("_")).map(d=>({...d.data()}));
-        const dq=docs.find(d=>d.id==="_quadros"), da=docs.find(d=>d.id==="_acesso");
+        const dq=docs.find(d=>d.id==="_quadros"), da=docs.find(d=>d.id==="_acesso"), dc=docs.find(d=>d.id==="_categorias");
+        if(dc && Array.isArray(dc.data().lista)) categorias=dc.data().lista.map(c=>({...c}));
         if(primeira){
           primeira=false;
           const ids=new Set(remotas.map(t=>t.id));
@@ -556,6 +671,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
           if(da && da.data().eh===EMAIL_HASH) acesso={...da.data()};
           ajustarQuadros();
         }
+        if(ajustarCategorias() || !dc) salvarCategorias();
         guardar(LS,tarefas); guardar(LSQ,quadros); if(acesso) guardar(LSA,acesso);
         clearTimeout(timer); setSync("☁ sincronizado"); render();
       }, ()=>{ clearTimeout(timer); col=null; setSync("salvo neste navegador"); if(!decidido){ decidido=true; telaAcesso(); } });
