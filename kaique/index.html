@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Organização do Kaique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--verde:#1E3A2F;--ouro:#E9B44C;--claro:#C9D8CC;--creme:#F7F3EA;--texto:#22302a;--sub:#6f7a72;--linha:#ebe5d8;--alta:#d1495b;--media:#E9B44C;--baixa:#4f9d69}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Poppins,system-ui,sans-serif;background:var(--creme);color:var(--texto);min-height:100vh}
+button{font-family:inherit}
+header{background:var(--verde);color:#fff;padding:28px 20px 70px}
+.wrap{max-width:860px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo b{width:38px;height:38px;border-radius:50%;background:var(--ouro);color:var(--verde);display:grid;place-items:center;font-family:Fraunces;font-size:20px}
+.logo span{font-size:14px;color:var(--claro)}
+.topdir{display:flex;gap:8px;align-items:center}
+.sync{font-size:12px;color:var(--claro);background:rgba(255,255,255,.08);padding:5px 10px;border-radius:999px}
+.sair{border:0;background:rgba(255,255,255,.08);color:var(--claro);font-size:12px;padding:5px 10px;border-radius:999px;cursor:pointer}
+.sair:hover{background:rgba(255,255,255,.16);color:#fff}
+h1{font-family:Fraunces;font-size:32px;margin-top:22px}
+.data{color:var(--claro);font-size:14px;margin-top:4px;text-transform:capitalize}
+.frase{margin-top:18px;position:relative;padding:4px 0 4px 34px;transition:opacity .6s}
+.frase::before{content:"“";position:absolute;left:0;top:-10px;font-family:Fraunces;font-size:56px;color:var(--ouro);line-height:1}
+.frase p{font-family:Fraunces;font-size:19px;line-height:1.45;font-style:italic}
+.stats{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.1);border-radius:14px;padding:10px 16px;min-width:110px}
+.stat strong{display:block;font-family:Fraunces;font-size:22px}
+.stat small{font-size:12px;color:var(--claro)}
+.barra{height:6px;background:rgba(255,255,255,.15);border-radius:9px;margin-top:16px;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--ouro);width:0;transition:width .4s}
+main{margin-top:-46px;padding:0 20px 60px}
+.card{background:#fff;border-radius:18px;box-shadow:0 6px 24px rgba(30,58,47,.08)}
+/* quadros */
+.quadros{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px;scrollbar-width:thin}
+.quadro{flex:none;border:0;background:#fff;border-radius:14px;padding:10px 14px;cursor:pointer;text-align:left;box-shadow:0 2px 8px rgba(30,58,47,.06);min-width:120px;position:relative}
+.quadro strong{display:block;font-size:13px;font-weight:600;color:var(--texto);white-space:nowrap}
+.quadro small{font-size:11px;color:var(--sub)}
+.quadro.on{background:var(--ouro)}
+.quadro.on small{color:var(--verde)}
+.quadro.novo{background:transparent;box-shadow:none;border:1.5px dashed #cfc6b2;color:var(--sub);font-size:13px;min-width:auto}
+.qmenu{display:none;position:absolute;top:6px;right:6px;gap:2px}
+.quadro.on .qmenu{display:flex}
+.qmenu span{font-size:12px;padding:1px 5px;border-radius:6px;color:var(--verde);opacity:.7}
+.qmenu span:hover{opacity:1;background:rgba(0,0,0,.08)}
+.quadro.on strong{padding-right:38px}
+/* nova */
+form.nova{padding:16px;display:grid;grid-template-columns:1fr auto;gap:10px}
+form.nova input[type=text]{border:1.5px solid var(--linha);border-radius:12px;padding:13px 14px;font:inherit;font-size:15px;outline:none}
+form.nova input[type=text]:focus{border-color:var(--verde)}
+.btn{background:var(--ouro);color:var(--verde);border:0;border-radius:12px;padding:0 20px;font:600 15px Poppins;cursor:pointer}
+.btn:hover{filter:brightness(.95)}
+.opts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
+.opts select,.opts input{border:1.5px solid var(--linha);border-radius:10px;padding:8px 10px;font:inherit;font-size:13px;color:var(--texto);background:#fff}
+.filtros{display:flex;gap:6px;margin:18px 0 12px;flex-wrap:wrap;align-items:center}
+.chip{border:0;background:#fff;color:var(--sub);padding:8px 14px;border-radius:999px;font:500 13px Poppins;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.chip.on{background:var(--verde);color:#fff}
+.busca{margin-left:auto;border:1.5px solid var(--linha);border-radius:999px;padding:8px 14px;font:inherit;font-size:13px;background:#fff;min-width:170px}
+.lista{list-style:none}
+.item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--linha)}
+.item:last-child{border-bottom:0}
+.check{width:24px;height:24px;border-radius:8px;border:2px solid var(--claro);background:#fff;cursor:pointer;flex:none;display:grid;place-items:center}
+.feito .check{background:var(--verde);border-color:var(--verde)}
+.feito .check::after{content:"";width:6px;height:11px;border:solid var(--ouro);border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.corpo{flex:1;min-width:0}
+.titulo{font-size:15px;font-weight:500;word-break:break-word;cursor:text}
+.feito .titulo{text-decoration:line-through;color:var(--sub)}
+.meta{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;align-items:center}
+.tag{font-size:11px;padding:2px 9px;border-radius:999px;background:var(--creme);color:var(--sub);font-weight:500}
+.tag.cat{background:#e6efe8;color:var(--verde)}
+.tag.atrasada{background:#fbe6e8;color:var(--alta)}
+.tag.hoje{background:#fbf0d6;color:#8a6210}
+select.mover{font:500 11px Poppins;color:var(--sub);background:var(--creme);border:0;border-radius:999px;padding:2px 6px;cursor:pointer;max-width:150px}
+.prio{width:4px;align-self:stretch;border-radius:4px;flex:none}
+.p-alta{background:var(--alta)}.p-media{background:var(--media)}.p-baixa{background:var(--baixa)}
+.del{border:0;background:none;color:#c2bba9;font-size:20px;cursor:pointer;padding:4px 6px;border-radius:8px;line-height:1}
+.del:hover{color:var(--alta);background:#fbe6e8}
+.vazio{padding:46px 20px;text-align:center;color:var(--sub)}
+.vazio div{font-size:34px;margin-bottom:8px}
+.edit{width:100%;border:1.5px solid var(--verde);border-radius:8px;padding:6px 8px;font:inherit;font-size:15px}
+.rodape{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:12px;color:var(--sub)}
+.link{border:0;background:none;color:var(--verde);font:500 12px Poppins;cursor:pointer;text-decoration:underline}
+.aviso{font-size:12px;color:var(--sub);margin-top:10px;text-align:center}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(160%);background:var(--verde);color:#fff;padding:14px 20px;border-radius:14px;max-width:92%;width:440px;box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:Fraunces;font-style:italic;font-size:16px;transition:transform .5s;z-index:9;border-left:4px solid var(--ouro)}
+.toast.on{transform:translateX(-50%) translateY(0)}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(20,30,25,.45);display:none;place-items:center;z-index:20;padding:20px}
+.modal.on{display:grid}
+.modal .box{background:#fff;border-radius:18px;padding:22px;width:100%;max-width:360px}
+.modal h3{font-family:Fraunces;font-size:20px;margin-bottom:12px}
+.modal input{width:100%;border:1.5px solid var(--linha);border-radius:12px;padding:12px;font:inherit;font-size:15px;outline:none}
+.modal input:focus{border-color:var(--verde)}
+.modal .acoes{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.modal .acoes .btn{padding:10px 18px}
+.btn.sec{background:var(--creme);color:var(--sub)}
+.modal p{font-size:14px;color:var(--sub);line-height:1.5}
+/* tela de acesso */
+#acesso{position:fixed;inset:0;background:var(--verde);z-index:50;display:grid;place-items:center;padding:20px}
+#acesso.fora{display:none}
+.login{width:100%;max-width:380px;color:#fff}
+.login .logo{justify-content:center;margin-bottom:22px}
+.login h2{font-family:Fraunces;font-size:28px;text-align:center}
+.login .sub{text-align:center;color:var(--claro);font-size:14px;margin:6px 0 24px}
+.login label{display:block;font-size:12px;color:var(--claro);margin:12px 0 6px}
+.login input{width:100%;border:1.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;border-radius:12px;padding:13px 14px;font:inherit;font-size:15px;outline:none}
+.login input:focus{border-color:var(--ouro)}
+.login .btn{width:100%;padding:14px;margin-top:20px}
+.login .erro{color:#ffb3bb;font-size:13px;min-height:18px;margin-top:10px;text-align:center}
+.login .frase{margin-top:30px}
+.login .frase p{font-size:16px;color:var(--claro)}
+@media(max-width:560px){h1{font-size:24px}.busca{margin-left:0;width:100%}}
+</style>
+</head>
+<body>
+
+<!-- acesso -->
+<div id="acesso">
+  <form class="login" id="loginForm" autocomplete="on">
+    <div class="logo"><b>K</b></div>
+    <h2 id="lTitulo">Carregando…</h2>
+    <p class="sub" id="lSub"></p>
+    <div id="lCampos" style="display:none">
+      <label for="lEmail">E-mail</label>
+      <input type="email" id="lEmail" autocomplete="username" required>
+      <label for="lSenha">Senha</label>
+      <input type="password" id="lSenha" autocomplete="current-password" required minlength="4">
+      <div id="lConfBox" style="display:none">
+        <label for="lConf">Confirmar senha</label>
+        <input type="password" id="lConf" autocomplete="new-password">
+      </div>
+      <button class="btn" type="submit" id="lBtn">Entrar</button>
+      <div class="erro" id="lErro"></div>
+    </div>
+    <div class="frase"><p class="fraseTxt"></p></div>
+  </form>
+</div>
+
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="logo"><b>K</b><span>Organização do Kaique</span></div>
+      <div class="topdir">
+        <span class="sync" id="sync">carregando…</span>
+        <button class="sair" id="bloquear" title="Bloquear">🔒 Bloquear</button>
+      </div>
+    </div>
+    <h1>Bom trabalho, Kaique</h1>
+    <div class="data" id="hoje"></div>
+    <div class="frase" id="frase"><p class="fraseTxt"></p></div>
+    <div class="stats">
+      <div class="stat"><strong id="sPend">0</strong><small>pendentes</small></div>
+      <div class="stat"><strong id="sHoje">0</strong><small>para hoje</small></div>
+      <div class="stat"><strong id="sAtr">0</strong><small>atrasadas</small></div>
+      <div class="stat"><strong id="sFeito">0</strong><small>concluídas</small></div>
+    </div>
+    <div class="barra"><i id="prog"></i></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="quadros" id="quadros"></div>
+
+  <form class="nova card" id="form">
+    <input type="text" id="tTitulo" placeholder="O que precisa ser feito?" autocomplete="off" maxlength="200">
+    <button class="btn" type="submit">Adicionar</button>
+    <div class="opts">
+      <select id="tQuadro" title="Quadro"></select>
+      <select id="tPrio" title="Prioridade">
+        <option value="media">Prioridade média</option>
+        <option value="alta">Prioridade alta</option>
+        <option value="baixa">Prioridade baixa</option>
+      </select>
+      <input type="date" id="tData" title="Prazo">
+      <input type="text" id="tCat" list="cats" placeholder="Categoria" maxlength="40" style="flex:1;min-width:130px">
+      <datalist id="cats"></datalist>
+    </div>
+  </form>
+
+  <div class="filtros" id="filtros">
+    <button class="chip on" data-f="pendentes">Pendentes</button>
+    <button class="chip" data-f="hoje">Hoje</button>
+    <button class="chip" data-f="atrasadas">Atrasadas</button>
+    <button class="chip" data-f="concluidas">Concluídas</button>
+    <button class="chip" data-f="todas">Todas</button>
+    <input class="busca" id="busca" placeholder="Buscar…">
+  </div>
+
+  <ul class="lista card" id="lista"></ul>
+
+  <div class="rodape">
+    <span id="contagem"></span>
+    <button class="link" id="limpar" type="button">Apagar concluídas</button>
+  </div>
+  <p class="aviso">Clique duas vezes numa tarefa para editar.</p>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="modal">
+  <form class="box" id="mForm">
+    <h3 id="mTitulo"></h3>
+    <div id="mCorpo"></div>
+    <div class="acoes">
+      <button type="button" class="btn sec" id="mCancelar">Cancelar</button>
+      <button type="submit" class="btn" id="mOk">Salvar</button>
+    </div>
+  </form>
+</div>
+
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const EMAIL_HASH = "7efe55a081d8565c60d7b9a7b954695d0745225de8974225b6216c992ae42a41";
+  const LS = "belarmino-tarefas", LSQ = "kaique-quadros", LSA = "kaique-acesso";
+  let tarefas = [];
+  let quadros = null;            // [{id,nome}]
+  let acesso = null;             // {email,salt,hash}
+  let liberado = false;
+  let filtro = "pendentes", busca = "", quadroSel = "todos";
+  let col = null;
+
+  const QUADROS_PADRAO = [
+    {id:"q-agora", nome:"Esta semana"},
+    {id:"q-semana", nome:"Para semana que vem"},
+    {id:"q-mes", nome:"Para mês que vem"},
+    {id:"q-futuro", nome:"Futuramente"}
+  ];
+
+  const ler = (k,d) => { try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } };
+  const guardar = (k,v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
+  const hojeISO = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+  const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const novoId = p => p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  $("#hoje").textContent = new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"});
+
+  // ---------- frases ----------
+  const FRASES = [
+    "Cada tarefa que você termina aqui é um tijolo do negócio que vai ser seu.",
+    "Esse lugar é a escola, não o destino. Deus já tem o seu próximo capítulo escrito.",
+    "Um dia você vai olhar pra trás e agradecer por cada hora que aguentou firme.",
+    "Quem é fiel no pouco, Deus coloca sobre o muito.",
+    "Hoje você trabalha pelo salário. Amanhã, pelo seu próprio sonho.",
+    "Seu próprio patrão: não é se, é quando. Continua.",
+    "O que você planta em silêncio, Deus faz crescer em público.",
+    "Disciplina hoje, liberdade amanhã.",
+    "Você não está preso. Você está sendo preparado.",
+    "Cada real que você ganha aqui pode ser semente do que é seu.",
+    "Deus abre portas que nenhum chefe consegue fechar.",
+    "Seja excelente aqui, porque é assim que se constrói o caráter de um dono.",
+    "A sua hora vai chegar. Até lá, faz bem feito.",
+    "O CLT paga as contas. O seu sonho paga a alma. Não abandona nenhum dos dois.",
+    "Entrega o seu caminho ao Senhor, confia nele, e o mais Ele fará.",
+    "Grandes negócios começaram com alguém cansado que não desistiu.",
+    "Você vai ter a sua própria empresa, a sua agenda e a sua liberdade.",
+    "Respira. Faz o próximo passo. Deus cuida do resto.",
+    "O que é seu está guardado. Ninguém tira.",
+    "Hoje você bate ponto. Um dia vai gerar emprego pra muita gente.",
+    "Não é sobre sair daqui correndo. É sobre sair daqui pronto.",
+    "A bênção vem. Continua trabalhando como quem já sabe disso.",
+    "Cada hora aqui é um treino para o dia em que você vai mandar no seu tempo.",
+    "Deus não te trouxe até aqui pra te deixar aqui.",
+    "Seu nome ainda vai estar na porta da sua própria empresa.",
+    "Foco no hoje, fé no amanhã.",
+    "Quem tem visão aguenta o processo.",
+    "Você está mais perto do que imagina. Não para agora.",
+    "O tempo de Deus é perfeito. O seu esforço é a parte que te cabe.",
+    "Um dia esse emprego vai ser só uma parte bonita da sua história."
+  ];
+  let horaAtual = null;
+  function atualizarFrase(){
+    const h = new Date().getHours(); if(h===horaAtual) return;
+    const primeira = horaAtual===null; horaAtual=h;
+    const f = FRASES[Math.floor(Date.now()/3600000) % FRASES.length];
+    const el=$("#frase"); el.style.opacity=0;
+    setTimeout(()=>{ document.querySelectorAll(".fraseTxt").forEach(p=>p.textContent=f); el.style.opacity=1; }, primeira?0:600);
+    if(!primeira && liberado){ const t=$("#toast"); t.textContent=f; t.classList.add("on"); setTimeout(()=>t.classList.remove("on"),9000); }
+  }
+  atualizarFrase(); setInterval(atualizarFrase, 30000);
+
+  // ---------- acesso (e-mail e senha) ----------
+  async function sha(txt){ try{ const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(txt)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join(""); }catch(e){ return ""; } }
+  async function hashSenha(email, senha, salt){
+    const txt = salt+"|"+email.trim().toLowerCase()+"|"+senha;
+    try{
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(txt));
+      return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+    }catch(e){ let h=0; for(const c of txt){ h=(h*31+c.charCodeAt(0))|0; } return "x"+h; }
+  }
+  function sessaoOk(){ try{ return sessionStorage.getItem(LSA+"-ok")==="1"; }catch(e){ return false; } }
+  function marcarSessao(v){ try{ v?sessionStorage.setItem(LSA+"-ok","1"):sessionStorage.removeItem(LSA+"-ok"); }catch(e){} }
+
+  let modoCriar = false;
+  function telaAcesso(){
+    if(liberado) return;
+    $("#lCampos").style.display="block";
+    if(acesso && acesso.eh!==EMAIL_HASH) acesso=null;
+    modoCriar = !acesso;
+    $("#lTitulo").textContent = modoCriar ? "Crie seu acesso" : "Bem-vindo de volta";
+    $("#lSub").textContent = modoCriar ? "Defina o e-mail e a senha para abrir sua organização." : "Entre com seu e-mail e senha.";
+    $("#lConfBox").style.display = modoCriar ? "block" : "none";
+    $("#lSenha").autocomplete = modoCriar ? "new-password" : "current-password";
+    $("#lBtn").textContent = modoCriar ? "Criar acesso" : "Entrar";
+    if(acesso && !$("#lEmail").value) $("#lEmail").value = acesso.email;
+    setTimeout(()=>($("#lEmail").value?$("#lSenha"):$("#lEmail")).focus(),50);
+  }
+  function liberar(){ liberado=true; marcarSessao(true); $("#acesso").classList.add("fora"); $("#lSenha").value=""; $("#lConf").value=""; render(); }
+  function bloquear(){ liberado=false; marcarSessao(false); $("#acesso").classList.remove("fora"); $("#lista").innerHTML=""; telaAcesso(); }
+  $("#bloquear").addEventListener("click", bloquear);
+
+  $("#loginForm").addEventListener("submit", async e=>{
+    e.preventDefault();
+    const email=$("#lEmail").value.trim(), senha=$("#lSenha").value; const erro=$("#lErro"); erro.textContent="";
+    if(await sha(email.trim().toLowerCase())!==EMAIL_HASH){ erro.textContent="Este e-mail não tem acesso."; return; }
+    if(!email || senha.length<4){ erro.textContent="Use uma senha com pelo menos 4 caracteres."; return; }
+    if(modoCriar){
+      if(senha!==$("#lConf").value){ erro.textContent="As senhas não conferem."; return; }
+      const salt=novoId("s"); acesso={email:email.toLowerCase(), eh:EMAIL_HASH, salt, hash:await hashSenha(email,senha,salt)};
+      guardar(LSA, acesso);
+      if(col){ try{ await col.doc("_acesso").set(acesso); }catch(e){} }
+      liberar();
+    } else {
+      const h = await hashSenha(email, senha, acesso.salt);
+      if(h===acesso.hash && email.toLowerCase()===acesso.email) liberar();
+      else { erro.textContent="E-mail ou senha incorretos."; $("#lSenha").select(); }
+    }
+  });
+
+  // ---------- quadros ----------
+  const nomeQuadro = id => (quadros.find(q=>q.id===id)||{}).nome || "Sem quadro";
+  async function salvarQuadros(){ guardar(LSQ, quadros); if(col){ try{ await col.doc("_quadros").set({lista:quadros}); }catch(e){} } }
+
+  function renderQuadros(){
+    const pend = id => tarefas.filter(t=>!t.feito && (id==="todos" || t.quadro===id)).length;
+    let html = `<button class="quadro ${quadroSel==="todos"?"on":""}" data-q="todos"><strong>Tudo</strong><small>${pend("todos")} pendentes</small></button>`;
+    html += quadros.map(q=>`<button class="quadro ${quadroSel===q.id?"on":""}" data-q="${q.id}">
+      <span class="qmenu"><span data-qa="ren" title="Renomear">✎</span><span data-qa="del" title="Apagar quadro">🗑</span></span>
+      <strong>${esc(q.nome)}</strong><small>${pend(q.id)} pendentes</small></button>`).join("");
+    html += `<button class="quadro novo" data-q="novo">+ Novo quadro</button>`;
+    $("#quadros").innerHTML = html;
+    const opts = quadros.map(q=>`<option value="${q.id}">${esc(q.nome)}</option>`).join("");
+    const sel=$("#tQuadro"); const atual = quadroSel!=="todos" ? quadroSel : (sel.value && quadros.some(q=>q.id===sel.value) ? sel.value : quadros[0]?.id);
+    sel.innerHTML = opts; if(atual) sel.value = atual;
+  }
+
+  // modal simples
+  let mAcao=null;
+  function abrirModal(titulo, corpoHtml, okTxt, acao){
+    $("#mTitulo").textContent=titulo; $("#mCorpo").innerHTML=corpoHtml; $("#mOk").textContent=okTxt; mAcao=acao;
+    $("#modal").classList.add("on"); const i=$("#mCorpo input"); if(i){ i.focus(); i.select(); }
+  }
+  const fecharModal = ()=>{ $("#modal").classList.remove("on"); mAcao=null; };
+  $("#mCancelar").addEventListener("click", fecharModal);
+  $("#modal").addEventListener("click", e=>{ if(e.target.id==="modal") fecharModal(); });
+  $("#mForm").addEventListener("submit", e=>{ e.preventDefault(); const a=mAcao; fecharModal(); if(a) a($("#mCorpo input")?.value?.trim()); });
+
+  $("#quadros").addEventListener("click", e=>{
+    const b=e.target.closest(".quadro"); if(!b) return;
+    const qa=e.target.closest("[data-qa]"); const id=b.dataset.q;
+    if(id==="novo"){
+      abrirModal("Novo quadro", `<input maxlength="40" placeholder="Ex.: Para o fim do ano">`, "Criar", nome=>{
+        if(!nome) return; const q={id:novoId("q"),nome}; quadros.push(q); quadroSel=q.id; salvarQuadros(); render();
+      }); return;
+    }
+    if(qa && qa.dataset.qa==="ren"){
+      const q=quadros.find(x=>x.id===id);
+      abrirModal("Renomear quadro", `<input maxlength="40" value="${esc(q.nome)}">`, "Salvar", nome=>{ if(nome){ q.nome=nome; salvarQuadros(); render(); } }); return;
+    }
+    if(qa && qa.dataset.qa==="del"){
+      const q=quadros.find(x=>x.id===id); const n=tarefas.filter(t=>t.quadro===id).length;
+      if(quadros.length<=1){ abrirModal("Não dá pra apagar", `<p>Você precisa ter pelo menos um quadro.</p>`, "Ok", null); return; }
+      const destino = quadros.find(x=>x.id!==id);
+      abrirModal(`Apagar "${q.nome}"?`, `<p>${n?`As ${n} tarefa(s) desse quadro vão para "${esc(destino.nome)}".`:"O quadro está vazio."}</p>`, "Apagar", ()=>{
+        tarefas.filter(t=>t.quadro===id).forEach(t=>{ t.quadro=destino.id; gravar(t); });
+        quadros=quadros.filter(x=>x.id!==id); quadroSel="todos"; salvarQuadros(); render();
+      }); return;
+    }
+    quadroSel=id; render();
+  });
+
+  // ---------- lista ----------
+  const ordemPrio={alta:0,media:1,baixa:2};
+  function render(){
+    if(!quadros) return;
+    renderQuadros();
+    const h=hojeISO(); const pend=tarefas.filter(t=>!t.feito);
+    $("#sPend").textContent=pend.length;
+    $("#sHoje").textContent=pend.filter(t=>t.data===h).length;
+    $("#sAtr").textContent=pend.filter(t=>t.data&&t.data<h).length;
+    $("#sFeito").textContent=tarefas.length-pend.length;
+    $("#prog").style.width=tarefas.length?((tarefas.length-pend.length)/tarefas.length*100)+"%":"0";
+    if(!liberado) return;
+
+    $("#cats").innerHTML=[...new Set(tarefas.map(t=>t.cat).filter(Boolean))].map(c=>`<option value="${esc(c)}">`).join("");
+    let v=tarefas.filter(t=>quadroSel==="todos"||t.quadro===quadroSel).filter(t=>{
+      if(filtro==="pendentes") return !t.feito;
+      if(filtro==="hoje") return !t.feito&&t.data===h;
+      if(filtro==="atrasadas") return !t.feito&&t.data&&t.data<h;
+      if(filtro==="concluidas") return t.feito;
+      return true;
+    });
+    if(busca){ const b=busca.toLowerCase(); v=v.filter(t=>(t.titulo+" "+(t.cat||"")).toLowerCase().includes(b)); }
+    const dk=t=>t.data||"9999";
+    v.sort((a,b)=>(a.feito-b.feito)||(ordemPrio[a.prio]-ordemPrio[b.prio])||(dk(a)<dk(b)?-1:dk(a)>dk(b)?1:0)||(a.criado-b.criado));
+
+    const ul=$("#lista");
+    if(!v.length){
+      const msg={pendentes:"Nada pendente aqui. Bora adicionar!",hoje:"Nenhuma tarefa para hoje.",atrasadas:"Nada atrasado. 👏",concluidas:"Nenhuma tarefa concluída ainda.",todas:"Esse quadro está vazio."}[filtro];
+      ul.innerHTML=`<li class="vazio"><div>${filtro==="atrasadas"?"✅":"📝"}</div>${busca?"Nada encontrado.":msg}</li>`;
+    } else {
+      const opts=id=>quadros.map(q=>`<option value="${q.id}" ${q.id===id?"selected":""}>${esc(q.nome)}</option>`).join("");
+      ul.innerHTML=v.map(t=>{
+        let dt="";
+        if(t.data){ const cls=!t.feito&&t.data<h?"atrasada":(!t.feito&&t.data===h?"hoje":""); const [y,m,d]=t.data.split("-");
+          dt=`<span class="tag ${cls}">${t.data===h?"Hoje":(cls==="atrasada"?"Atrasada · ":"")+d+"/"+m}</span>`; }
+        return `<li class="item ${t.feito?"feito":""}" data-id="${t.id}">
+          <span class="prio p-${t.prio}" title="Prioridade ${t.prio}"></span>
+          <button class="check" data-a="toggle" aria-label="Concluir"></button>
+          <div class="corpo"><div class="titulo" data-a="edit">${esc(t.titulo)}</div>
+          <div class="meta"><select class="mover" title="Mover para outro quadro">${opts(t.quadro)}</select>${t.cat?`<span class="tag cat">${esc(t.cat)}</span>`:""}${dt}</div></div>
+          <button class="del" data-a="del" title="Apagar">×</button></li>`;
+      }).join("");
+    }
+    $("#contagem").textContent=`${v.length} de ${tarefas.length} tarefa${tarefas.length===1?"":"s"}`;
+  }
+
+  // ---------- persistência ----------
+  async function gravar(t){ guardar(LS,tarefas); if(col){ try{ await col.doc(t.id).set(t); }catch(e){ setSync("salvo só neste navegador"); } } }
+  async function apagar(id){ guardar(LS,tarefas); if(col){ try{ await col.doc(id).delete(); }catch(e){} } }
+  const setSync=s=>$("#sync").textContent=s;
+
+  $("#form").addEventListener("submit", e=>{
+    e.preventDefault(); const titulo=$("#tTitulo").value.trim(); if(!titulo) return;
+    const t={id:novoId("t"),titulo,prio:$("#tPrio").value,data:$("#tData").value||"",cat:$("#tCat").value.trim(),quadro:$("#tQuadro").value,feito:false,criado:Date.now()};
+    tarefas.push(t); render(); gravar(t); $("#tTitulo").value=""; $("#tData").value=""; $("#tTitulo").focus();
+  });
+  $("#lista").addEventListener("click", e=>{
+    const a=e.target.closest("[data-a]"); if(!a) return;
+    const id=a.closest(".item").dataset.id; const t=tarefas.find(x=>x.id===id); if(!t) return;
+    if(a.dataset.a==="toggle"){ t.feito=!t.feito; render(); gravar(t); }
+    if(a.dataset.a==="del"){ tarefas=tarefas.filter(x=>x.id!==id); render(); apagar(id); }
+  });
+  $("#lista").addEventListener("change", e=>{
+    if(!e.target.classList.contains("mover")) return;
+    const t=tarefas.find(x=>x.id===e.target.closest(".item").dataset.id); if(!t) return;
+    t.quadro=e.target.value; render(); gravar(t);
+  });
+  $("#lista").addEventListener("dblclick", e=>{
+    const el=e.target.closest('[data-a="edit"]'); if(!el) return;
+    const t=tarefas.find(x=>x.id===el.closest(".item").dataset.id);
+    const inp=document.createElement("input"); inp.className="edit"; inp.value=t.titulo; inp.maxLength=200;
+    el.replaceWith(inp); inp.focus(); inp.select(); let ok=false;
+    const fim=s=>{ if(ok) return; ok=true; const nv=inp.value.trim(); if(s&&nv&&nv!==t.titulo){ t.titulo=nv; gravar(t); } render(); };
+    inp.addEventListener("keydown", ev=>{ if(ev.key==="Enter") fim(true); if(ev.key==="Escape") fim(false); });
+    inp.addEventListener("blur", ()=>fim(true));
+  });
+  $("#filtros").addEventListener("click", e=>{
+    const c=e.target.closest(".chip"); if(!c) return;
+    document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===c)); filtro=c.dataset.f; render();
+  });
+  $("#busca").addEventListener("input", e=>{ busca=e.target.value.trim(); render(); });
+  let confirmando=false;
+  $("#limpar").addEventListener("click", ()=>{
+    const feitas=tarefas.filter(t=>t.feito); if(!feitas.length) return; const b=$("#limpar");
+    if(!confirmando){ confirmando=true; b.textContent=`Confirmar: apagar ${feitas.length}?`; setTimeout(()=>{confirmando=false;b.textContent="Apagar concluídas";},4000); return; }
+    confirmando=false; b.textContent="Apagar concluídas"; tarefas=tarefas.filter(t=>!t.feito); render();
+    (async()=>{ guardar(LS,tarefas); if(col) for(const t of feitas){ try{ await col.doc(t.id).delete(); }catch(e){} } })();
+  });
+
+  // ---------- início ----------
+  function ajustarQuadros(){
+    if(!quadros || !quadros.length) quadros = QUADROS_PADRAO.map(q=>({...q}));
+    const ids=new Set(quadros.map(q=>q.id)); let mudou=false;
+    tarefas.forEach(t=>{ if(!ids.has(t.quadro)){ t.quadro=quadros[0].id; mudou=true; } });
+    return mudou;
+  }
+  tarefas=ler(LS,[]); quadros=ler(LSQ,null); acesso=ler(LSA,null);
+  ajustarQuadros();
+  if(acesso && acesso.eh!==EMAIL_HASH) acesso=null;
+  if(acesso && sessaoOk()) liberar();
+  else if(acesso) telaAcesso();
+  render(); setSync("salvo neste navegador");
+
+  let decidido = !!acesso;
+  const esperaAcesso = setTimeout(()=>{ if(!decidido){ decidido=true; telaAcesso(); } }, 6000);
+
+  (async()=>{
+    try{
+      if(!window.claude||!window.claude.use){ decidido=true; clearTimeout(esperaAcesso); telaAcesso(); return; }
+      const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
+      const uid = db&&user ? await user.id() : null;
+      if(!uid){ decidido=true; clearTimeout(esperaAcesso); telaAcesso(); return; }
+      col=db.collection("data/users/"+uid); setSync("sincronizando…");
+      const timer=setTimeout(()=>setSync("sem conexão — salvo neste navegador"),10000);
+      let primeira=true;
+      col.onSnapshot(snap=>{
+        if(primeira && snap.metadata.fromCache) return;
+        const docs=snap.docs.filter(d=>d.exists);
+        const remotas=docs.filter(d=>!d.id.startsWith("_")).map(d=>({...d.data()}));
+        const dq=docs.find(d=>d.id==="_quadros"), da=docs.find(d=>d.id==="_acesso");
+        if(primeira){
+          primeira=false;
+          const ids=new Set(remotas.map(t=>t.id));
+          const faltam=tarefas.filter(t=>!ids.has(t.id));
+          tarefas=remotas.concat(faltam);
+          if(dq) quadros=dq.data().lista;
+          const mudou = ajustarQuadros();
+          (async()=>{
+            if(!dq) await salvarQuadros();
+            for(const t of (mudou?tarefas:faltam)){ try{ await col.doc(t.id).set(t); }catch(e){} }
+            if(!da && acesso){ try{ await col.doc("_acesso").set(acesso); }catch(e){} }
+          })();
+          if(da && da.data().eh===EMAIL_HASH){ const novo=da.data(); if(!acesso || novo.hash!==acesso.hash){ acesso={...novo}; if(liberado && !sessaoOk()) bloquear(); } }
+          if(!decidido || !liberado){ decidido=true; clearTimeout(esperaAcesso); if(!liberado){ if(acesso && sessaoOk()) liberar(); else telaAcesso(); } }
+        } else {
+          tarefas=remotas;
+          if(dq) quadros=dq.data().lista;
+          if(da && da.data().eh===EMAIL_HASH) acesso={...da.data()};
+          ajustarQuadros();
+        }
+        guardar(LS,tarefas); guardar(LSQ,quadros); if(acesso) guardar(LSA,acesso);
+        clearTimeout(timer); setSync("☁ sincronizado"); render();
+      }, ()=>{ clearTimeout(timer); col=null; setSync("salvo neste navegador"); if(!decidido){ decidido=true; telaAcesso(); } });
+    }catch(e){ if(!decidido){ decidido=true; telaAcesso(); } }
+  })();
+})();
+</script>
+</body>
+</html>
