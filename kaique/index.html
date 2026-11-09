@@ -208,6 +208,16 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
 .dadd input:focus{border-color:var(--c)}
 .dadd .btn{padding:0 16px;font-size:14px}
 .drodape{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--linha);font-size:12px;color:var(--sub)}
+.etqs{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.elab{font-size:13px;margin-right:2px}
+.echip{border:1.5px solid var(--e);background:#fff;color:var(--e);font:600 12px Inter;padding:5px 11px;border-radius:999px;cursor:pointer;user-select:none}
+.echip.on{background:var(--e);color:#fff}
+.echip.nova{border:1.5px dashed #cfc6b2;color:var(--sub);background:none;font-weight:500}
+.echip.nova:hover{border-color:var(--verde);color:var(--verde)}
+.tag.etq{color:#fff;font-weight:600}
+.feito .tag.etq{opacity:.55}
+.apagarl{display:flex!important;align-items:center;gap:8px;margin-top:16px!important;color:var(--alta)!important;cursor:pointer}
+.apagarl input{width:auto!important}
 @media(max-width:560px){h1{font-size:24px}.busca{margin-left:0;width:100%}}
 </style>
 </head>
@@ -273,6 +283,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
       <input type="date" id="tData" title="Prazo">
       <input type="text" id="tCat" list="cats" placeholder="Categoria" maxlength="40" style="flex:1;min-width:130px">
       <datalist id="cats"></datalist>
+      <div class="etqs" id="tEtqs"></div>
     </div>
   </form>
 
@@ -302,6 +313,8 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
   <div class="box det" id="detBox">
     <button type="button" class="fechar" data-d="fechar" title="Fechar">×</button>
     <div class="dtopo" id="detTopo"></div>
+    <div class="dsec"><strong>🏷 Etiquetas</strong></div>
+    <div class="etqs" id="detEtqs"></div>
     <div class="dsec"><strong>☑ Checklist</strong><div class="dprog" id="detProg"></div></div>
     <ul class="dlista" id="detLista"></ul>
     <form id="detAdd" class="dadd"><input id="detNova" placeholder="+ Adicionar item" maxlength="200" autocomplete="off"><button class="btn" type="submit">Adicionar</button></form>
@@ -342,6 +355,31 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     let mudou=false;
     tarefas.forEach(t=>{ if(t.cat && !categorias.some(c=>c.nome===t.cat)){ categorias.push({nome:t.cat, cor:CORES[categorias.length%CORES.length]}); mudou=true; } });
     return mudou;
+  }
+  const LSE = "kaique-etiquetas";
+  let etiquetas = [];            // [{id,nome,cor}]
+  let novasEtq = new Set();
+  const CORES_ETQ = ["#d1495b","#e8833a","#E9B44C","#4f9d69","#0E7490","#1D4ED8","#7C3AED","#BE185D","#475569","#1E3A2F"];
+  async function salvarEtiquetas(){ guardar(LSE, etiquetas); if(col){ try{ await col.doc("_etiquetas").set({lista:etiquetas}); }catch(e){} } }
+  const etqHtml = t => (t.etqs||[]).map(id=>etiquetas.find(e=>e.id===id)).filter(Boolean).map(e=>`<span class="tag etq" style="background:${e.cor}">${esc(e.nome)}</span>`).join("");
+  const chipsEtq = (sel, acao) => etiquetas.map(e=>`<button type="button" class="echip ${sel.has(e.id)?"on":""}" data-${acao}="etq" data-eid="${e.id}" style="--e:${e.cor}" title="Clique para marcar · duplo clique para editar">${esc(e.nome)}</button>`).join("") + `<button type="button" class="echip nova" data-${acao}="novaetq">+ Nova etiqueta</button>`;
+  function paletaE(sel){ return `<div class="paleta">${CORES_ETQ.map(c=>`<button type="button" data-cor="${c}" class="${c===sel?"on":""}" style="background:${c}"></button>`).join("")}</div>`; }
+  function novaEtiqueta(depois){
+    abrirModal("Nova etiqueta", `<div class="campos"><label>Nome</label><input maxlength="30" placeholder="Ex.: Urgente, Aguardando cliente"><label>Cor</label>${paletaE(CORES_ETQ[etiquetas.length%CORES_ETQ.length])}</div>`, "Criar", n=>{
+      if(!n) return; const e={id:novoId("e"), nome:n, cor:document.querySelector("#mCorpo .paleta button.on")?.dataset.cor||CORES_ETQ[0]};
+      etiquetas.push(e); salvarEtiquetas(); if(depois) depois(e); render();
+    });
+  }
+  function editarEtiqueta(id){
+    const e=etiquetas.find(x=>x.id===id); if(!e) return;
+    abrirModal("Editar etiqueta", `<div class="campos"><label>Nome</label><input maxlength="30" value="${esc(e.nome)}"><label>Cor</label>${paletaE(e.cor)}
+      <label class="apagarl"><input type="checkbox" id="eApagar"> Apagar esta etiqueta</label></div>`, "Salvar", n=>{
+      if($("#eApagar").checked){
+        etiquetas=etiquetas.filter(x=>x.id!==id); novasEtq.delete(id);
+        tarefas.filter(t=>(t.etqs||[]).includes(id)).forEach(t=>{ t.etqs=t.etqs.filter(x=>x!==id); gravar(t); });
+      } else { if(n) e.nome=n; const c=document.querySelector("#mCorpo .paleta button.on")?.dataset.cor; if(c) e.cor=c; }
+      salvarEtiquetas(); render();
+    });
   }
   async function salvarCategorias(){ guardar(LSC, categorias); if(col){ try{ await col.doc("_categorias").set({lista:categorias}); }catch(e){} } }
 
@@ -541,7 +579,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
         <span class="prio p-${t.prio}" title="Prioridade ${t.prio}"></span>
         <button class="check" data-a="toggle" aria-label="Concluir"></button>
         <div class="corpo"><div class="titulo" data-a="abrir" title="Abrir tarefa">${esc(t.titulo)}</div>
-        <div class="meta"><span class="tag tp-${t.prio}">${{alta:"🔴 Alta",media:"🟡 Média",baixa:"🟢 Baixa"}[t.prio]}</span>${(t.subs||[]).length?`<span class="tag subt ${t.subs.every(x=>x.ok)?"ok":""}" data-a="abrir">☑ ${t.subs.filter(x=>x.ok).length}/${t.subs.length}</span>`:""}<select class="mover" title="Mover para outro quadro">${opts(t.quadro)}</select>${t.cat&&!semCat?`<span class="tag cat" style="background:${cc}1f;color:${cc}">● ${esc(t.cat)}</span>`:""}${dt}</div></div>
+        <div class="meta"><span class="tag tp-${t.prio}">${{alta:"🔴 Alta",media:"🟡 Média",baixa:"🟢 Baixa"}[t.prio]}</span>${etqHtml(t)}${(t.subs||[]).length?`<span class="tag subt ${t.subs.every(x=>x.ok)?"ok":""}" data-a="abrir">☑ ${t.subs.filter(x=>x.ok).length}/${t.subs.length}</span>`:""}<select class="mover" title="Mover para outro quadro">${opts(t.quadro)}</select>${t.cat&&!semCat?`<span class="tag cat" style="background:${cc}1f;color:${cc}">● ${esc(t.cat)}</span>`:""}${dt}</div></div>
         <button class="ed" data-a="editar" title="Editar">✎</button><button class="del" data-a="del" title="Apagar">×</button></li>`;
     };
     const ul=$("#lista"), cols=$("#colunas");
@@ -581,6 +619,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
       }
       cols.innerHTML = `<aside class="catnav"><small class="navtit">Categorias</small>${nav}</aside><div class="catpainel">${painel}</div>`;
     }
+    $("#tEtqs").innerHTML = `<span class="elab">🏷</span>` + chipsEtq(novasEtq,"f");
     renderDet();
     $("#contagem").textContent=`${v.length} de ${tarefas.length} tarefa${tarefas.length===1?"":"s"}`;
   }
@@ -592,7 +631,8 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
 
   $("#form").addEventListener("submit", e=>{
     e.preventDefault(); const titulo=$("#tTitulo").value.trim(); if(!titulo) return;
-    const t={id:novoId("t"),titulo,prio:$("#tPrio").value,data:$("#tData").value||"",cat:$("#tCat").value.trim(),quadro:$("#tQuadro").value,feito:false,criado:Date.now()};
+    const t={id:novoId("t"),titulo,prio:$("#tPrio").value,data:$("#tData").value||"",cat:$("#tCat").value.trim(),quadro:$("#tQuadro").value,etqs:[...novasEtq],feito:false,criado:Date.now()};
+    novasEtq.clear();
     tarefas.push(t); render(); gravar(t); $("#tTitulo").value=""; $("#tData").value=""; $("#tTitulo").focus();
   });
   function editar(t){
@@ -623,6 +663,13 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     t.quadro=e.target.value; render(); gravar(t);
   });
 
+  $("#tEtqs").addEventListener("click", e=>{
+    const b=e.target.closest("[data-f]"); if(!b) return;
+    if(b.dataset.f==="novaetq") return novaEtiqueta(x=>novasEtq.add(x.id));
+    const id=b.dataset.eid; novasEtq.has(id)?novasEtq.delete(id):novasEtq.add(id); render();
+  });
+  document.addEventListener("dblclick", e=>{ const b=e.target.closest(".echip[data-eid]"); if(b) editarEtiqueta(b.dataset.eid); });
+
   // ---------- detalhe da tarefa (checklist) ----------
   let detId=null;
   function abrirDet(id){ detId=id; renderDet(); $("#det").classList.add("on"); setTimeout(()=>$("#detNova").focus(),50); }
@@ -634,7 +681,8 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     $("#detBox").style.setProperty("--c", cor);
     $("#detTopo").innerHTML=`<button type="button" class="check grande ${t.feito?"on":""}" data-d="feito" title="Concluir tarefa"></button>
       <div><h3 class="${t.feito?"riscado":""}">${esc(t.titulo)}</h3>
-      <div class="meta">${t.cat?`<span class="tag" style="background:${cor}1f;color:${cor}">● ${esc(t.cat)}</span>`:""}<span class="tag tp-${t.prio}">${{alta:"🔴 Alta",media:"🟡 Média",baixa:"🟢 Baixa"}[t.prio]}</span><span class="tag">${esc(nomeQuadro(t.quadro))}</span>${t.data?`<span class="tag">📅 ${t.data.split("-").reverse().slice(0,2).join("/")}</span>`:""}</div></div>`;
+      <div class="meta">${t.cat?`<span class="tag" style="background:${cor}1f;color:${cor}">● ${esc(t.cat)}</span>`:""}<span class="tag tp-${t.prio}">${{alta:"🔴 Alta",media:"🟡 Média",baixa:"🟢 Baixa"}[t.prio]}</span>${etqHtml(t)}<span class="tag">${esc(nomeQuadro(t.quadro))}</span>${t.data?`<span class="tag">📅 ${t.data.split("-").reverse().slice(0,2).join("/")}</span>`:""}</div></div>`;
+    $("#detEtqs").innerHTML = chipsEtq(new Set(t.etqs||[]),"d");
     $("#detProg").innerHTML = subs.length ? `<span>${pct}%</span><div class="dbar"><i style="width:${pct}%"></i></div>` : "";
     $("#detLista").innerHTML = subs.map(x=>`<li class="sitem ${x.ok?"ok":""}" data-s="${x.id}">
       <button type="button" class="scheck" data-d="sub"></button><span class="stxt">${esc(x.txt)}</span><button type="button" class="sdel" data-d="sdel" title="Remover">×</button></li>`).join("")
@@ -646,6 +694,8 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     const b=e.target.closest("[data-d]"); if(!b) return;
     const d=b.dataset.d;
     if(d==="feito"){ t.feito=!t.feito; }
+    else if(d==="etq"){ const id=b.dataset.eid; t.etqs=t.etqs||[]; t.etqs=t.etqs.includes(id)?t.etqs.filter(x=>x!==id):t.etqs.concat(id); }
+    else if(d==="novaetq"){ novaEtiqueta(e=>{ t.etqs=(t.etqs||[]).concat(e.id); gravar(t); }); return; }
     else if(d==="editar"){ editar(t); return; }
     else if(d==="sub"||d==="sdel"){
       const sid=b.closest(".sitem").dataset.s; t.subs=t.subs||[];
@@ -731,7 +781,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     tarefas.forEach(t=>{ if(!ids.has(t.quadro)){ t.quadro=quadros[0].id; mudou=true; } });
     return mudou;
   }
-  tarefas=ler(LS,[]); quadros=ler(LSQ,null); acesso=ler(LSA,null); categorias=ler(LSC,[]); visao=ler(LSV,"colunas"); catSel=ler("kaique-catsel",null);
+  tarefas=ler(LS,[]); quadros=ler(LSQ,null); acesso=ler(LSA,null); categorias=ler(LSC,[]); etiquetas=ler(LSE,[]); visao=ler(LSV,"colunas"); catSel=ler("kaique-catsel",null);
   ajustarCategorias();
   ajustarQuadros();
   if(acesso && acesso.eh!==EMAIL_HASH) acesso=null;
@@ -755,7 +805,8 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
         if(primeira && snap.metadata.fromCache) return;
         const docs=snap.docs.filter(d=>d.exists);
         const remotas=docs.filter(d=>!d.id.startsWith("_")).map(d=>({...d.data()}));
-        const dq=docs.find(d=>d.id==="_quadros"), da=docs.find(d=>d.id==="_acesso"), dc=docs.find(d=>d.id==="_categorias");
+        const dq=docs.find(d=>d.id==="_quadros"), da=docs.find(d=>d.id==="_acesso"), dc=docs.find(d=>d.id==="_categorias"), de=docs.find(d=>d.id==="_etiquetas");
+        if(de && Array.isArray(de.data().lista)) etiquetas=de.data().lista.map(x=>({...x}));
         if(dc && Array.isArray(dc.data().lista)) categorias=dc.data().lista.map(c=>({...c}));
         if(primeira){
           primeira=false;
@@ -778,6 +829,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
           ajustarQuadros();
         }
         if(ajustarCategorias() || !dc) salvarCategorias();
+        if(!de && etiquetas.length) salvarEtiquetas();
         guardar(LS,tarefas); guardar(LSQ,quadros); if(acesso) guardar(LSA,acesso);
         clearTimeout(timer); setSync("☁ sincronizado"); render();
       }, ()=>{ clearTimeout(timer); col=null; setSync("salvo neste navegador"); if(!decidido){ decidido=true; telaAcesso(); } });
