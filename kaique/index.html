@@ -239,6 +239,19 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
 .tag.atrasada{background:#c8323f!important;color:#fff!important;font-weight:700}
 .toast.forte{background:#c8323f;border-left-color:#fff;font-size:15px}
 #tHora{width:auto}
+.item{background:color-mix(in srgb, var(--p, #fff) 9%, white)}
+.item .prio{background:var(--p)}
+.item.feito{background:#fff}
+.tag.ptag{background:color-mix(in srgb, var(--p) 22%, white);color:color-mix(in srgb, var(--p) 70%, black);display:inline-flex;align-items:center;gap:5px;font-weight:600}
+.tag.ptag i{width:8px;height:8px;border-radius:50%;background:var(--p)}
+.feito .tag.ptag{background:var(--creme);color:var(--sub)}
+.legenda{flex-wrap:wrap;align-items:center;gap:6px!important}
+.legenda small{font-size:12px;margin-right:2px}
+.lp{display:inline-flex;align-items:center;gap:6px;border:0;background:#fff;border-radius:999px;padding:4px 10px;font:500 12px Inter;color:var(--texto);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.lp i{width:10px;height:10px;border-radius:3px;background:var(--p)}
+.lp:hover{box-shadow:0 0 0 1.5px var(--p)}
+.lp.nova{background:none;box-shadow:none;border:1.5px dashed #cfc6b2;color:var(--sub)}
+.dica{font-size:12px!important;margin-top:10px}
 @media(max-width:560px){h1{font-size:24px}.busca{margin-left:0;width:100%}}
 </style>
 </head>
@@ -297,11 +310,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     <button class="btn" type="submit">Adicionar</button>
     <div class="opts">
       <select id="tQuadro" title="Quadro"></select>
-      <select id="tPrio" title="Prioridade">
-        <option value="media">🟡 Prioridade média</option>
-        <option value="alta">🔴 Prioridade alta</option>
-        <option value="baixa">🟢 Prioridade baixa</option>
-      </select>
+      <select id="tPrio" title="Prioridade"></select>
       <input type="date" id="tData" title="Data do prazo">
       <input type="time" id="tHora" title="Horário do prazo">
       <input type="text" id="tCat" list="cats" placeholder="Categoria" maxlength="40" style="flex:1;min-width:130px">
@@ -320,7 +329,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     <input class="busca" id="busca" placeholder="Buscar…">
   </div>
 
-  <div class="legenda"><span><i style="background:var(--alta)"></i>Alta</span><span><i style="background:var(--media)"></i>Média</span><span><i style="background:var(--baixa)"></i>Baixa</span></div>
+  <div class="legenda" id="legenda"></div>
   <div id="area"><ul class="lista card" id="lista"></ul><div class="colunas" id="colunas"></div></div>
 
   <div class="rodape">
@@ -378,6 +387,42 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     let mudou=false;
     tarefas.forEach(t=>{ if(t.cat && !categorias.some(c=>c.nome===t.cat)){ categorias.push({nome:t.cat, cor:CORES[categorias.length%CORES.length]}); mudou=true; } });
     return mudou;
+  }
+  const LSP = "kaique-prioridades";
+  const PRIO_PADRAO = [{id:"alta",nome:"Alta",cor:"#d1495b"},{id:"media",nome:"Média",cor:"#E9B44C"},{id:"baixa",nome:"Baixa",cor:"#4f9d69"}];
+  let prioridades = PRIO_PADRAO.map(p=>({...p}));
+  const getP = id => prioridades.find(p=>p.id===id) || prioridades.find(p=>p.id==="media") || prioridades[0] || {id:"",nome:"Sem prioridade",cor:"#9aa39c"};
+  const prioPadrao = () => (prioridades.find(p=>p.id==="media")||prioridades[0]||{}).id || "";
+  const prioTag = t => { const p=getP(t.prio); return `<span class="tag ptag" style="--p:${p.cor}"><i></i>${esc(p.nome)}</span>`; };
+  async function salvarPrioridades(){ guardar(LSP, prioridades); if(col){ try{ await col.doc("_prioridades").set({lista:prioridades}); }catch(e){} } }
+  function renderPrio(){
+    const sel=$("#tPrio"); const atual=sel.value && prioridades.some(p=>p.id===sel.value) ? sel.value : prioPadrao();
+    sel.innerHTML = prioridades.map(p=>`<option value="${p.id}">● ${esc(p.nome)}</option>`).join("") + `<option value="__nova">+ Nova prioridade…</option>`;
+    sel.value = atual;
+    $("#legenda").innerHTML = `<small>Prioridades:</small>` + prioridades.map(p=>`<button type="button" class="lp" data-pid="${p.id}" style="--p:${p.cor}" title="Clique para editar"><i></i>${esc(p.nome)}</button>`).join("") + `<button type="button" class="lp nova" data-pid="__nova">+ Nova</button>`;
+  }
+  function novaPrioridade(depois){
+    abrirModal("Nova prioridade", `<div class="campos"><label>Nome</label><input maxlength="25" placeholder="Ex.: Urgentíssimo, Pode esperar"><label>Cor</label>${paletaE("#e8833a")}<p class="dica">Ela entra na lista de prioridades. A posição define a ordem das tarefas (as de cima aparecem primeiro).</p><label>Posição</label><select id="pPos">${prioridades.map((p,i)=>`<option value="${i}">Antes de ${esc(p.nome)}</option>`).join("")}<option value="${prioridades.length}" selected>Por último</option></select></div>`, "Criar", n=>{
+      if(!n){ renderPrio(); return; }
+      const p={id:novoId("p"), nome:n, cor:document.querySelector("#mCorpo .paleta button.on")?.dataset.cor||"#e8833a"};
+      prioridades.splice(Number($("#pPos").value), 0, p); salvarPrioridades(); render(); if(depois) depois(p);
+    });
+  }
+  function editarPrioridade(id){
+    const p=prioridades.find(x=>x.id===id); if(!p) return;
+    const i=prioridades.indexOf(p);
+    abrirModal("Editar prioridade", `<div class="campos"><label>Nome</label><input maxlength="25" value="${esc(p.nome)}"><label>Cor</label>${paletaE(p.cor)}
+      <label>Posição</label><select id="pPos">${prioridades.map((x,j)=>`<option value="${j}" ${j===i?"selected":""}>${j+1}º lugar</option>`).join("")}</select>
+      ${prioridades.length>1?`<label class="apagarl"><input type="checkbox" id="pApagar"> Apagar esta prioridade</label>`:""}</div>`, "Salvar", n=>{
+      if($("#pApagar")?.checked){
+        prioridades=prioridades.filter(x=>x.id!==id); const dest=prioPadrao();
+        tarefas.filter(t=>t.prio===id).forEach(t=>{ t.prio=dest; gravar(t); });
+      } else {
+        if(n) p.nome=n; const c=document.querySelector("#mCorpo .paleta button.on")?.dataset.cor; if(c) p.cor=c;
+        const np=Number($("#pPos").value); prioridades.splice(i,1); prioridades.splice(np,0,p);
+      }
+      salvarPrioridades(); render();
+    });
   }
   const LSE = "kaique-etiquetas";
   let etiquetas = [];            // [{id,nome,cor}]
@@ -537,7 +582,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     $("#mTitulo").textContent=titulo; $("#mCorpo").innerHTML=corpoHtml; $("#mOk").textContent=okTxt; mAcao=acao;
     $("#modal").classList.add("on"); const i=$("#mCorpo input"); if(i){ i.focus(); i.select(); }
   }
-  const fecharModal = ()=>{ $("#modal").classList.remove("on"); mAcao=null; };
+  const fecharModal = ()=>{ $("#modal").classList.remove("on"); mAcao=null; if($("#tPrio").value==="__nova") renderPrio(); };
   $("#mCancelar").addEventListener("click", fecharModal);
   $("#modal").addEventListener("click", e=>{ if(e.target.id==="modal") fecharModal(); });
   $("#mForm").addEventListener("submit", e=>{ e.preventDefault(); const a=mAcao; const v=$("#mCorpo input")?.value?.trim(); if(a) a(v); fecharModal(); });
@@ -567,7 +612,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
   });
 
   // ---------- lista ----------
-  const ordemPrio={alta:0,media:1,baixa:2};
+  const ordemPrio=new Proxy({}, {get:(_,id)=>{ const i=prioridades.findIndex(p=>p.id===id); return i<0?99:i; }});
   function render(){
     if(!quadros) return;
     renderQuadros();
@@ -597,11 +642,11 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
       let dt="";
       if(t.data) dt=tagPrazo(t);
       const cc=corCat(t.cat);
-      return `<li class="item pr-${t.prio} ${t.feito?"feito":""}" data-id="${t.id}">
-        <span class="prio p-${t.prio}" title="Prioridade ${t.prio}"></span>
+      return `<li class="item ${t.feito?"feito":""}" data-id="${t.id}" style="--p:${getP(t.prio).cor}">
+        <span class="prio" title="Prioridade ${esc(getP(t.prio).nome)}"></span>
         <button class="check" data-a="toggle" aria-label="Concluir"></button>
         <div class="corpo"><div class="titulo" data-a="abrir" title="Abrir tarefa">${esc(t.titulo)}</div>
-        <div class="meta"><span class="tag tp-${t.prio}">${{alta:"🔴 Alta",media:"🟡 Média",baixa:"🟢 Baixa"}[t.prio]}</span>${etqHtml(t)}${(t.subs||[]).length?`<span class="tag subt ${t.subs.every(x=>x.ok)?"ok":""}" data-a="abrir">☑ ${t.subs.filter(x=>x.ok).length}/${t.subs.length}</span>`:""}<select class="mover" title="Mover para outro quadro">${opts(t.quadro)}</select>${t.cat&&!semCat?`<span class="tag cat" style="background:${cc}1f;color:${cc}">● ${esc(t.cat)}</span>`:""}${dt}</div></div>
+        <div class="meta">${prioTag(t)}${etqHtml(t)}${(t.subs||[]).length?`<span class="tag subt ${t.subs.every(x=>x.ok)?"ok":""}" data-a="abrir">☑ ${t.subs.filter(x=>x.ok).length}/${t.subs.length}</span>`:""}<select class="mover" title="Mover para outro quadro">${opts(t.quadro)}</select>${t.cat&&!semCat?`<span class="tag cat" style="background:${cc}1f;color:${cc}">● ${esc(t.cat)}</span>`:""}${dt}</div></div>
         <button class="ed" data-a="editar" title="Editar">✎</button><button class="del" data-a="del" title="Apagar">×</button></li>`;
     };
     const ul=$("#lista"), cols=$("#colunas");
@@ -642,6 +687,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
       cols.innerHTML = `<aside class="catnav"><small class="navtit">Categorias</small>${nav}</aside><div class="catpainel">${painel}</div>`;
     }
     $("#tEtqs").innerHTML = `<span class="elab">🏷</span>` + chipsEtq(novasEtq,"f");
+    renderPrio();
     renderAlertas();
     renderDet();
     $("#contagem").textContent=`${v.length} de ${tarefas.length} tarefa${tarefas.length===1?"":"s"}`;
@@ -732,13 +778,13 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
 
   $("#form").addEventListener("submit", e=>{
     e.preventDefault(); const titulo=$("#tTitulo").value.trim(); if(!titulo) return;
-    const t={id:novoId("t"),titulo,prio:$("#tPrio").value,data:$("#tData").value||"",hora:$("#tData").value?($("#tHora").value||""):"",cat:$("#tCat").value.trim(),quadro:$("#tQuadro").value,etqs:[...novasEtq],feito:false,criado:Date.now()};
+    const t={id:novoId("t"),titulo,prio:($("#tPrio").value==="__nova"?prioPadrao():$("#tPrio").value),data:$("#tData").value||"",hora:$("#tData").value?($("#tHora").value||""):"",cat:$("#tCat").value.trim(),quadro:$("#tQuadro").value,etqs:[...novasEtq],feito:false,criado:Date.now()};
     novasEtq.clear();
     tarefas.push(t); render(); gravar(t); $("#tTitulo").value=""; $("#tData").value=""; $("#tHora").value=""; $("#tTitulo").focus();
   });
   function editar(t){
       const qo=quadros.map(q=>`<option value="${q.id}" ${q.id===t.quadro?"selected":""}>${esc(q.nome)}</option>`).join("");
-      const po=[["alta","🔴 Alta"],["media","🟡 Média"],["baixa","🟢 Baixa"]].map(([v,n])=>`<option value="${v}" ${v===t.prio?"selected":""}>${n}</option>`).join("");
+      const po=prioridades.map(p=>`<option value="${p.id}" ${p.id===t.prio?"selected":""}>${esc(p.nome)}</option>`).join("");
       abrirModal("Editar tarefa", `<div class="campos">
         <label>Tarefa</label><input id="eTitulo" maxlength="200" value="${esc(t.titulo)}">
         <label>Quadro</label><select id="eQuadro">${qo}</select>
@@ -772,6 +818,9 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
   });
   document.addEventListener("dblclick", e=>{ const b=e.target.closest(".echip[data-eid]"); if(b) editarEtiqueta(b.dataset.eid); });
 
+  $("#tPrio").addEventListener("change", e=>{ if(e.target.value==="__nova") novaPrioridade(p=>{ $("#tPrio").value=p.id; }); });
+  $("#legenda").addEventListener("click", e=>{ const b=e.target.closest(".lp"); if(!b) return; b.dataset.pid==="__nova" ? novaPrioridade() : editarPrioridade(b.dataset.pid); });
+
   // ---------- detalhe da tarefa (checklist) ----------
   let detId=null;
   function abrirDet(id){ detId=id; renderDet(); $("#det").classList.add("on"); setTimeout(()=>$("#detNova").focus(),50); }
@@ -783,7 +832,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     $("#detBox").style.setProperty("--c", cor);
     $("#detTopo").innerHTML=`<button type="button" class="check grande ${t.feito?"on":""}" data-d="feito" title="Concluir tarefa"></button>
       <div><h3 class="${t.feito?"riscado":""}">${esc(t.titulo)}</h3>
-      <div class="meta">${t.cat?`<span class="tag" style="background:${cor}1f;color:${cor}">● ${esc(t.cat)}</span>`:""}<span class="tag tp-${t.prio}">${{alta:"🔴 Alta",media:"🟡 Média",baixa:"🟢 Baixa"}[t.prio]}</span>${etqHtml(t)}<span class="tag">${esc(nomeQuadro(t.quadro))}</span>${t.data?tagPrazo(t):""}</div></div>`;
+      <div class="meta">${t.cat?`<span class="tag" style="background:${cor}1f;color:${cor}">● ${esc(t.cat)}</span>`:""}${prioTag(t)}${etqHtml(t)}<span class="tag">${esc(nomeQuadro(t.quadro))}</span>${t.data?tagPrazo(t):""}</div></div>`;
     $("#detEtqs").innerHTML = chipsEtq(new Set(t.etqs||[]),"d");
     $("#detProg").innerHTML = subs.length ? `<span>${pct}%</span><div class="dbar"><i style="width:${pct}%"></i></div>` : "";
     $("#detLista").innerHTML = subs.map(x=>`<li class="sitem ${x.ok?"ok":""}" data-s="${x.id}">
@@ -843,7 +892,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     const inp=f.querySelector("input"); const titulo=inp.value.trim(); if(!titulo) return;
     const cat=f.closest(".coluna").dataset.cat;
     const quadro = quadroSel!=="todos" ? quadroSel : $("#tQuadro").value;
-    const t={id:novoId("t"),titulo,prio:"media",data:"",cat,quadro,feito:false,criado:Date.now()};
+    const t={id:novoId("t"),titulo,prio:prioPadrao(),data:"",cat,quadro,feito:false,criado:Date.now()};
     tarefas.push(t); render(); gravar(t);
     const cn=[...document.querySelectorAll(".coluna[data-cat]")].find(c=>c.dataset.cat===cat); if(cn) cn.querySelector(".cadd input").focus();
   });
@@ -883,7 +932,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     tarefas.forEach(t=>{ if(!ids.has(t.quadro)){ t.quadro=quadros[0].id; mudou=true; } });
     return mudou;
   }
-  tarefas=ler(LS,[]); quadros=ler(LSQ,null); acesso=ler(LSA,null); categorias=ler(LSC,[]); etiquetas=ler(LSE,[]); visao=ler(LSV,"colunas"); catSel=ler("kaique-catsel",null);
+  tarefas=ler(LS,[]); quadros=ler(LSQ,null); acesso=ler(LSA,null); categorias=ler(LSC,[]); etiquetas=ler(LSE,[]); prioridades=ler(LSP,PRIO_PADRAO.map(p=>({...p}))); visao=ler(LSV,"colunas"); catSel=ler("kaique-catsel",null);
   ajustarCategorias();
   ajustarQuadros();
   if(acesso && acesso.eh!==EMAIL_HASH) acesso=null;
@@ -907,7 +956,8 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
         if(primeira && snap.metadata.fromCache) return;
         const docs=snap.docs.filter(d=>d.exists);
         const remotas=docs.filter(d=>!d.id.startsWith("_")).map(d=>({...d.data()}));
-        const dq=docs.find(d=>d.id==="_quadros"), da=docs.find(d=>d.id==="_acesso"), dc=docs.find(d=>d.id==="_categorias"), de=docs.find(d=>d.id==="_etiquetas");
+        const dq=docs.find(d=>d.id==="_quadros"), da=docs.find(d=>d.id==="_acesso"), dc=docs.find(d=>d.id==="_categorias"), de=docs.find(d=>d.id==="_etiquetas"), dp=docs.find(d=>d.id==="_prioridades");
+        if(dp && Array.isArray(dp.data().lista) && dp.data().lista.length) prioridades=dp.data().lista.map(x=>({...x}));
         if(de && Array.isArray(de.data().lista)) etiquetas=de.data().lista.map(x=>({...x}));
         if(dc && Array.isArray(dc.data().lista)) categorias=dc.data().lista.map(c=>({...c}));
         if(primeira){
@@ -932,6 +982,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
         }
         if(ajustarCategorias() || !dc) salvarCategorias();
         if(!de && etiquetas.length) salvarEtiquetas();
+        if(!dp) salvarPrioridades(); else guardar(LSP,prioridades);
         guardar(LS,tarefas); guardar(LSQ,quadros); if(acesso) guardar(LSA,acesso);
         clearTimeout(timer); setSync("☁ sincronizado"); render();
       }, ()=>{ clearTimeout(timer); col=null; setSync("salvo neste navegador"); if(!decidido){ decidido=true; telaAcesso(); } });
