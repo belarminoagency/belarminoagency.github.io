@@ -218,6 +218,27 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
 .feito .tag.etq{opacity:.55}
 .apagarl{display:flex!important;align-items:center;gap:8px;margin-top:16px!important;color:var(--alta)!important;cursor:pointer}
 .apagarl input{width:auto!important}
+#alertas{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+#alertas:empty{display:none}
+.alerta{border-radius:16px;padding:14px 16px;box-shadow:0 6px 24px rgba(30,58,47,.08)}
+.atit{font-weight:800;font-size:15px;margin-bottom:8px;letter-spacing:-.2px}
+.aitens{display:flex;flex-direction:column;gap:6px}
+.aitem{display:flex;justify-content:space-between;gap:12px;align-items:center;border:0;border-radius:10px;padding:9px 12px;font:inherit;font-size:14px;cursor:pointer;text-align:left;background:rgba(255,255,255,.18);color:inherit}
+.aitem:hover{background:rgba(255,255,255,.3)}
+.aitem b{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aitem span{font-size:12px;font-weight:600;white-space:nowrap;opacity:.95}
+.alerta.vermelho{background:#c8323f;color:#fff;animation:pulsa 1.6s ease-in-out infinite}
+.alerta.laranja{background:#e8833a;color:#fff}
+.alerta.dourado{background:#fff;border-left:6px solid var(--ouro)}
+.alerta.dourado .aitem{background:var(--creme)}
+.alerta.dourado .aitem:hover{background:#efe7d4}
+.alerta.neutro{background:#fff;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px;color:var(--sub);box-shadow:none;border:1.5px dashed var(--linha);padding:10px 14px}
+.abtn{border:0;background:var(--verde);color:#fff;border-radius:10px;padding:8px 14px;font:600 13px Inter;cursor:pointer;flex:none}
+@keyframes pulsa{0%,100%{box-shadow:0 0 0 0 rgba(200,50,63,.55)}50%{box-shadow:0 0 0 8px rgba(200,50,63,0)}}
+.tag.embreve{background:#e8833a;color:#fff;font-weight:700}
+.tag.atrasada{background:#c8323f!important;color:#fff!important;font-weight:700}
+.toast.forte{background:#c8323f;border-left-color:#fff;font-size:15px}
+#tHora{width:auto}
 @media(max-width:560px){h1{font-size:24px}.busca{margin-left:0;width:100%}}
 </style>
 </head>
@@ -268,6 +289,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
 </header>
 
 <main class="wrap">
+  <div id="alertas"></div>
   <div class="quadros" id="quadros"></div>
 
   <form class="nova card" id="form">
@@ -280,7 +302,8 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
         <option value="alta">🔴 Prioridade alta</option>
         <option value="baixa">🟢 Prioridade baixa</option>
       </select>
-      <input type="date" id="tData" title="Prazo">
+      <input type="date" id="tData" title="Data do prazo">
+      <input type="time" id="tHora" title="Horário do prazo">
       <input type="text" id="tCat" list="cats" placeholder="Categoria" maxlength="40" style="flex:1;min-width:130px">
       <datalist id="cats"></datalist>
       <div class="etqs" id="tEtqs"></div>
@@ -468,7 +491,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     if(acesso && !$("#lEmail").value) $("#lEmail").value = acesso.email;
     setTimeout(()=>($("#lEmail").value?$("#lSenha"):$("#lEmail")).focus(),50);
   }
-  function liberar(){ liberado=true; marcarSessao(true); $("#acesso").classList.add("fora"); $("#lSenha").value=""; $("#lConf").value=""; render(); }
+  function liberar(){ liberado=true; marcarSessao(true); $("#acesso").classList.add("fora"); $("#lSenha").value=""; $("#lConf").value=""; render(); setTimeout(checarPrazos,1500); }
   function bloquear(){ liberado=false; marcarSessao(false); $("#acesso").classList.remove("fora"); $("#lista").innerHTML=""; telaAcesso(); }
   $("#bloquear").addEventListener("click", bloquear);
 
@@ -551,7 +574,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     const h=hojeISO(); const pend=tarefas.filter(t=>!t.feito);
     $("#sPend").textContent=pend.length;
     $("#sHoje").textContent=pend.filter(t=>t.data===h).length;
-    $("#sAtr").textContent=pend.filter(t=>t.data&&t.data<h).length;
+    $("#sAtr").textContent=pend.filter(atr).length;
     $("#sFeito").textContent=tarefas.length-pend.length;
     $("#prog").style.width=tarefas.length?((tarefas.length-pend.length)/tarefas.length*100)+"%":"0";
     if(!liberado) return;
@@ -561,7 +584,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     let v=tarefas.filter(t=>noQuadro(t,quadroSel)).filter(t=>{
       if(filtro==="pendentes") return !t.feito;
       if(filtro==="hoje") return !t.feito&&t.data===h;
-      if(filtro==="atrasadas") return !t.feito&&t.data&&t.data<h;
+      if(filtro==="atrasadas") return !t.feito&&atr(t);
       if(filtro==="concluidas") return t.feito;
       return true;
     });
@@ -572,8 +595,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     const opts=id=>quadros.map(q=>`<option value="${q.id}" ${q.id===id?"selected":""}>${esc(q.nome)}</option>`).join("");
     const itemHtml=(t,semCat)=>{
       let dt="";
-      if(t.data){ const cls=!t.feito&&t.data<h?"atrasada":(!t.feito&&t.data===h?"hoje":""); const [y,m,d]=t.data.split("-");
-        dt=`<span class="tag ${cls}">${t.data===h?"Hoje":(cls==="atrasada"?"Atrasada · ":"")+d+"/"+m}</span>`; }
+      if(t.data) dt=tagPrazo(t);
       const cc=corCat(t.cat);
       return `<li class="item pr-${t.prio} ${t.feito?"feito":""}" data-id="${t.id}">
         <span class="prio p-${t.prio}" title="Prioridade ${t.prio}"></span>
@@ -620,10 +642,89 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
       cols.innerHTML = `<aside class="catnav"><small class="navtit">Categorias</small>${nav}</aside><div class="catpainel">${painel}</div>`;
     }
     $("#tEtqs").innerHTML = `<span class="elab">🏷</span>` + chipsEtq(novasEtq,"f");
+    renderAlertas();
     renderDet();
     $("#contagem").textContent=`${v.length} de ${tarefas.length} tarefa${tarefas.length===1?"":"s"}`;
   }
 
+
+  // ---------- prazos, lembretes e notificações ----------
+  const ANTECEDENCIA = 30*60000;   // avisa 30 min antes
+  const prazoMs = t => { if(!t.data) return null; const [y,m,d]=t.data.split("-").map(Number); const [hh,mi]=(t.hora||"23:59").split(":").map(Number); return new Date(y,m-1,d,hh,mi,t.hora?0:59).getTime(); };
+  function status(t){
+    if(t.feito || !t.data) return null;
+    const falta = prazoMs(t) - Date.now();
+    if(falta < 0) return "atrasada";
+    if(t.hora && falta <= ANTECEDENCIA) return "embreve";
+    if(t.data === hojeISO()) return "hoje";
+    return null;
+  }
+  const atr = t => status(t)==="atrasada";
+  function tempoTxt(ms){ const m=Math.round(Math.abs(ms)/60000); if(m<60) return m+" min"; const h=Math.floor(m/60); if(h<24) return h+"h"+(m%60?String(m%60).padStart(2,"0"):""); const d=Math.floor(h/24); return d+(d===1?" dia":" dias"); }
+  function quando(t){ const [y,m,d]=t.data.split("-"); const dia = t.data===hojeISO() ? "Hoje" : d+"/"+m; return dia + (t.hora ? " às "+t.hora : ""); }
+  function tagPrazo(t){
+    const st=status(t), falta=prazoMs(t)-Date.now();
+    if(st==="atrasada") return `<span class="tag atrasada">⚠ Atrasada · ${quando(t)}</span>`;
+    if(st==="embreve") return `<span class="tag embreve">⏰ Faltam ${tempoTxt(falta)} · ${t.hora}</span>`;
+    if(st==="hoje") return `<span class="tag hoje">📅 ${quando(t)}</span>`;
+    return `<span class="tag">📅 ${quando(t)}</span>`;
+  }
+  let alertasFechados = false;
+  function renderAlertas(){
+    const box=$("#alertas"); if(!box) return;
+    if(!liberado){ box.innerHTML=""; return; }
+    const pend=tarefas.filter(t=>!t.feito && t.data);
+    const atrs=pend.filter(t=>status(t)==="atrasada").sort((a,b)=>prazoMs(a)-prazoMs(b));
+    const breve=pend.filter(t=>status(t)==="embreve").sort((a,b)=>prazoMs(a)-prazoMs(b));
+    const hoje=pend.filter(t=>status(t)==="hoje").sort((a,b)=>prazoMs(a)-prazoMs(b));
+    const n=atrs.length+breve.length;
+    document.title = n ? `(${n}) ⚠ Organização do Kaique` : "Organização do Kaique";
+    const podeNotif = ("Notification" in window) && Notification.permission==="default";
+    if(!atrs.length && !breve.length && !hoje.length){
+      box.innerHTML = podeNotif ? `<div class="alerta neutro"><span>🔔 Ative as notificações para ser avisado quando um prazo estiver chegando.</span><button type="button" class="abtn" data-al="notif">Ativar</button></div>` : "";
+      return;
+    }
+    const linha = t => { const f=prazoMs(t)-Date.now(); const st=status(t);
+      const quandoTxt = st==="atrasada" ? `atrasada há ${tempoTxt(f)}` : st==="embreve" ? `faltam ${tempoTxt(f)}` : (t.hora?`até ${t.hora}`:"até o fim do dia");
+      return `<button type="button" class="aitem" data-al="abrir" data-id="${t.id}"><b>${esc(t.titulo)}</b><span>${quandoTxt}</span></button>`; };
+    let html="";
+    if(atrs.length) html+=`<div class="alerta vermelho"><div class="atit">🚨 ${atrs.length} tarefa${atrs.length>1?"s":""} atrasada${atrs.length>1?"s":""}</div><div class="aitens">${atrs.slice(0,6).map(linha).join("")}</div></div>`;
+    if(breve.length) html+=`<div class="alerta laranja"><div class="atit">⏰ Prazo chegando</div><div class="aitens">${breve.map(linha).join("")}</div></div>`;
+    if(hoje.length) html+=`<div class="alerta dourado"><div class="atit">📅 Para hoje</div><div class="aitens">${hoje.slice(0,6).map(linha).join("")}</div></div>`;
+    if(podeNotif) html+=`<div class="alerta neutro"><span>🔔 Quer receber notificação no computador também?</span><button type="button" class="abtn" data-al="notif">Ativar</button></div>`;
+    box.innerHTML=html;
+  }
+  $("#alertas").addEventListener("click", async e=>{
+    const b=e.target.closest("[data-al]"); if(!b) return;
+    if(b.dataset.al==="abrir") abrirDet(b.dataset.id);
+    if(b.dataset.al==="notif"){ try{ await Notification.requestPermission(); }catch(err){} renderAlertas(); }
+  });
+  const LSN="kaique-notificados";
+  let avisados = ler(LSN, {});
+  function bip(){ try{ const ac=new (window.AudioContext||window.webkitAudioContext)(); [0,0.25].forEach(dt=>{ const o=ac.createOscillator(), g=ac.createGain(); o.frequency.value=880; o.connect(g); g.connect(ac.destination); g.gain.setValueAtTime(.15,ac.currentTime+dt); g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+dt+.2); o.start(ac.currentTime+dt); o.stop(ac.currentTime+dt+.22); }); }catch(e){} }
+  function avisar(titulo, corpo, id){
+    const t=$("#toast"); t.innerHTML=`<b>${esc(titulo)}</b><br>${esc(corpo)}`; t.classList.add("on","forte"); clearTimeout(avisar.tm); avisar.tm=setTimeout(()=>t.classList.remove("on","forte"),12000);
+    bip();
+    try{ if("Notification" in window && Notification.permission==="granted"){ const n=new Notification(titulo,{body:corpo,tag:id,requireInteraction:true}); n.onclick=()=>{ window.focus(); if(id) abrirDet(id); n.close(); }; } }catch(e){}
+  }
+  let assinatura="";
+  function checarPrazos(){
+    if(!liberado) return;
+    const novos=[];
+    tarefas.forEach(t=>{
+      const st=status(t); if(st!=="embreve" && st!=="atrasada") return;
+      const k=t.id+"|"+st+"|"+t.data+"|"+(t.hora||""); if(avisados[k]) return;
+      avisados[k]=Date.now(); novos.push([t,st]);
+    });
+    if(novos.length){
+      guardar(LSN, avisados);
+      if(novos.length>2){ avisar("⚠ Prazos precisando de atenção", novos.length+" tarefas estão atrasadas ou com prazo chegando.", null); }
+      else novos.forEach(([t,st])=> st==="atrasada" ? avisar("🚨 Tarefa atrasada", t.titulo+" — prazo era "+quando(t), t.id) : avisar("⏰ Falta pouco!", t.titulo+" — vence às "+t.hora+" (faltam "+tempoTxt(prazoMs(t)-Date.now())+")", t.id));
+    }
+    const sig=tarefas.map(t=>t.id+":"+status(t)).join(",");
+    if(sig!==assinatura){ assinatura=sig; render(); } else renderAlertas();
+  }
+  setInterval(checarPrazos, 30000);
   // ---------- persistência ----------
   async function gravar(t){ guardar(LS,tarefas); if(col){ try{ await col.doc(t.id).set(t); }catch(e){ setSync("salvo só neste navegador"); } } }
   async function apagar(id){ guardar(LS,tarefas); if(col){ try{ await col.doc(id).delete(); }catch(e){} } }
@@ -631,9 +732,9 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
 
   $("#form").addEventListener("submit", e=>{
     e.preventDefault(); const titulo=$("#tTitulo").value.trim(); if(!titulo) return;
-    const t={id:novoId("t"),titulo,prio:$("#tPrio").value,data:$("#tData").value||"",cat:$("#tCat").value.trim(),quadro:$("#tQuadro").value,etqs:[...novasEtq],feito:false,criado:Date.now()};
+    const t={id:novoId("t"),titulo,prio:$("#tPrio").value,data:$("#tData").value||"",hora:$("#tData").value?($("#tHora").value||""):"",cat:$("#tCat").value.trim(),quadro:$("#tQuadro").value,etqs:[...novasEtq],feito:false,criado:Date.now()};
     novasEtq.clear();
-    tarefas.push(t); render(); gravar(t); $("#tTitulo").value=""; $("#tData").value=""; $("#tTitulo").focus();
+    tarefas.push(t); render(); gravar(t); $("#tTitulo").value=""; $("#tData").value=""; $("#tHora").value=""; $("#tTitulo").focus();
   });
   function editar(t){
       const qo=quadros.map(q=>`<option value="${q.id}" ${q.id===t.quadro?"selected":""}>${esc(q.nome)}</option>`).join("");
@@ -642,10 +743,11 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
         <label>Tarefa</label><input id="eTitulo" maxlength="200" value="${esc(t.titulo)}">
         <label>Quadro</label><select id="eQuadro">${qo}</select>
         <div class="dois"><div><label>Prioridade</label><select id="ePrio">${po}</select></div>
-        <div><label>Prazo</label><input type="date" id="eData" value="${t.data||""}"></div></div>
+        <div><label>Data</label><input type="date" id="eData" value="${t.data||""}"></div></div>
+        <label>Horário (opcional)</label><input type="time" id="eHora" value="${t.hora||""}">
         <label>Categoria</label><input id="eCat" list="cats" maxlength="40" value="${esc(t.cat||"")}"></div>`, "Salvar", ()=>{
           const nt=$("#eTitulo").value.trim(); if(nt) t.titulo=nt;
-          t.quadro=$("#eQuadro").value; t.prio=$("#ePrio").value; t.data=$("#eData").value||""; t.cat=$("#eCat").value.trim();
+          t.quadro=$("#eQuadro").value; t.prio=$("#ePrio").value; t.data=$("#eData").value||""; t.hora=t.data?($("#eHora").value||""):""; t.cat=$("#eCat").value.trim();
           render(); gravar(t);
         });
   }
@@ -681,7 +783,7 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
     $("#detBox").style.setProperty("--c", cor);
     $("#detTopo").innerHTML=`<button type="button" class="check grande ${t.feito?"on":""}" data-d="feito" title="Concluir tarefa"></button>
       <div><h3 class="${t.feito?"riscado":""}">${esc(t.titulo)}</h3>
-      <div class="meta">${t.cat?`<span class="tag" style="background:${cor}1f;color:${cor}">● ${esc(t.cat)}</span>`:""}<span class="tag tp-${t.prio}">${{alta:"🔴 Alta",media:"🟡 Média",baixa:"🟢 Baixa"}[t.prio]}</span>${etqHtml(t)}<span class="tag">${esc(nomeQuadro(t.quadro))}</span>${t.data?`<span class="tag">📅 ${t.data.split("-").reverse().slice(0,2).join("/")}</span>`:""}</div></div>`;
+      <div class="meta">${t.cat?`<span class="tag" style="background:${cor}1f;color:${cor}">● ${esc(t.cat)}</span>`:""}<span class="tag tp-${t.prio}">${{alta:"🔴 Alta",media:"🟡 Média",baixa:"🟢 Baixa"}[t.prio]}</span>${etqHtml(t)}<span class="tag">${esc(nomeQuadro(t.quadro))}</span>${t.data?tagPrazo(t):""}</div></div>`;
     $("#detEtqs").innerHTML = chipsEtq(new Set(t.etqs||[]),"d");
     $("#detProg").innerHTML = subs.length ? `<span>${pct}%</span><div class="dbar"><i style="width:${pct}%"></i></div>` : "";
     $("#detLista").innerHTML = subs.map(x=>`<li class="sitem ${x.ok?"ok":""}" data-s="${x.id}">
