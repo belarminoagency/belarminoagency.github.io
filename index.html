@@ -257,7 +257,9 @@ section{position:relative;padding-block:clamp(72px,10vw,128px)}
 /* missão visão valores */
 .mvv{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
 .mv{border-radius:28px;padding:clamp(32px,4vw,56px);min-height:340px;display:flex;flex-direction:column;justify-content:space-between;gap:32px;position:relative;overflow:hidden;min-width:0}
-.mv.m{background:var(--indigo)}
+.mv.m{background:var(--indigo);color:var(--white)}
+.mv.m p{color:rgba(255,255,255,.9)}
+.light .mv.m .eyebrow{color:var(--sky)}
 .mv.v{background:var(--white);color:var(--ink)}
 .mv .tag{font-family:var(--font-display);font-weight:900;font-size:clamp(46px,6vw,84px);letter-spacing:-.05em;line-height:.9}
 .mv.m .tag{color:var(--lime)}
