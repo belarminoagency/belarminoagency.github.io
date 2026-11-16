@@ -239,7 +239,7 @@ footer a{text-decoration:none;color:var(--ink)}
       </div>
       <div class="box">
         <div class="lbl">Pagamento único</div>
-        <div class="big">Acesso completo</div>
+        <div class="big">R$ 27</div>
         <a class="btn js-buy" href="#" data-checkout>Quero o Forja →</a>
         <small>Pagamento seguro pela Kiwify · Pix ou cartão</small>
       </div>
@@ -273,7 +273,7 @@ footer a{text-decoration:none;color:var(--ink)}
 
 <script>
 // Cole aqui o link de checkout da Kiwify quando o produto estiver criado.
-const CHECKOUT = "";
+const CHECKOUT = "https://pay.kiwify.com.br/sZxJNzs";
 const WHATS = "https://wa.me/5511953837208?text=" + encodeURIComponent("Oi! Quero comprar o app Forja.");
 const destino = CHECKOUT || WHATS;
 document.querySelectorAll("[data-checkout]").forEach(a => { a.href = destino; a.target = "_blank"; a.rel = "noopener"; });
