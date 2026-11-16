@@ -73,7 +73,7 @@ const ERR={
   "permission-denied":"Sem permissão. Saia e entre de novo."
 };
 const errMsg=e=>ERR[e?.code]||"Algo deu errado. Tente de novo.";
-const brand=`<div class="logo"><b>B</b>B-Foco</div>`;
+const brand=`<div class="logo"><svg viewBox="96 110 340 300" width="56" height="50" aria-hidden="true"><rect x="118" y="150" width="244" height="244" rx="58" fill="none" stroke="#E9B44C" stroke-width="40"/><path d="M303 265 L410 132" fill="none" stroke="#1E3A2F" stroke-width="84" stroke-linecap="round"/><path d="M178 268 L246 336 L410 132" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/></svg><span>B-Foco</span></div>`;
 const credit=`<p class="credit">Feito por <strong>Kaique Belarmino</strong></p>`;
 const show=html=>{G.innerHTML=html;gateEl.hidden=false;window.scrollTo(0,0)};
 

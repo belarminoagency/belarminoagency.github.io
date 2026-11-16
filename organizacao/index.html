@@ -260,6 +260,8 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
 .lp.nova{background:none;box-shadow:none;border:1.5px dashed #cfc6b2;color:var(--sub)}
 .dica{font-size:12px!important;margin-top:10px}
 #acesso{display:none!important}
+.logo .marca{display:grid;place-items:center;font-style:normal}
+.logo span{font-weight:700;color:#fff!important;font-size:16px!important}
 body{padding-bottom:env(safe-area-inset-bottom)}
 header{padding-top:max(28px,env(safe-area-inset-top))}
 @media(max-width:640px){
@@ -339,7 +341,7 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
 <header>
   <div class="wrap">
     <div class="top">
-      <div class="logo"><b>B</b><span>B-Foco</span></div>
+      <div class="logo"><i class="marca"><svg viewBox="96 110 340 300" width="40" height="36" aria-hidden="true"><rect x="118" y="150" width="244" height="244" rx="58" fill="none" stroke="#E9B44C" stroke-width="40"/><path d="M303 265 L410 132" fill="none" stroke="#1E3A2F" stroke-width="84" stroke-linecap="round"/><path d="M178 268 L246 336 L410 132" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/></svg></i><span>B-Foco</span></div>
       <div class="topdir">
         <span class="sync" id="sync">carregando…</span>
         <button class="sair" id="bloquear" title="Sair da conta">Sair</button>
@@ -1027,7 +1029,7 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
     entrar(uid, perfil, admin){
       const nome=(perfil&&perfil.nome||"").trim().split(/\s+/)[0];
       $("#saud").textContent = nome ? `Bom trabalho, ${nome}` : "Bom trabalho!";
-      document.querySelectorAll(".logo b").forEach(b=>b.textContent = nome ? nome[0].toUpperCase() : "B");
+      
       ref=window.ORG_db.collection("organizacao_dados").doc(uid);
       let primeira=true;
       ref.onSnapshot(d=>{
