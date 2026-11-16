@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Forja — Treino e alimentação no seu celular</title>
+<meta name="description" content="Forja: app de treino e alimentação personalizado pro seu corpo e seu objetivo. Em casa ou na academia.">
+<meta name="theme-color" content="#E4561F">
+<meta property="og:title" content="Forja — Treino e alimentação no seu celular">
+<meta property="og:description" content="Plano de treino e alimentação montado pro seu corpo, seu objetivo e seus dias. Em casa ou na academia.">
+<meta property="og:image" content="https://belarminoagency.github.io/forja-app/icon.png">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,700;125,800;125,900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0F1419; --surface:#18202A; --raise:#202a36; --ink:#E9EDF1; --muted:#97A2AE; --line:#29333F;
+  --ember:#FF7240; --ember-deep:#E4561F; --glow:#3A2014; --ok:#5CC48C;
+  --display:"Archivo","Arial Narrow",sans-serif; --body:"DM Sans",system-ui,-apple-system,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 max(20px,env(safe-area-inset-left))}
+h1,h2,h3{font-family:var(--display);font-stretch:125%;line-height:1.02;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(42px,8vw,76px);font-weight:900;text-transform:uppercase}
+h2{font-size:clamp(30px,5vw,46px);font-weight:900;text-transform:uppercase}
+h3{font-size:20px;font-weight:800}
+p{margin:0}
+.ember{color:var(--ember)}
+.eyebrow{font:700 12px/1 var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--ember)}
+
+/* topo */
+header{position:sticky;top:0;z-index:20;background:rgba(15,20,25,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.bar{display:flex;align-items:center;justify-content:space-between;height:62px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:900 22px var(--display);font-stretch:125%;text-transform:uppercase}
+.brand img{width:34px;height:34px;border-radius:9px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--ember);color:#1B0B04;font:700 17px var(--body);text-decoration:none;padding:16px 26px;border-radius:12px;transition:transform .15s,background .15s}
+.btn:hover{background:#ff8656;transform:translateY(-1px)}
+.btn.sm{padding:10px 16px;font-size:15px;border-radius:10px}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+
+/* hero */
+.hero{padding:56px 0 72px;display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
+.hero .lead{font-size:19px;color:var(--muted);margin:22px 0 30px;max-width:520px}
+.hero .cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.hero .note{margin-top:18px;font-size:14px;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap}
+.hero .note span::before{content:"✓ ";color:var(--ok);font-weight:700}
+
+/* celular */
+.phone{justify-self:center;width:290px;border-radius:40px;padding:12px;background:#05080b;border:1px solid #2b3540;box-shadow:0 40px 90px -30px rgba(255,114,64,.45),0 0 0 6px #121a22}
+.screen{border-radius:30px;background:#EEF1F4;color:#16202A;padding:22px 16px 18px;min-height:540px;display:flex;flex-direction:column;gap:12px}
+.screen .hi{font:900 26px var(--display);font-stretch:125%;text-transform:uppercase}
+.screen .tag{font-size:12px;color:#64707D;font-weight:500}
+.card{background:#fff;border:1px solid #D9DEE4;border-radius:16px;padding:14px}
+.card .t{font:800 15px var(--display);font-stretch:112%;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.card .t small{font:700 11px var(--body);color:#E4561F;background:#FCE6DC;padding:3px 8px;border-radius:99px}
+.ex{display:flex;align-items:center;gap:10px;font-size:13px;padding:7px 0;border-top:1px solid #EEF1F4}
+.ex:first-of-type{border-top:0}
+.ck{width:20px;height:20px;border-radius:6px;border:2px solid #D9DEE4;flex:none}
+.ck.on{background:#2E8A5A;border-color:#2E8A5A;position:relative}
+.ck.on::after{content:"";position:absolute;left:5px;top:1px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.ex b{margin-left:auto;font-weight:700;color:#64707D;font-size:12px}
+.meal{display:flex;justify-content:space-between;font-size:13px;padding:6px 0}
+.meal span:last-child{color:#64707D}
+.prog{height:8px;background:#EEF1F4;border-radius:99px;overflow:hidden;margin-top:6px}
+.prog i{display:block;height:100%;width:62%;background:#E4561F;border-radius:99px}
+
+/* seções */
+section{padding:80px 0;border-top:1px solid var(--line)}
+.head{max-width:640px;margin-bottom:40px}
+.head p{color:var(--muted);font-size:18px;margin-top:14px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feat{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px}
+.feat .ic{width:46px;height:46px;border-radius:12px;background:var(--glow);display:grid;place-items:center;font-size:22px;margin-bottom:18px}
+.feat p{color:var(--muted);margin-top:8px}
+
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
+.step{padding:24px;border-radius:18px;background:var(--surface);border:1px solid var(--line);counter-increment:s}
+.step::before{content:counter(s,decimal-leading-zero);font:900 40px var(--display);font-stretch:125%;color:var(--ember);display:block;margin-bottom:12px}
+.step p{color:var(--muted);margin-top:6px;font-size:15px}
+
+.for{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.for ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.for li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px 16px 50px;position:relative}
+.for li::before{content:"✓";position:absolute;left:18px;top:15px;color:var(--ok);font-weight:700}
+
+.offer{background:linear-gradient(135deg,#2a1710,#18202A 60%);border:1px solid #4a2a1c;border-radius:26px;padding:48px;display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:center}
+.offer ul{margin:20px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+.offer li::before{content:"✓  ";color:var(--ember);font-weight:700}
+.offer .box{background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center}
+.offer .box .lbl{color:var(--muted);font-size:14px}
+.offer .box .big{font:900 34px var(--display);font-stretch:125%;text-transform:uppercase;margin:6px 0 20px}
+.offer .box .btn{width:100%}
+.offer .box small{display:block;margin-top:14px;color:var(--muted);font-size:13px}
+
+.faq{display:grid;gap:12px;max-width:780px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 22px}
+summary{cursor:pointer;font-weight:700;font-size:17px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--ember);font-size:22px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{color:var(--muted);margin-top:10px}
+
+footer{border-top:1px solid var(--line);padding:36px 0 calc(36px + env(safe-area-inset-bottom));color:var(--muted);font-size:14px}
+footer .row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+footer a{text-decoration:none;color:var(--ink)}
+
+.float{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:30;display:none}
+
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;padding-top:36px;gap:44px}
+  .grid,.steps{grid-template-columns:1fr 1fr}
+  .for,.offer{grid-template-columns:1fr}
+  .offer{padding:28px}
+  .float{display:block}
+}
+@media (max-width:560px){
+  .grid,.steps{grid-template-columns:1fr}
+  .hero .cta .btn{width:100%}
+  section{padding:60px 0}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#"><img src="icon.png" alt="">Forja</a>
+    <a class="btn sm js-buy" href="#oferta">Quero o Forja</a>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="hero">
+    <div>
+      <span class="eyebrow">App de treino e alimentação</span>
+      <h1 style="margin-top:14px">Forje o seu <span class="ember">melhor corpo.</span></h1>
+      <p class="lead">Um plano de treino e alimentação montado pro seu corpo, seu objetivo e os dias que você tem. Em casa com halteres ou na academia, tudo no seu celular.</p>
+      <div class="cta">
+        <a class="btn js-buy" href="#oferta">Quero meu plano →</a>
+        <a class="btn ghost" href="#como-funciona">Como funciona</a>
+      </div>
+      <div class="note"><span>Plano personalizado</span><span>Casa ou academia</span><span>Suporte no WhatsApp</span></div>
+    </div>
+
+    <div class="phone" aria-hidden="true">
+      <div class="screen">
+        <div>
+          <div class="hi">Bom dia, Lucas</div>
+          <div class="tag">Ectomorfo · ganhar massa · 4 dias</div>
+        </div>
+        <div class="card">
+          <div class="t">Treino A · Peito e tríceps <small>Hoje</small></div>
+          <div class="ex"><i class="ck on"></i>Supino com halteres<b>4×10</b></div>
+          <div class="ex"><i class="ck on"></i>Crucifixo<b>3×12</b></div>
+          <div class="ex"><i class="ck"></i>Flexão fechada<b>3×máx</b></div>
+          <div class="ex"><i class="ck"></i>Tríceps francês<b>3×12</b></div>
+        </div>
+        <div class="card">
+          <div class="t">Comida de hoje</div>
+          <div class="meal"><span>Café da manhã</span><span>3 ovos + pão</span></div>
+          <div class="meal"><span>Almoço</span><span>arroz, feijão, frango</span></div>
+          <div class="meal"><span>Pré-treino</span><span>banana + aveia</span></div>
+        </div>
+        <div class="card">
+          <div class="t">Seu progresso</div>
+          <div class="tag">Treinos feitos esse mês: 10 de 16</div>
+          <div class="prog"><i></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="head">
+      <span class="eyebrow">O que tem dentro</span>
+      <h2 style="margin-top:12px">Tudo que você precisa pra <span class="ember">não parar.</span></h2>
+      <p>Chega de treino copiado da internet que não serve pra você. O Forja monta o plano a partir de quem você é.</p>
+    </div>
+    <div class="grid">
+      <div class="feat"><div class="ic">🏋️</div><h3>Treino sob medida</h3><p>Montado pelo seu biotipo, objetivo e quantos dias por semana você consegue treinar.</p></div>
+      <div class="feat"><div class="ic">🍽️</div><h3>Alimentação do dia</h3><p>O que comer em cada refeição, com porções simples de entender. Sem dieta impossível.</p></div>
+      <div class="feat"><div class="ic">🏠</div><h3>Casa ou academia</h3><p>Só tem halteres em casa? Tem treino pra isso. Vai pra academia? Também.</p></div>
+      <div class="feat"><div class="ic">✅</div><h3>Checklist do treino</h3><p>Marque cada exercício feito e veja o treino do dia andar.</p></div>
+      <div class="feat"><div class="ic">📈</div><h3>Seu progresso</h3><p>Acompanhe treinos feitos e seu peso ao longo das semanas.</p></div>
+      <div class="feat"><div class="ic">💡</div><h3>Dicas pro seu corpo</h3><p>Orientações específicas pro seu biotipo e pro seu objetivo: ganhar massa ou emagrecer.</p></div>
+    </div>
+  </section>
+
+  <section id="como-funciona">
+    <div class="head">
+      <span class="eyebrow">Como funciona</span>
+      <h2 style="margin-top:12px">Em 4 passos você <span class="ember">começa hoje.</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Garanta seu acesso</h3><p>Finalize a compra com Pix ou cartão, em ambiente seguro.</p></div>
+      <div class="step"><h3>Instale o app</h3><p>Você recebe o link do Forja e instala no celular em segundos.</p></div>
+      <div class="step"><h3>Crie sua conta</h3><p>Conte seu corpo hoje, seu objetivo e seus dias de treino.</p></div>
+      <div class="step"><h3>Siga o plano</h3><p>Treino e comida do dia prontos. É só abrir e fazer.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head">
+      <span class="eyebrow">Pra quem é</span>
+      <h2 style="margin-top:12px">O Forja é <span class="ember">pra você</span> se…</h2>
+    </div>
+    <div class="for">
+      <ul>
+        <li>Você quer ganhar massa ou emagrecer, mas não sabe por onde começar</li>
+        <li>Treina em casa com pouco equipamento e quer resultado</li>
+        <li>Começa animado e para na segunda semana</li>
+      </ul>
+      <ul>
+        <li>Não sabe o que comer pra acompanhar o treino</li>
+        <li>Quer algo simples, direto no celular, sem planilha</li>
+        <li>Não quer pagar personal todo mês</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="oferta">
+    <div class="offer">
+      <div>
+        <span class="eyebrow">Acesso ao Forja</span>
+        <h2 style="margin-top:12px">Comece a forjar <span class="ember">hoje.</span></h2>
+        <ul>
+          <li>Plano de treino personalizado</li>
+          <li>Plano de alimentação com porções simples</li>
+          <li>Treinos pra casa e pra academia</li>
+          <li>Checklist e acompanhamento de progresso</li>
+          <li>Suporte direto pelo WhatsApp</li>
+        </ul>
+      </div>
+      <div class="box">
+        <div class="lbl">Pagamento único</div>
+        <div class="big">Acesso completo</div>
+        <a class="btn js-buy" href="#" data-checkout>Quero o Forja →</a>
+        <small>Pagamento seguro pela Kiwify · Pix ou cartão</small>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head">
+      <span class="eyebrow">Dúvidas</span>
+      <h2 style="margin-top:12px">Perguntas frequentes</h2>
+    </div>
+    <div class="faq">
+      <details><summary>Funciona no iPhone e no Android?</summary><p>Sim. O Forja abre direto do navegador e pode ser instalado na tela inicial de qualquer celular.</p></details>
+      <details><summary>Preciso de academia?</summary><p>Não. Na hora de montar seu plano você escolhe onde treina, e o app monta os treinos pra isso, inclusive só com halteres em casa.</p></details>
+      <details><summary>Quando recebo o acesso?</summary><p>Logo depois da compra você recebe o link do app. Cria sua conta e o acesso é liberado pra você.</p></details>
+      <details><summary>Tem mensalidade?</summary><p>Não. É pagamento único.</p></details>
+      <details><summary>E se eu tiver dúvida usando o app?</summary><p>É só chamar no WhatsApp que a gente te ajuda.</p></details>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap row">
+    <div><strong style="color:var(--ink)">Forja</strong> · Criado por Kaique Belarmino</div>
+    <div>Desenvolvido por <a href="https://belarminoagency.github.io/">belarmino agency</a> · <a href="https://wa.me/5511953837208">WhatsApp</a></div>
+  </div>
+</footer>
+
+<a class="btn float js-buy" href="#oferta">Quero o Forja</a>
+
+<script>
+// Cole aqui o link de checkout da Kiwify quando o produto estiver criado.
+const CHECKOUT = "";
+const WHATS = "https://wa.me/5511953837208?text=" + encodeURIComponent("Oi! Quero comprar o app Forja.");
+const destino = CHECKOUT || WHATS;
+document.querySelectorAll("[data-checkout]").forEach(a => { a.href = destino; a.target = "_blank"; a.rel = "noopener"; });
+</script>
+</body>
+</html>
