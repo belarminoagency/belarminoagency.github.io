@@ -4,60 +4,108 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Kaique Belarmino</title>
+<meta name="theme-color" content="#17158F">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
 <style>
-/* VOICE: pessoal, masculino, direto — sem personagem
-   IDEA: capa de revista: foto cheia, nome grande por cima
-   PICTURE: a foto do Kaique ocupando o topo, luz quente
-   COLOUR and TYPE: branco + preto, acento dourado da luz da estante; Archivo Black + Instrument Serif itálico
-   LAYOUT: coluna única de celular, foto > nome > botões */
-:root{color-scheme:light dark;--bg:light-dark(#ffffff,#16130f);--ink:light-dark(#141414,#f4efe6);--soft:light-dark(#5c5c5c,#b9b0a2);--card:light-dark(#f3f1ed,#221d17);--gold:#e3a83b}
-:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+/* VOICE: pessoal, com energia — atleta, empresário, cristão
+   IDEA: cartaz de luta: foto em destaque, faixa correndo, cartel como placar
+   PICTURE: foto do Kaique num cartão inclinado sobre formas verde-limão
+   COLOUR and TYPE: índigo #17158F dominante, verde-limão #D7E928 acento, azul claro #AAB8FF apoio; Archivo Black + Instrument Serif itálico
+   LAYOUT: coluna de celular — foto, nome, faixa, botões, cartel, apps, redes */
+:root{--indigo:#17158F;--deep:#0f0d66;--lime:#D7E928;--sky:#AAB8FF;--white:#fff;--ink:#0d0c3d}
 *{box-sizing:border-box;min-width:0}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Archivo,system-ui,sans-serif;overflow-x:clip}
-.wrap{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
-.hero{position:relative;aspect-ratio:3/3.4;overflow:hidden}
-.hero img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block}
-.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.15) 62%,rgba(0,0,0,.78) 100%)}
-.name{position:absolute;left:0;right:0;bottom:22px;z-index:1;text-align:center;color:#fff;padding:0 16px}
-.name h1{margin:0;font:400 clamp(40px,12vw,56px)/1 "Archivo Black",sans-serif;letter-spacing:.01em;text-transform:uppercase;text-shadow:0 2px 18px rgba(0,0,0,.35)}
-.name h1 em{display:block;font:italic 400 clamp(38px,11vw,52px)/1 "Instrument Serif",serif;text-transform:none;letter-spacing:0;margin-top:2px}
-.tags{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:14px;font-weight:600;opacity:.92}
-.tags span+span::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--gold);margin-right:14px;vertical-align:middle}
-.links{padding:26px 18px 10px;display:grid;gap:12px}
-.links a{display:flex;align-items:center;gap:14px;min-height:62px;padding:12px 18px;border-radius:18px;background:var(--card);color:var(--ink);text-decoration:none;font-weight:600;font-size:16px;transition:transform .15s ease,background .15s}
-.links a:hover{transform:translateY(-2px)}
-.links a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.links a.main{background:var(--ink);color:var(--bg)}
-.links small{display:block;font-weight:400;font-size:13px;color:var(--soft)}
-.links a.main small{color:inherit;opacity:.7}
-.ic{flex:none;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--gold);color:#141414}
-.ic svg{width:20px;height:20px}
-.arrow{margin-left:auto;opacity:.5;font-size:18px}
-.links .soon{opacity:.55;pointer-events:none}
-.links .free{background:var(--gold);color:#141414;font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px;margin-left:auto;white-space:nowrap}
+html{background:var(--indigo);overflow-x:hidden}
+body{margin:0;background:radial-gradient(120% 60% at 50% 0%,#2522b8 0%,var(--indigo) 55%,var(--deep) 100%);color:var(--white);font:16px/1.5 Archivo,system-ui,sans-serif;overflow-x:clip;min-height:100vh}
+.wrap{max-width:480px;margin:0 auto;padding-bottom:34px;position:relative;overflow:hidden}
+
+/* formas de fundo */
+.blob{position:absolute;border-radius:38%;pointer-events:none;z-index:0}
+.b1{width:220px;height:220px;background:var(--lime);top:40px;right:-70px;animation:float 9s ease-in-out infinite}
+.b2{width:150px;height:150px;background:var(--sky);top:300px;left:-60px;opacity:.55;animation:float 11s ease-in-out infinite reverse}
+.b3{width:90px;height:90px;border:3px solid var(--lime);background:none;top:900px;right:-30px;animation:spin 18s linear infinite}
+@keyframes float{50%{transform:translateY(-18px) rotate(12deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* foto */
+.hero{position:relative;z-index:1;padding:28px 34px 0}
+.photo{position:relative;border-radius:28px;overflow:hidden;aspect-ratio:4/4.6;transform:rotate(-3deg);box-shadow:0 22px 50px rgba(5,4,40,.55);border:4px solid var(--white);animation:pop .7s cubic-bezier(.2,1.4,.4,1) both}
+.photo img{width:100%;height:100%;object-fit:cover;object-position:50% 28%;display:block}
+.badge{position:absolute;right:18px;bottom:-16px;z-index:2;background:var(--lime);color:var(--indigo);font:400 15px/1 "Archivo Black",sans-serif;padding:12px 16px;border-radius:16px;transform:rotate(4deg);box-shadow:0 8px 20px rgba(0,0,0,.25);animation:pop .7s .25s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes pop{from{opacity:0;transform:scale(.85) rotate(-8deg)}}
+
+/* nome */
+.name{position:relative;z-index:1;text-align:center;padding:34px 18px 0}
+.name h1{margin:0;font:400 clamp(44px,13vw,60px)/.95 "Archivo Black",sans-serif;text-transform:uppercase;letter-spacing:.01em}
+.name h1 em{display:block;font:italic 400 clamp(42px,12vw,56px)/1 "Instrument Serif",serif;text-transform:none;color:var(--lime);letter-spacing:0}
+.name p{margin:12px auto 0;max-width:30ch;color:var(--sky);font-size:15px}
+
+/* faixa correndo */
+.strip{position:relative;z-index:1;margin:22px 0 4px;background:var(--lime);color:var(--indigo);transform:rotate(-2deg);overflow:hidden;white-space:nowrap;padding:11px 0;font:400 18px/1 "Archivo Black",sans-serif;text-transform:uppercase}
+.strip div{display:inline-block;animation:run 16s linear infinite}
+.strip span{margin:0 14px}
+.strip i{font-style:normal;color:var(--sky);-webkit-text-stroke:0}
+@keyframes run{to{transform:translateX(-50%)}}
+
+/* blocos */
+.sec{position:relative;z-index:1;padding:24px 18px 0}
 h2{margin:0 0 12px;font:400 22px/1.1 "Archivo Black",sans-serif;text-transform:uppercase}
-h2 em{font:italic 400 24px "Instrument Serif",serif;text-transform:none}
-.sec{padding:22px 18px 4px}
+h2 em{font:italic 400 26px "Instrument Serif",serif;text-transform:none;color:var(--lime)}
+.links{display:grid;gap:12px}
+.links a{position:relative;display:flex;align-items:center;gap:14px;min-height:66px;padding:12px 16px;border-radius:20px;background:var(--white);color:var(--ink);text-decoration:none;font-weight:700;font-size:16px;box-shadow:0 6px 0 rgba(5,4,40,.35);transition:transform .15s ease,box-shadow .15s ease;opacity:0;animation:up .5s ease forwards}
+.links a:hover{transform:translateY(-3px) rotate(-.6deg);box-shadow:0 9px 0 rgba(5,4,40,.35)}
+.links a:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(5,4,40,.35)}
+.links a:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
+.links a.main{background:var(--lime);color:var(--indigo)}
+.links a.main::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 0 0 0 rgba(215,233,40,.6);animation:pulse 2.2s ease-out infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 14px rgba(215,233,40,0)}100%{box-shadow:0 0 0 0 rgba(215,233,40,0)}}
+.links small{display:block;font-weight:400;font-size:13px;color:#4b4a7a}
+.links a.main small{color:var(--indigo);opacity:.75}
+.ic{flex:none;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--indigo);color:var(--white)}
+.links a.main .ic{background:var(--indigo);color:var(--lime)}
+.ic svg{width:21px;height:21px}
+.arrow{margin-left:auto;font-size:20px;color:var(--indigo)}
+.free{margin-left:auto;background:var(--indigo);color:var(--lime);font:400 11px "Archivo Black",sans-serif;padding:5px 9px;border-radius:99px;white-space:nowrap}
+.links .soon{background:rgba(255,255,255,.1);color:var(--white);box-shadow:none;pointer-events:none;border:2px dashed rgba(170,184,255,.5)}
+.links .soon small{color:var(--sky)}
+.links .soon .ic{background:rgba(255,255,255,.12)}
+.links .soon .arrow{color:var(--sky)}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* cartel */
 .cartel{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.cartel div{background:var(--card);border-radius:16px;padding:14px 10px;text-align:center}
-.cartel b{display:block;font:400 26px/1 "Archivo Black",sans-serif}
-.cartel span{display:block;font-size:13px;color:var(--soft);margin-top:6px;line-height:1.3}
-footer{margin-top:auto;padding:24px 18px 30px;text-align:center;font-size:13px;color:var(--soft)}
-@media(prefers-reduced-motion:reduce){.links a{transition:none}.links a:hover{transform:none}}
+.cartel div{background:var(--sky);color:var(--indigo);border-radius:20px;padding:16px 8px 14px;text-align:center;box-shadow:0 6px 0 rgba(5,4,40,.35)}
+.cartel div:nth-child(2){background:var(--lime);transform:translateY(-6px)}
+.cartel b{display:block;font:400 clamp(24px,7vw,30px)/1 "Archivo Black",sans-serif}
+.cartel span{display:block;font-size:13px;font-weight:600;margin-top:6px;line-height:1.25}
+
+footer{position:relative;z-index:1;margin-top:30px;text-align:center;font-size:13px;color:var(--sky)}
+footer b{color:var(--lime);font-weight:600}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.links a{opacity:1}}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i>
+
   <header class="hero">
-    <img src="foto.jpg" alt="Kaique Belarmino">
-    <div class="name">
-      <h1>Kaique<em>Belarmino</em></h1>
-      <div class="tags"><span>Atleta</span><span>Empresário</span><span>Cristão</span></div>
-    </div>
+    <div class="photo"><img src="foto.jpg" alt="Kaique Belarmino"></div>
+    <div class="badge">CEO · LUTADOR</div>
   </header>
-  <nav class="links" id="links"></nav>
+
+  <section class="name">
+    <h1>Kaique<em>Belarmino</em></h1>
+    <p>Documentando a construção: no tatame, nos negócios e na fé.</p>
+  </section>
+
+  <div class="strip" aria-hidden="true"><div>
+    <span>Atleta</span><i>✦</i><span>Empresário</span><i>✦</i><span>Cristão</span><i>✦</i><span>Petrópolis RJ</span><i>✦</i>
+    <span>Atleta</span><i>✦</i><span>Empresário</span><i>✦</i><span>Cristão</span><i>✦</i><span>Petrópolis RJ</span><i>✦</i>
+  </div></div>
+
+  <section class="sec"><nav class="links" id="links"></nav></section>
+
   <section class="sec">
     <h2>Meu <em>cartel</em></h2>
     <div class="cartel">
@@ -66,15 +114,18 @@ footer{margin-top:auto;padding:24px 18px 30px;text-align:center;font-size:13px;c
       <div><b>1-0</b><span>MMA<br>estreia</span></div>
     </div>
   </section>
+
   <section class="sec">
     <h2>Meus <em>apps</em></h2>
-    <nav class="links" id="apps" style="padding:0"></nav>
+    <nav class="links" id="apps"></nav>
   </section>
+
   <section class="sec">
     <h2>Me <em>acompanhe</em></h2>
-    <nav class="links" id="redes" style="padding:0"></nav>
+    <nav class="links" id="redes"></nav>
   </section>
-  <footer>Petrópolis, RJ</footer>
+
+  <footer>Feito pela <b>belarmino agency</b></footer>
 </div>
 <script>
 {
@@ -95,13 +146,14 @@ const links=[
 ];
 const apps=[
   {t:'Forja',s:'Treino e alimentação personalizados',u:'https://belarminoagency.github.io/forja/',i:'fit',free:true},
-  {t:'B-Fight',s:'Boxe, Muay Thai, MMA e Jiu-Jitsu · iPhone e Android',u:'https://belarminoagency.github.io/b-fight/',i:'fight',free:true}
+  {t:'B-Fight',s:'Boxe, Muay Thai, MMA e Jiu-Jitsu',u:'https://belarminoagency.github.io/b-fight/',i:'fight',free:true}
 ];
 const redes=[
   {t:'TikTok',s:'Em breve',u:'',i:'tt',soon:true},
   {t:'YouTube',s:'Em breve',u:'',i:'yt',soon:true}
 ];
-const row=l=>`<a href="${l.u||'#'}" target="_blank" rel="noopener" class="${l.main?'main':''} ${l.soon&&!l.u?'soon':''}"><span class="ic">${icons[l.i]}</span><span>${l.t}<small>${l.s}</small></span>${l.free?'<span class="free">GRÁTIS</span>':'<span class="arrow">→</span>'}</a>`;
+let n=0;
+const row=l=>`<a href="${l.u||'#'}" target="_blank" rel="noopener" class="${l.main?'main':''} ${l.soon&&!l.u?'soon':''}" style="animation-delay:${.35+(n++)*.08}s"><span class="ic">${icons[l.i]}</span><span>${l.t}<small>${l.s}</small></span>${l.free?'<span class="free">GRÁTIS</span>':'<span class="arrow">→</span>'}</a>`;
 document.getElementById('links').innerHTML=links.map(row).join('');
 document.getElementById('apps').innerHTML=apps.map(row).join('');
 document.getElementById('redes').innerHTML=redes.map(row).join('');
