@@ -177,7 +177,7 @@ footer a{color:#fff;text-decoration:none}
           </ul>
         </div>
         <div class="box">
-          <div class="lbl">Pagamento único</div>
+          <div class="lbl"><s>De R$ 108</s> · pagamento único</div>
           <div class="big" id="preco">4 apps</div>
           <div class="sm">Sem mensalidade. Acesso pelo celular ou computador.</div>
           <a class="btn dark" href="#" data-checkout>Quero o pacote</a>
@@ -209,7 +209,7 @@ footer a{color:#fff;text-decoration:none}
 {
 // Quando o produto existir na Kiwify: cole o link do checkout e o preço aqui.
 const CHECKOUT = "";
-const PRECO = "";
+const PRECO = "R$ 47";
 const WHATS = "https://wa.me/5511953837208?text=" + encodeURIComponent("Oi! Quero comprar o Pacote Belarmino Apps.");
 document.querySelectorAll("[data-checkout]").forEach(a => { a.href = CHECKOUT || WHATS; a.target = "_blank"; a.rel = "noopener"; });
 if (PRECO) document.getElementById("preco").textContent = PRECO;
