@@ -259,6 +259,85 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
 .lp:hover{box-shadow:0 0 0 1.5px var(--p)}
 .lp.nova{background:none;box-shadow:none;border:1.5px dashed #cfc6b2;color:var(--sub)}
 .dica{font-size:12px!important;margin-top:10px}
+
+/* ===== movimento & acabamento ===== */
+:root{--ease:cubic-bezier(.22,.8,.24,1);--ease-pop:cubic-bezier(.34,1.56,.64,1)}
+header{position:relative;overflow:hidden;background:linear-gradient(160deg,#1E3A2F 0%,#183026 55%,#14291f 100%)}
+header::before,header::after{content:"";position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;opacity:.55}
+header::before{width:420px;height:420px;background:radial-gradient(circle,rgba(233,180,76,.35),transparent 65%);top:-180px;right:-120px;animation:flutua 16s ease-in-out infinite alternate}
+header::after{width:360px;height:360px;background:radial-gradient(circle,rgba(79,157,105,.35),transparent 65%);bottom:-200px;left:-120px;animation:flutua 20s ease-in-out infinite alternate-reverse}
+header .wrap{position:relative;z-index:1}
+@keyframes flutua{from{transform:translate(0,0) scale(1)}to{transform:translate(-60px,40px) scale(1.15)}}
+h1{animation:sobe .7s var(--ease) both}
+.data{animation:sobe .7s .08s var(--ease) both}
+.frase{animation:sobe .7s .16s var(--ease) both;transition:opacity .5s var(--ease),transform .5s var(--ease),filter .5s}
+.frase.troca{opacity:0;transform:translateY(6px);filter:blur(3px)}
+.stats .stat{animation:sobe .6s var(--ease) both;transition:transform .25s var(--ease),background .25s;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.06)}
+.stats .stat:nth-child(1){animation-delay:.2s}.stats .stat:nth-child(2){animation-delay:.26s}.stats .stat:nth-child(3){animation-delay:.32s}.stats .stat:nth-child(4){animation-delay:.38s}
+.stats .stat:hover{transform:translateY(-3px);background:rgba(255,255,255,.14)}
+.stat strong.pulo{animation:pulo .5s var(--ease-pop)}
+@keyframes pulo{0%{transform:scale(1)}40%{transform:scale(1.18);color:var(--ouro)}100%{transform:scale(1)}}
+.barra i{background:linear-gradient(90deg,var(--ouro),#f3cf7f,var(--ouro));background-size:200% 100%;animation:brilho 3s linear infinite;transition:width .8s var(--ease)}
+@keyframes brilho{to{background-position:-200% 0}}
+@keyframes sobe{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+main > *{animation:sobe .6s .15s var(--ease) both}
+.card,.coluna,.catnav,.alerta,.quadro{transition:box-shadow .3s var(--ease),transform .3s var(--ease)}
+form.nova:focus-within{box-shadow:0 10px 34px rgba(30,58,47,.14);transform:translateY(-1px)}
+.btn,.chip,.quadro,.catitem,.echip,.lp,.abtn,.mini,.sair{transition:transform .18s var(--ease),background .25s,color .25s,box-shadow .25s,filter .2s}
+.btn:active,.chip:active,.quadro:active,.catitem:active,.echip:active,.lp:active,.abtn:active,.sair:active{transform:scale(.96)}
+.btn:hover{box-shadow:0 6px 18px rgba(233,180,76,.35)}
+.quadro:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(30,58,47,.10)}
+.quadro.on{box-shadow:0 8px 22px rgba(233,180,76,.35)}
+.chip.on{box-shadow:0 6px 16px rgba(30,58,47,.22)}
+/* tarefas */
+.item{position:relative;transition:background .3s,transform .25s var(--ease),opacity .35s,box-shadow .25s}
+.item:hover{transform:translateX(3px);box-shadow:inset 3px 0 0 var(--p)}
+.item.entra{animation:entra .5s var(--ease) both;animation-delay:calc(var(--i) * 45ms)}
+@keyframes entra{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}
+.check{transition:transform .25s var(--ease-pop),background .25s,border-color .25s}
+.check:hover{transform:scale(1.1);border-color:var(--p,var(--verde))}
+.item.concluindo .check{animation:marca .45s var(--ease-pop)}
+@keyframes marca{0%{transform:scale(1)}35%{transform:scale(.8)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.titulo{position:relative;display:inline}
+.item.concluindo .titulo{color:var(--sub);transition:color .4s}
+.item.concluindo .titulo::after{content:"";position:absolute;left:0;top:55%;height:2px;background:var(--sub);width:100%;transform-origin:left;animation:risca .35s var(--ease) both}
+.item.concluindo{animation:some .5s .15s var(--ease) both}
+@keyframes risca{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes some{to{opacity:.35;transform:translateX(10px)}}
+.item.reabrindo{animation:entra .4s var(--ease) both}
+.fagulha{position:fixed;width:0;height:0;pointer-events:none;z-index:99}
+.fagulha i{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--ouro);left:-3px;top:-3px;transform:rotate(var(--a)) translateX(0);animation:fagulha .6s var(--ease) forwards}
+.fagulha i:nth-child(even){background:var(--baixa)}
+@keyframes fagulha{0%{opacity:1;transform:rotate(var(--a)) translateX(0) scale(1)}100%{opacity:0;transform:rotate(var(--a)) translateX(26px) scale(.4)}}
+.tag{transition:transform .2s var(--ease)}
+.del,.ed{transition:opacity .2s,background .2s,color .2s,transform .2s}
+@media(hover:hover){.item .del,.item .ed{opacity:.35}.item:hover .del,.item:hover .ed{opacity:1}}
+/* categorias */
+.catitem{position:relative}
+.catitem.on{box-shadow:0 6px 18px color-mix(in srgb,var(--c) 40%,transparent)}
+.catitem:not(.on):hover{transform:translateX(3px)}
+.catpainel .coluna{animation:painel .45s var(--ease) both}
+@keyframes painel{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.chead{background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 70%,black))}
+.chead::after{content:"";position:absolute;right:-40px;top:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none}
+.cbar i{transition:width .8s var(--ease)}
+/* modais */
+.modal{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.modal.on .box{animation:abre .35s var(--ease) both}
+@keyframes abre{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+.modal.on{animation:fundo .25s ease both}
+@keyframes fundo{from{background:rgba(20,30,25,0)}}
+.sitem{transition:background .2s,transform .2s var(--ease)}
+.sitem.ok .scheck{animation:marca .4s var(--ease-pop)}
+.dbar i{transition:width .6s var(--ease)}
+/* alertas */
+.alerta{animation:sobe .5s var(--ease) both}
+.alerta.vermelho{animation:sobe .5s var(--ease) both, pulsa 2.2s 1s ease-in-out infinite}
+.aitem{transition:background .2s,transform .2s var(--ease)}
+.aitem:hover{transform:translateX(4px)}
+.toast{transition:transform .5s var(--ease-pop)}
+/* acessibilidade: menos movimento */
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 #acesso{display:none!important}
 .logo .marca{display:grid;place-items:center;font-style:normal}
 .logo span{font-weight:700;color:#fff!important;font-size:16px!important}
@@ -521,6 +600,23 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
   const ler = (k,d) => { try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } };
   const guardar = (k,v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} if(window.__nuvem && k!==LSN && k!==LSV && k!=="org-catsel") window.__nuvem(); };
   const hojeISO = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+  const vistos = new Set();
+  const calmo = (()=>{ try{ return matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } })();
+  function animNum(el, n){
+    if(!el) return; const de=Number(el.dataset.v||el.textContent)||0; el.dataset.v=n;
+    if(de===n || calmo){ el.textContent=n; return; }
+    el.classList.remove("pulo"); void el.offsetWidth; el.classList.add("pulo");
+    const t0=performance.now(), dur=500;
+    const passo=t=>{ const k=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-k,3); el.textContent=Math.round(de+(n-de)*e); if(k<1) requestAnimationFrame(passo); };
+    requestAnimationFrame(passo);
+  }
+  function fagulha(btn){
+    if(calmo) return;
+    const r=btn.getBoundingClientRect(); const box=document.createElement("div"); box.className="fagulha";
+    box.style.left=(r.left+r.width/2)+"px"; box.style.top=(r.top+r.height/2)+"px";
+    for(let i=0;i<8;i++){ const p=document.createElement("i"); p.style.setProperty("--a",(i*45)+"deg"); box.appendChild(p); }
+    document.body.appendChild(box); setTimeout(()=>box.remove(),700);
+  }
   const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const novoId = p => p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   $("#hoje").textContent = new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"});
@@ -563,8 +659,8 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
     const h = new Date().getHours(); if(h===horaAtual) return;
     const primeira = horaAtual===null; horaAtual=h;
     const f = FRASES[Math.floor(Date.now()/3600000) % FRASES.length];
-    const el=$("#frase"); el.style.opacity=0;
-    setTimeout(()=>{ document.querySelectorAll(".fraseTxt").forEach(p=>p.textContent=f); el.style.opacity=1; }, primeira?0:600);
+    const el=$("#frase"); el.classList.add("troca");
+    setTimeout(()=>{ document.querySelectorAll(".fraseTxt").forEach(p=>p.textContent=f); el.classList.remove("troca"); }, primeira?0:600);
     if(!primeira && liberado){ const t=$("#toast"); t.textContent=f; t.classList.add("on"); setTimeout(()=>t.classList.remove("on"),9000); }
   }
   atualizarFrase(); setInterval(atualizarFrase, 30000);
@@ -676,10 +772,10 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
     if(!quadros) return;
     renderQuadros();
     const h=hojeISO(); const pend=tarefas.filter(t=>!t.feito);
-    $("#sPend").textContent=pend.length;
-    $("#sHoje").textContent=pend.filter(t=>t.data===h).length;
-    $("#sAtr").textContent=pend.filter(atr).length;
-    $("#sFeito").textContent=tarefas.length-pend.length;
+    animNum($("#sPend"),pend.length);
+    animNum($("#sHoje"),pend.filter(t=>t.data===h).length);
+    animNum($("#sAtr"),pend.filter(atr).length);
+    animNum($("#sFeito"),tarefas.length-pend.length);
     $("#prog").style.width=tarefas.length?((tarefas.length-pend.length)/tarefas.length*100)+"%":"0";
     if(!liberado) return;
 
@@ -697,11 +793,13 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
     v.sort((a,b)=>(a.feito-b.feito)||(ordemPrio[a.prio]-ordemPrio[b.prio])||(dk(a)<dk(b)?-1:dk(a)>dk(b)?1:0)||(a.criado-b.criado));
 
     const opts=id=>quadros.map(q=>`<option value="${q.id}" ${q.id===id?"selected":""}>${esc(q.nome)}</option>`).join("");
+    let idx=0;
     const itemHtml=(t,semCat)=>{
+      const novo=!vistos.has(t.id); const ord=novo?Math.min(idx++,12):0;
       let dt="";
       if(t.data) dt=tagPrazo(t);
       const cc=corCat(t.cat);
-      return `<li class="item ${t.feito?"feito":""}" data-id="${t.id}" style="--p:${getP(t.prio).cor}">
+      return `<li class="item ${t.feito?"feito":""} ${novo?"entra":""}" data-id="${t.id}" style="--p:${getP(t.prio).cor};--i:${ord}">
         <span class="prio" title="Prioridade ${esc(getP(t.prio).nome)}"></span>
         <button class="check" data-a="toggle" aria-label="Concluir"></button>
         <div class="corpo"><div class="titulo" data-a="abrir" title="Abrir tarefa">${esc(t.titulo)}</div>
@@ -717,6 +815,7 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
         const msg={pendentes:"Nada pendente aqui. Bora adicionar!",hoje:"Nenhuma tarefa para hoje.",atrasadas:"Nada atrasado. 👏",concluidas:"Nenhuma tarefa concluída ainda.",todas:"Esse quadro está vazio."}[filtro];
         ul.innerHTML=`<li class="vazio"><div>${filtro==="atrasadas"?"✅":"📝"}</div>${busca?"Nada encontrado.":msg}</li>`;
       } else ul.innerHTML=v.map(t=>itemHtml(t,false)).join("");
+      v.forEach(t=>vistos.add(t.id));
     } else {
       // colunas por categoria
       const base=tarefas.filter(t=>noQuadro(t,quadroSel)).filter(t=>!busca||(t.titulo+" "+(t.cat||"")).toLowerCase().includes(busca.toLowerCase()));
@@ -739,7 +838,7 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
             ${nome?`<span class="cmenu"><button type="button" data-ca="ren" title="Editar categoria">✎</button><button type="button" data-ca="del" title="Apagar categoria">🗑</button></span>`:""}
             <div class="cbar"><i style="width:${pct}%"></i></div></div>
           <form class="cadd"><input placeholder="+ Adicionar tarefa em ${nome?esc(nome):"Sem categoria"}" maxlength="200"></form>
-          <ul class="clista">${vis.map(t=>itemHtml(t,true)).join("")||`<li class="cvazio">Nada por aqui</li>`}</ul>
+          <ul class="clista">${vis.map(t=>itemHtml(t,true)).join("")||`<li class="cvazio">Nada por aqui</li>`}</ul>${(vis.forEach(t=>vistos.add(t.id)),"")}
           ${feitas.length?`<button type="button" class="cfeitas" data-ca="feitas">${aberto?"▾":"▸"} Concluídas (${feitas.length})</button>${aberto?`<ul class="clista">${feitas.map(t=>itemHtml(t,true)).join("")}</ul>`:""}`:""}
         </section>`;
       }
@@ -859,7 +958,12 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
   $("#area").addEventListener("click", e=>{
     const a=e.target.closest("[data-a]"); if(!a) return;
     const id=a.closest(".item").dataset.id; const t=tarefas.find(x=>x.id===id); if(!t) return;
-    if(a.dataset.a==="toggle"){ t.feito=!t.feito; render(); gravar(t); }
+    if(a.dataset.a==="toggle"){
+      t.feito=!t.feito; gravar(t);
+      const li=a.closest(".item"); li.classList.add(t.feito?"concluindo":"reabrindo"); li.classList.toggle("feito",t.feito);
+      if(t.feito) fagulha(a);
+      clearTimeout(render.tm); render.tm=setTimeout(render, 520);
+    }
     if(a.dataset.a==="del"){ tarefas=tarefas.filter(x=>x.id!==id); render(); apagar(id); }
     if(a.dataset.a==="editar") editar(t);
     if(a.dataset.a==="abrir") abrirDet(t.id);
