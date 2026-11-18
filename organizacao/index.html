@@ -390,6 +390,86 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
   .lp{flex:none}
   .rodape{flex-direction:column;gap:6px}
 }
+
+/* ===== layout com páginas ===== */
+body{background:var(--creme)}
+.app{min-height:100vh}
+.side{display:none}
+.tabbar{display:none}
+.pag{display:none;max-width:980px;margin:0 auto;padding:28px 32px 60px}
+body[data-pag="inicio"] .pag[data-p="inicio"],body[data-pag="tarefas"] .pag[data-p="tarefas"],body[data-pag="categorias"] .pag[data-p="categorias"],body[data-pag="ajustes"] .pag[data-p="ajustes"]{display:block;animation:sobe .45s var(--ease) both}
+.hero{border-radius:24px;padding:30px 32px 28px;margin-bottom:18px;color:#fff}
+.hero h1{margin-top:0}
+.phead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 18px}
+.phead h2,.bhead h2{font-size:26px;font-weight:800;letter-spacing:-.6px;margin:0}
+.bhead{display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 12px}
+.bhead h2{font-size:20px}
+.vertodas{font-size:13px;font-weight:600;color:var(--verde);text-decoration:none}
+.vertodas:hover{text-decoration:underline}
+.mini-nova{padding:10px 16px;font-size:14px}
+#inicioLista .sep{list-style:none;padding:14px 16px 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--sub);background:var(--creme)}
+.slot .filtros{margin-top:4px}
+.quadros{margin-bottom:6px}
+.ajuste{padding:18px 20px;margin-bottom:12px}
+.ajuste h3{font-size:16px;font-weight:700;margin:0 0 4px}
+.ajd{font-size:13px;color:var(--sub);margin:0 0 12px}
+.ajuste .legenda{margin:0;flex-wrap:wrap!important;overflow:visible!important}
+.ajuste .legenda small{display:none}
+.ajuste .btn{padding:11px 18px;font-size:14px}
+.credito{text-align:center;color:var(--sub);font-size:13px;margin-top:24px}
+#bfAdminBtn{display:none!important}
+.visao[hidden]{display:none!important}
+.hero > *{position:relative;z-index:1}
+.nbadge{font-style:normal;font-size:11px;font-weight:700;min-width:20px;height:20px;padding:0 6px;border-radius:99px;display:inline-grid;place-items:center;background:rgba(255,255,255,.14);color:inherit}
+.nbadge:empty{display:none}
+.nbadge.alerta-b{background:#c8323f!important;color:#fff!important}
+.nbox h3{font-size:20px;font-weight:800;margin:0 0 14px}
+.nbox form.nova{box-shadow:none;padding:0;background:none}
+.nbox{position:relative;max-width:620px!important}
+#novaModal{z-index:25}
+.topo-m{display:none}
+
+/* computador */
+@media (min-width:900px){
+  .side{display:flex;flex-direction:column;gap:18px;position:fixed;inset:0 auto 0 0;width:250px;padding:26px 18px;background:linear-gradient(180deg,#1E3A2F,#14291f);color:#fff;z-index:20}
+  .side .logo span{font-size:18px!important}
+  .novaBtn{width:100%;padding:13px;font-size:15px}
+  .nav{display:flex;flex-direction:column;gap:4px}
+  .nl{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;color:var(--claro);text-decoration:none;font-weight:600;font-size:15px;transition:background .2s,color .2s,transform .2s var(--ease)}
+  .nl svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .nl span{flex:1}
+  .nl:hover{background:rgba(255,255,255,.07);color:#fff;transform:translateX(2px)}
+  .nl.on{background:rgba(233,180,76,.16);color:#fff;box-shadow:inset 3px 0 0 var(--ouro)}
+  .sidefoot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .sidefoot .sync{display:inline-block!important}
+  .conteudo{margin-left:250px}
+  .hero{background:linear-gradient(135deg,#1E3A2F 0%,#183026 60%,#14291f 100%)}
+}
+
+/* celular */
+@media (max-width:899px){
+  .topo-m{display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:15;padding:max(12px,env(safe-area-inset-top)) 16px 12px;background:rgba(30,58,47,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#fff}
+  .topo-m .logo span{font-size:17px!important;font-weight:800}
+  .topo-m .marca svg{width:30px;height:27px}
+  .pag{padding:16px 14px calc(100px + env(safe-area-inset-bottom))}
+  .hero{border-radius:20px;padding:20px 18px 18px;margin-bottom:14px}
+  .hero h1{font-size:23px!important}
+  .phead h2{font-size:22px}
+  .mini-nova{display:none}
+  .phead{display:none}
+  .pag{padding-top:12px}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);align-items:end;position:fixed;left:0;right:0;bottom:0;z-index:20;padding:6px 8px max(8px,env(safe-area-inset-bottom));background:rgba(255,255,255,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--linha);box-shadow:0 -6px 24px rgba(30,58,47,.06)}
+  .tl{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--sub);text-decoration:none;font-size:11px;font-weight:600;transition:color .2s}
+  .tl svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s var(--ease-pop)}
+  .tl.on{color:var(--verde)}
+  .tl.on svg{transform:translateY(-2px) scale(1.08)}
+  .tl.on::after{content:"";position:absolute;top:-6px;width:22px;height:3px;border-radius:3px;background:var(--ouro)}
+  .tl .nbadge{position:absolute;top:0;left:calc(50% + 6px);background:var(--verde);color:#fff;height:17px;min-width:17px;font-size:10px;padding:0 4px}
+  .fab{justify-self:center;width:58px;height:58px;margin-top:-26px;border-radius:50%;border:4px solid var(--creme);background:var(--ouro);color:var(--verde);font:700 30px/1 Inter;box-shadow:0 8px 22px rgba(233,180,76,.45);cursor:pointer;transition:transform .2s var(--ease-pop)}
+  .fab:active{transform:scale(.92)}
+  .toast{bottom:calc(90px + env(safe-area-inset-bottom))!important}
+  .nbox{padding-top:22px}
+}
 @media(max-width:560px){h1{font-size:24px}.busca{margin-left:0;width:100%}}
 </style>
 </head>
@@ -417,18 +497,22 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
   </form>
 </div>
 
-<header>
-  <div class="wrap">
-    <div class="top">
-      <div class="logo"><i class="marca"><svg viewBox="96 110 340 300" width="40" height="36" aria-hidden="true"><rect x="118" y="150" width="244" height="244" rx="58" fill="none" stroke="#E9B44C" stroke-width="40"/><path d="M303 265 L410 132" fill="none" stroke="#1E3A2F" stroke-width="84" stroke-linecap="round"/><path d="M178 268 L246 336 L410 132" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/></svg></i><span>B-Foco</span></div>
-      <div class="topdir">
-        <span class="sync" id="sync">carregando…</span>
-        <button class="sair" id="bloquear" title="Sair da conta">Sair</button>
-      </div>
-    </div>
-    <h1 id="saud">Bom trabalho!</h1>
-    <div class="data" id="hoje"></div>
-    <div class="frase" id="frase"><p class="fraseTxt"></p></div>
+<div class="app">
+<aside class="side">
+  <div class="logo"><i class="marca"><svg viewBox="96 110 340 300" width="40" height="36" aria-hidden="true"><rect x="118" y="150" width="244" height="244" rx="58" fill="none" stroke="#E9B44C" stroke-width="40"/><path d="M303 265 L410 132" fill="none" stroke="#1E3A2F" stroke-width="84" stroke-linecap="round"/><path d="M178 268 L246 336 L410 132" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/></svg></i><span>B-Foco</span></div>
+  <button type="button" class="btn novaBtn" data-nova>+ Nova tarefa</button>
+  <nav class="nav"><a href="#inicio" class="nl" data-ir="inicio"><svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z"/></svg><span>Início</span><b class="nbadge" data-badge="inicio"></b></a><a href="#tarefas" class="nl" data-ir="tarefas"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12.2 2.4 2.4 4.6-5.2"/></svg><span>Tarefas</span><b class="nbadge" data-badge="tarefas"></b></a><a href="#categorias" class="nl" data-ir="categorias"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg><span>Categorias</span><b class="nbadge" data-badge="categorias"></b></a><a href="#ajustes" class="nl" data-ir="ajustes"><svg viewBox="0 0 24 24"><path d="M5 7h9M18 7h1M5 17h3M12 17h7"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Ajustes</span><b class="nbadge" data-badge="ajustes"></b></a></nav>
+  <div class="sidefoot"><span class="sync" id="sync">carregando…</span><button class="sair" id="bloquear" title="Sair da conta">Sair</button></div>
+</aside>
+
+<div class="conteudo">
+  <div class="topo-m"><div class="logo"><i class="marca"><svg viewBox="96 110 340 300" width="40" height="36" aria-hidden="true"><rect x="118" y="150" width="244" height="244" rx="58" fill="none" stroke="#E9B44C" stroke-width="40"/><path d="M303 265 L410 132" fill="none" stroke="#1E3A2F" stroke-width="84" stroke-linecap="round"/><path d="M178 268 L246 336 L410 132" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/></svg></i><span id="tituloPag">B-Foco</span></div></div>
+
+  <section class="pag" data-p="inicio">
+    <header class="hero">
+      <h1 id="saud">Bom trabalho!</h1>
+      <div class="data" id="hoje"></div>
+      <div class="frase" id="frase"><p class="fraseTxt"></p></div>
     <div class="stats">
       <div class="stat"><strong id="sPend">0</strong><small>pendentes</small></div>
       <div class="stat"><strong id="sHoje">0</strong><small>para hoje</small></div>
@@ -436,13 +520,62 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
       <div class="stat"><strong id="sFeito">0</strong><small>concluídas</small></div>
     </div>
     <div class="barra"><i id="prog"></i></div>
+    </header>
+    <div id="alertas"></div>
+    <div class="bloco">
+      <div class="bhead"><h2>Seu dia</h2><a href="#tarefas" class="vertodas">Ver todas →</a></div>
+      <ul class="lista card" id="inicioLista"></ul>
+    </div>
+  </section>
+
+  <section class="pag" data-p="tarefas">
+    <div class="phead"><h2>Tarefas</h2><button type="button" class="btn mini-nova" data-nova>+ Nova</button></div>
+    <div class="quadros" id="quadros"></div>
+    <div class="slot" data-slot="tarefas"></div>
+  </section>
+
+  <section class="pag" data-p="categorias">
+    <div class="phead"><h2>Categorias</h2><button type="button" class="btn mini-nova" data-nova>+ Nova</button></div>
+    <div class="slot" data-slot="categorias"></div>
+  </section>
+
+  <section class="pag" data-p="ajustes">
+    <div class="phead"><h2>Ajustes</h2></div>
+    <div class="ajuste card"><h3>Prioridades</h3><p class="ajd">Clique numa prioridade para mudar nome, cor ou posição.</p><div class="legenda" id="legenda"></div></div>
+    <div class="ajuste card"><h3>Etiquetas</h3><p class="ajd">Clique numa etiqueta para editar ou apagar.</p><div class="etqs" id="ajEtqs"></div></div>
+    <div class="ajuste card"><h3>Notificações</h3><p class="ajd" id="ajNotifTxt"></p><button type="button" class="btn sec" id="ajNotif">Ativar notificações</button></div>
+    <div class="ajuste card" id="ajAdmin" hidden><h3>Usuários</h3><p class="ajd">Libere ou recuse quem pediu acesso ao B-Foco.</p><button type="button" class="btn" id="ajUsuarios">Ver usuários</button></div>
+    <div class="ajuste card"><h3>Conta</h3><button type="button" class="btn sec" id="ajSair">Sair da conta</button></div>
+    <p class="credito">B-Foco · feito por <strong>Kaique Belarmino</strong></p>
+  </section>
+
+  <div id="moveis" hidden>
+  <div class="filtros" id="filtros">
+    <button class="chip on" data-f="pendentes">Pendentes</button>
+    <button class="chip" data-f="hoje">Hoje</button>
+    <button class="chip" data-f="atrasadas">Atrasadas</button>
+    <button class="chip" data-f="concluidas">Concluídas</button>
+    <button class="chip" data-f="todas">Todas</button>
+    <div class="visao" hidden><button type="button" data-v="colunas"></button><button type="button" data-v="lista"></button></div>
+    <input class="busca" id="busca" placeholder="Buscar…">
   </div>
-</header>
+  <div id="area"><ul class="lista card" id="lista"></ul><div class="colunas" id="colunas"></div></div>
+  <div class="rodape">
+    <span id="contagem"></span>
+    <button class="link" id="limpar" type="button">Apagar concluídas</button>
+  </div>
+  </div>
+</div>
+</div>
 
-<main class="wrap">
-  <div id="alertas"></div>
-  <div class="quadros" id="quadros"></div>
+<nav class="tabbar">
+  <a href="#inicio" class="tl" data-ir="inicio"><svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z"/></svg><span>Início</span><b class="nbadge" data-badge="inicio"></b></a><a href="#tarefas" class="tl" data-ir="tarefas"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12.2 2.4 2.4 4.6-5.2"/></svg><span>Tarefas</span><b class="nbadge" data-badge="tarefas"></b></a><button type="button" class="fab" data-nova aria-label="Nova tarefa">+</button><a href="#categorias" class="tl" data-ir="categorias"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg><span>Categorias</span><b class="nbadge" data-badge="categorias"></b></a><a href="#ajustes" class="tl" data-ir="ajustes"><svg viewBox="0 0 24 24"><path d="M5 7h9M18 7h1M5 17h3M12 17h7"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Ajustes</span><b class="nbadge" data-badge="ajustes"></b></a>
+</nav>
 
+<div class="modal" id="novaModal">
+  <div class="box nbox">
+    <button type="button" class="fechar" data-fecharnova title="Fechar">×</button>
+    <h3>Nova tarefa</h3>
   <form class="nova card" id="form">
     <input type="text" id="tTitulo" placeholder="O que precisa ser feito?" autocomplete="off" maxlength="200">
     <button class="btn" type="submit">Adicionar</button>
@@ -456,26 +589,8 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
       <div class="etqs" id="tEtqs"></div>
     </div>
   </form>
-
-  <div class="filtros" id="filtros">
-    <button class="chip on" data-f="pendentes">Pendentes</button>
-    <button class="chip" data-f="hoje">Hoje</button>
-    <button class="chip" data-f="atrasadas">Atrasadas</button>
-    <button class="chip" data-f="concluidas">Concluídas</button>
-    <button class="chip" data-f="todas">Todas</button>
-    <div class="visao"><button type="button" data-v="colunas">▦ Por categoria</button><button type="button" data-v="lista">☰ Lista</button></div>
-    <input class="busca" id="busca" placeholder="Buscar…">
   </div>
-
-  <div class="legenda" id="legenda"></div>
-  <div id="area"><ul class="lista card" id="lista"></ul><div class="colunas" id="colunas"></div></div>
-
-  <div class="rodape">
-    <span id="contagem"></span>
-    <button class="link" id="limpar" type="button">Apagar concluídas</button>
-  </div>
-  <p class="aviso">Clique numa tarefa para abrir o checklist.</p>
-</main>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -847,6 +962,20 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
     $("#tEtqs").innerHTML = `<span class="elab">🏷</span>` + chipsEtq(novasEtq,"f");
     renderPrio();
     renderAlertas();
+    // ---- Início: seu dia ----
+    { const il=$("#inicioLista"); if(il){
+      const hojeL=tarefas.filter(t=>!t.feito && (["atrasada","embreve","hoje"].includes(status(t)) || t.quadro==="q-hoje")).sort((a,b)=>(prazoMs(a)||9e15)-(prazoMs(b)||9e15));
+      const prox=tarefas.filter(t=>!t.feito && t.data && !hojeL.includes(t)).sort((a,b)=>prazoMs(a)-prazoMs(b)).slice(0,4);
+      let html=hojeL.slice(0,10).map(t=>itemHtml(t,false)).join("");
+      if(!hojeL.length) html=`<li class="vazio"><div>☀️</div>Nada marcado pra hoje.</li>`;
+      if(prox.length) html+=`<li class="sep">Próximos prazos</li>`+prox.map(t=>itemHtml(t,false)).join("");
+      il.innerHTML=html; hojeL.concat(prox).forEach(t=>vistos.add(t.id));
+    }
+    const pendN=tarefas.filter(t=>!t.feito).length, urg=tarefas.filter(t=>["atrasada","embreve"].includes(status(t))).length;
+    document.querySelectorAll('[data-badge="tarefas"]').forEach(b=>b.textContent=pendN||"");
+    document.querySelectorAll('[data-badge="inicio"]').forEach(b=>{ b.textContent=urg||""; b.classList.toggle("alerta-b",!!urg); });
+    const aj=$("#ajEtqs"); if(aj) aj.innerHTML=etiquetas.map(e=>`<button type="button" class="echip on" data-ajeid="${e.id}" style="--e:${e.cor}">${esc(e.nome)}</button>`).join("")+`<button type="button" class="echip nova" data-ajeid="__nova">+ Nova etiqueta</button>`;
+    }
     renderDet();
     $("#contagem").textContent=`${v.length} de ${tarefas.length} tarefa${tarefas.length===1?"":"s"}`;
   }
@@ -955,7 +1084,7 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
           render(); gravar(t);
         });
   }
-  $("#area").addEventListener("click", e=>{
+  $(".app").addEventListener("click", e=>{
     const a=e.target.closest("[data-a]"); if(!a) return;
     const id=a.closest(".item").dataset.id; const t=tarefas.find(x=>x.id===id); if(!t) return;
     if(a.dataset.a==="toggle"){
@@ -968,7 +1097,7 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
     if(a.dataset.a==="editar") editar(t);
     if(a.dataset.a==="abrir") abrirDet(t.id);
   });
-  $("#area").addEventListener("change", e=>{
+  $(".app").addEventListener("change", e=>{
     if(!e.target.classList.contains("mover")) return;
     const t=tarefas.find(x=>x.id===e.target.closest(".item").dataset.id); if(!t) return;
     t.quadro=e.target.value; render(); gravar(t);
@@ -1129,6 +1258,7 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
     const t=L("belarmino-tarefas"); if(!Array.isArray(t)||!t.length) return null;
     return {tarefas:t, quadros:L("kaique-quadros"), categorias:L("kaique-categorias")||[], etiquetas:L("kaique-etiquetas")||[], prioridades:L("kaique-prioridades")};
   }
+  window.ORG_fn = { abrirDet, editarEtiqueta, novaEtiqueta, render };
   window.ORG = {
     entrar(uid, perfil, admin){
       const nome=(perfil&&perfil.nome||"").trim().split(/\s+/)[0];
@@ -1150,6 +1280,50 @@ header{padding-top:max(28px,env(safe-area-inset-top))}
     }
   };
   window.dispatchEvent(new Event("org-pronto"));
+})();
+</script>
+<script>
+(function(){
+  const $=s=>document.querySelector(s);
+  const PAGS=["inicio","tarefas","categorias","ajustes"], NOMES={inicio:"Início",tarefas:"Tarefas",categorias:"Categorias",ajustes:"Ajustes"};
+  const mov=["#filtros","#area",".rodape"].map(s=>$(s));
+  function ir(p){
+    if(!PAGS.includes(p)) p="inicio";
+    document.body.dataset.pag=p;
+    document.querySelectorAll("[data-ir]").forEach(a=>a.classList.toggle("on",a.dataset.ir===p));
+    const tp=$("#tituloPag"); if(tp) tp.textContent = p==="inicio" ? "B-Foco" : NOMES[p];
+    const slot=document.querySelector(`.slot[data-slot="${p}"]`);
+    if(slot){ mov.forEach(el=>el&&slot.appendChild(el)); const v=document.querySelector(`.visao [data-v="${p==="categorias"?"colunas":"lista"}"]`); if(v) v.click(); }
+    if(p==="ajustes") ajustes();
+    window.scrollTo({top:0,behavior:"instant"});
+  }
+  function ajustes(){
+    const N=("Notification" in window)?Notification.permission:"x";
+    $("#ajNotifTxt").textContent = N==="granted" ? "Ativadas. Você recebe aviso 30 min antes do prazo e quando uma tarefa atrasar (com o app aberto numa aba)." : N==="denied" ? "Bloqueadas no navegador. Libere nas configurações do site (cadeado ao lado do endereço)." : N==="x" ? "Este navegador não tem notificações." : "Receba aviso 30 min antes do prazo e quando uma tarefa atrasar.";
+    $("#ajNotif").hidden = N!=="default";
+    const ab=$("#bfAdminBtn"); $("#ajAdmin").hidden = !ab || ab.hidden;
+    if(ab && !ab.hidden) $("#ajUsuarios").innerHTML = "Ver usuários" + (ab.querySelector("i") ? ` <i class="nbadge alerta-b">${ab.querySelector("i").textContent}</i>` : "");
+  }
+  addEventListener("hashchange",()=>ir(location.hash.slice(1)));
+  // nova tarefa
+  const nm=$("#novaModal");
+  function abrirNova(){
+    const c=document.body.dataset.pag==="categorias" && document.querySelector(".coluna[data-cat]");
+    if(c && c.dataset.cat) $("#tCat").value=c.dataset.cat;
+    nm.classList.add("on"); setTimeout(()=>$("#tTitulo").focus(),60);
+  }
+  const fecharNova=()=>nm.classList.remove("on");
+  document.addEventListener("click",e=>{ if(e.target.closest("[data-nova]")) abrirNova(); if(e.target.closest("[data-fecharnova]")||e.target===nm) fecharNova(); });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&nm.classList.contains("on")) fecharNova(); });
+  $("#form").addEventListener("submit",()=>setTimeout(()=>{ if(!$("#tTitulo").value){ fecharNova(); $("#tCat").value=""; } },0));
+  // ajustes
+  $("#ajEtqs").addEventListener("click",e=>{ const b=e.target.closest("[data-ajeid]"); if(!b||!window.ORG_fn) return; b.dataset.ajeid==="__nova"?ORG_fn.novaEtiqueta():ORG_fn.editarEtiqueta(b.dataset.ajeid); });
+  $("#ajNotif").addEventListener("click",async()=>{ try{ await Notification.requestPermission(); }catch(e){} ajustes(); window.ORG_fn&&ORG_fn.render(); });
+  $("#ajSair").addEventListener("click",()=>window.ORG_sair&&ORG_sair());
+  $("#ajUsuarios").addEventListener("click",()=>{ const ab=$("#bfAdminBtn"); if(ab) ab.click(); });
+  const vigia=()=>{ const ab=$("#bfAdminBtn"); if(!ab) return setTimeout(vigia,500); new MutationObserver(()=>{ if(document.body.dataset.pag==="ajustes") ajustes(); }).observe(ab,{attributes:true,childList:true,subtree:true}); };
+  vigia();
+  ir(location.hash.slice(1));
 })();
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
