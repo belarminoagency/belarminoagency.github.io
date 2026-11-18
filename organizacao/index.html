@@ -471,9 +471,43 @@ body[data-pag="inicio"] .pag[data-p="inicio"],body[data-pag="tarefas"] .pag[data
   .nbox{padding-top:22px}
 }
 @media(max-width:560px){h1{font-size:24px}.busca{margin-left:0;width:100%}}
+
+#splash{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#24463a 0%,#1E3A2F 45%,#14291f 100%);transition:opacity .55s cubic-bezier(.22,.8,.24,1),transform .55s cubic-bezier(.22,.8,.24,1)}
+#splash.sai{opacity:0;transform:scale(1.04);pointer-events:none}
+.sp-in{display:flex;flex-direction:column;align-items:center;gap:18px}
+.sp-box{stroke-dasharray:1;stroke-dashoffset:1;animation:spDesenha .7s .15s cubic-bezier(.65,0,.35,1) forwards}
+.sp-cut{opacity:0;animation:spAparece .01s .85s forwards}
+.sp-check{stroke-dasharray:1;stroke-dashoffset:1;animation:spDesenha .5s .85s cubic-bezier(.65,0,.35,1) forwards}
+.sp-logo{animation:spPulo .45s 1.3s cubic-bezier(.34,1.56,.64,1)}
+.sp-nome{font:800 30px Inter,system-ui,sans-serif;letter-spacing:-.6px;color:#fff;opacity:0;transform:translateY(8px);animation:spSobe .5s 1.25s cubic-bezier(.22,.8,.24,1) forwards}
+.sp-linhas{display:flex;flex-direction:column;gap:7px;width:120px}
+.sp-linhas i{display:block;height:5px;border-radius:5px;background:rgba(233,180,76,.85);transform-origin:left;transform:scaleX(0);animation:spLinha .4s cubic-bezier(.22,.8,.24,1) forwards}
+.sp-linhas i:nth-child(1){animation-delay:1.45s;width:100%}
+.sp-linhas i:nth-child(2){animation-delay:1.55s;width:78%;background:rgba(255,255,255,.35)}
+.sp-linhas i:nth-child(3){animation-delay:1.65s;width:56%;background:rgba(255,255,255,.2)}
+@keyframes spDesenha{to{stroke-dashoffset:0}}
+@keyframes spAparece{to{opacity:1}}
+@keyframes spPulo{0%{transform:scale(1)}45%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes spSobe{to{opacity:1;transform:none}}
+@keyframes spLinha{to{transform:scaleX(1)}}
+@media (prefers-reduced-motion: reduce){#splash *{animation:none!important;stroke-dashoffset:0!important;opacity:1!important;transform:none!important}}
 </style>
 </head>
 <body>
+<div id="splash" aria-hidden="true">
+  <div class="sp-in">
+    <svg class="sp-logo" viewBox="96 110 340 300" width="132" height="117">
+      <rect class="sp-box" x="118" y="150" width="244" height="244" rx="58" pathLength="1" fill="none" stroke="#E9B44C" stroke-width="40"/>
+      <path class="sp-cut" d="M303 265 L410 132" fill="none" stroke="#1E3A2F" stroke-width="84" stroke-linecap="round"/>
+      <path class="sp-check" d="M178 268 L246 336 L410 132" pathLength="1" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="sp-nome">B-Foco</div>
+    <div class="sp-linhas"><i></i><i></i><i></i></div>
+  </div>
+</div>
+<script>(function(){var sp=document.getElementById("splash");var calmo=false;try{calmo=matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){}
+setTimeout(function(){sp.classList.add("sai");setTimeout(function(){sp.remove()},600)},calmo?300:2100);})();</script>
+
 
 <!-- acesso -->
 <div id="acesso">
