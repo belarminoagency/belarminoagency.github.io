@@ -2,7 +2,6 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Quem libera o acesso. Mesmo e-mail de ADMIN_EMAILS no config.js.
     function admin() {
       return request.auth != null && request.auth.token.email in [
         'belarminokaique581@gmail.com'
@@ -12,7 +11,6 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == uid;
     }
 
-    // FORJA: um documento por cliente (nome, WhatsApp, e-mail e se está liberado).
     match /users/{uid} {
       allow read: if admin() || dono(uid);
       allow create: if admin() || (dono(uid)
@@ -22,9 +20,29 @@ service cloud.firestore {
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['aprovado', 'recusado', 'email']));
       allow delete: if admin();
     }
-
-    // RENDY: mesma regra, liberação separada do Forja.
-    // Só guarda nome, WhatsApp, e-mail e liberação. As finanças ficam no aparelho da pessoa.
+        match /bfight/{uid} {
+      allow read: if admin() || dono(uid);
+      allow create: if admin() || (dono(uid)
+        && request.resource.data.aprovado == false
+        && request.resource.data.recusado == false);
+      allow update: if admin() || (dono(uid)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['aprovado', 'recusado', 'email']));
+      allow delete: if admin();
+    }
+    match /organizacao/{uid} {
+      allow read: if admin() || dono(uid);
+      allow create: if admin() || (dono(uid)
+        && request.resource.data.aprovado == false
+        && request.resource.data.recusado == false);
+      allow update: if admin() || (dono(uid)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['aprovado', 'recusado', 'email']));
+      allow delete: if admin();
+    }
+    match /organizacao_dados/{uid} {
+      allow read, write: if dono(uid) && (admin()
+        || get(/databases/$(database)/documents/organizacao/$(uid)).data.aprovado == true);
+    }
+    // RENDY: liberação separada. Finanças ficam só no aparelho da pessoa.
     match /rendy/{uid} {
       allow read: if admin() || dono(uid);
       allow create: if admin() || (dono(uid)
