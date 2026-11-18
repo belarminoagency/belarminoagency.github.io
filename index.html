@@ -618,27 +618,30 @@ footer{background:var(--night);border-top:1px solid var(--line-dark);padding-blo
 .g6{background:var(--lime);border-radius:50%}
 
 @media (max-width:900px){
-  .stage{display:block}
-  .bigword{top:auto;bottom:0;opacity:.05}
-  .phone-col{position:sticky;top:0;height:54vh;padding-top:calc(70px + env(safe-area-inset-top,0px));background:linear-gradient(var(--sbg) 82%, transparent);transition:background .8s var(--ease)}
-  .phone{width:160px;height:332px;border-radius:30px;padding:7px}
-  .screen{border-radius:26px}
-  .notch{top:13px;width:54px;height:15px;margin-left:-27px}
-  .phone::before{top:80px;height:40px}.phone::after{top:130px;height:26px}
-  .scr{zoom:.55}
-  .chipf{font-size:11.5px;padding:7px 12px}
-  .chipf.c1{top:28%;left:3%}.chipf.c2{bottom:6%;right:3%}
-  .step{min-height:78vh;padding:20px clamp(16px,5vw,32px) 60px;align-items:flex-start}
-  .hero-step{min-height:auto;padding-top:28px}
-  .step-in{opacity:1;transform:none}
-  .step:not(.hero-step) .step-in{background:var(--white);border-radius:24px;padding:26px 22px;box-shadow:0 24px 50px -30px rgba(14,12,69,.35)}
-  .stage.dark .step.last .step-in{background:var(--indigo)}
-  .phone-col{z-index:3!important;height:46vh!important}
-  .ticks{display:none}
-  .step{min-height:70vh}
-  .dots{display:none}
-  .drag-hint{bottom:8px;font-size:10px}
+  .stage{display:block;background:var(--mist)!important;color:var(--ink)!important}
+  .bigword,.phone-col,.dots,.chipf,.drag-hint{display:none!important}
+  .hero-step{min-height:0;display:block;padding:calc(104px + env(safe-area-inset-top,0px)) 20px 56px}
+  .step{min-height:0;display:block;padding:64px 20px}
+  .step-in,.step.cur .step-in{opacity:1;transform:none;max-width:none}
+  .steps .step:nth-child(odd){background:var(--white)}
+  .steps .step:nth-child(even){background:var(--mist)}
+  .step h2{font-size:clamp(32px,9vw,44px)}
+  .step p{font-size:16px}
+  .scroll-d{display:none}
+  .step.last{background:var(--indigo-deep)!important;color:var(--white)}
+  .step.last p{color:rgba(255,255,255,.8)}
+  .step.last .num{color:var(--lime)}
+  .step.last .hl{background:none;color:var(--lime)}
+  .mshot{display:flex!important;justify-content:center;padding-top:36px;perspective:1200px}
 }
+.mshot{display:none}
+.mphone{--case:#17158F;position:relative;width:220px;height:456px;border-radius:38px;background:var(--case);padding:9px;box-shadow:0 40px 70px -30px rgba(14,12,69,.55), inset 0 0 0 2px rgba(255,255,255,.18);transform:rotate(-3deg);transition:background-color .5s, transform .8s var(--ease)}
+.mshot:nth-of-type(even) .mphone,.step:nth-child(even) .mphone{transform:rotate(3deg)}
+.mphone.in{animation:float 6s ease-in-out infinite}
+.mphone .notch{top:16px;width:64px;height:18px;margin-left:-32px}
+.mphone .screen{border-radius:30px}
+.mphone .scr{zoom:.74;opacity:1;transform:none}
+
 @media (max-width:560px){
   .hero-step h1{font-size:clamp(34px,10vw,48px)}
   .hero-step .ctas .btn,.step .ctas .btn{width:100%}
@@ -1633,11 +1636,28 @@ footer{background:var(--night);border-top:1px solid var(--line-dark);padding-blo
     // cores do celular
     stage.querySelectorAll('.sw').forEach(function(b){
       b.addEventListener('click', function(){
-        phone.style.setProperty('--case', b.dataset.case);
+        document.querySelectorAll('.phone,.mphone').forEach(function(p){ p.style.setProperty('--case', b.dataset.case); });
         stage.querySelectorAll('.sw').forEach(function(o){ o.classList.toggle('on', o === b); o.setAttribute('aria-pressed', String(o === b)); });
       });
     });
 
+
+    // versão celular: um celular fixo por seção, sem 3D seguindo a rolagem
+    stage.querySelectorAll('.step').forEach(function(st){
+      var i = st.dataset.i, src = stage.querySelector('.scr[data-s="'+i+'"]');
+      if(!src) return;
+      var box = document.createElement('div'); box.className = 'mshot'; box.setAttribute('aria-hidden','true');
+      var ph = document.createElement('div'); ph.className = 'mphone';
+      ph.innerHTML = '<div class="notch"></div><div class="screen"></div>';
+      var c = src.cloneNode(true); c.classList.remove('on');
+      ph.querySelector('.screen').appendChild(c); box.appendChild(ph);
+      var inner = st.querySelector('.step-in');
+      if(i === '5'){ var sw = inner.querySelector('.swatches'); inner.insertBefore(box, sw); box.style.paddingTop = '8px'; box.style.paddingBottom = '20px'; }
+      else inner.appendChild(box);
+      if('IntersectionObserver' in window){
+        new IntersectionObserver(function(es){ es.forEach(function(e){ c.classList.toggle('on', e.isIntersecting); ph.classList.toggle('in', e.isIntersecting); }); },{threshold:.35}).observe(ph);
+      } else c.classList.add('on');
+    });
     // palavra gigante e faixa geométrica
     var reduceM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.addEventListener('scroll', function(){
