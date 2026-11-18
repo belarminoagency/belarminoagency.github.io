@@ -65,7 +65,7 @@ h2 em{font:italic 400 26px "Instrument Serif",serif;text-transform:none;color:va
 .links a.main .ic{background:var(--indigo);color:var(--lime)}
 .ic svg{width:21px;height:21px}
 .arrow{margin-left:auto;font-size:20px;color:var(--indigo)}
-.free{margin-left:auto;background:var(--indigo);color:var(--lime);font:400 11px "Archivo Black",sans-serif;padding:5px 9px;border-radius:99px;white-space:nowrap}
+.free{flex:none;margin-left:auto;background:var(--indigo);color:var(--lime);font:400 11px "Archivo Black",sans-serif;padding:5px 9px;border-radius:99px;white-space:nowrap}
 .links .soon{background:rgba(255,255,255,.1);color:var(--white);box-shadow:none;pointer-events:none;border:2px dashed rgba(170,184,255,.5)}
 .links .soon small{color:var(--sky)}
 .links .soon .ic{background:rgba(255,255,255,.12)}
@@ -137,6 +137,8 @@ const icons={
   tt:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3c.3 2.2 1.7 3.8 4 4v3a7 7 0 0 1-4-1.3V15a6 6 0 1 1-6-6v3.2A2.8 2.8 0 1 0 12.8 15V3z"/></svg>',
   yt:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 8.2a3 3 0 0 0-2-2.1C18.2 5.6 12 5.6 12 5.6s-6.2 0-8 .5a3 3 0 0 0-2 2.1A31 31 0 0 0 1.6 12 31 31 0 0 0 2 15.8a3 3 0 0 0 2 2.1c1.8.5 8 .5 8 .5s6.2 0 8-.5a3 3 0 0 0 2-2.1 31 31 0 0 0 .4-3.8 31 31 0 0 0-.4-3.8zM10 15.1V8.9l5.2 3.1z"/></svg>',
   foco:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8 12 3 3 5-6"/></svg>',
+  pack:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>',
+  key:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/></svg>',
   web:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>'
 };
 // Para editar os links, mude só estas listas (soon:true = "em breve"):
@@ -146,16 +148,15 @@ const links=[
   {t:'Site da agência',s:'belarminoagency.github.io',u:'https://belarminoagency.github.io',i:'web'}
 ];
 const apps=[
-  {t:'Forja',s:'Treino e alimentação personalizados',u:'https://belarminoagency.github.io/forja/',i:'fit',free:true},
-  {t:'B-Fight',s:'Boxe, Muay Thai, MMA e Jiu-Jitsu',u:'https://belarminoagency.github.io/b-fight/',i:'fight',free:true},
-  {t:'B-Foco',s:'Organize suas tarefas',u:'https://belarminoagency.github.io/organizacao/',i:'foco',free:true}
+  {t:'Pacote Belarmino Apps',s:'Rendy + 3 apps bônus · de R$ 108',u:'https://kiwify.app/P7M1K3z',i:'pack',main:true,tag:'R$ 47'},
+  {t:'Já comprei',s:'Acesse seus apps',u:'https://belarminoagency.github.io/apps/',i:'key'}
 ];
 const redes=[
   {t:'TikTok',s:'Em breve',u:'',i:'tt',soon:true},
   {t:'YouTube',s:'Em breve',u:'',i:'yt',soon:true}
 ];
 let n=0;
-const row=l=>`<a href="${l.u||'#'}" target="_blank" rel="noopener" class="${l.main?'main':''} ${l.soon&&!l.u?'soon':''}" style="animation-delay:${.35+(n++)*.08}s"><span class="ic">${icons[l.i]}</span><span>${l.t}<small>${l.s}</small></span>${l.free?'<span class="free">GRÁTIS</span>':'<span class="arrow">→</span>'}</a>`;
+const row=l=>`<a href="${l.u||'#'}" target="_blank" rel="noopener" class="${l.main?'main':''} ${l.soon&&!l.u?'soon':''}" style="animation-delay:${.35+(n++)*.08}s"><span class="ic">${icons[l.i]}</span><span>${l.t}<small>${l.s}</small></span>${l.tag?`<span class="free">${l.tag}</span>`:l.free?'<span class="free">GRÁTIS</span>':'<span class="arrow">→</span>'}</a>`;
 document.getElementById('links').innerHTML=links.map(row).join('');
 document.getElementById('apps').innerHTML=apps.map(row).join('');
 document.getElementById('redes').innerHTML=redes.map(row).join('');
