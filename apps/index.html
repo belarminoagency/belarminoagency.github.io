@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Belarmino Apps — todos os seus apps</title>
+<meta name="description" content="Pacote de apps da belarmino agency: Rendy, Forja, B-Fight e B-Foco num só acesso.">
+<meta name="theme-color" content="#17158F">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Hub do pacote: um login, todos os apps. Cores da belarmino agency. */
+:root{--indigo:#17158F;--indigo-2:#221fb5;--lime:#D7E928;--sky:#AAB8FF;--bg:#F4F5FA;--card:#fff;--ink:#12123a;--muted:#5d6080;--line:#e3e5f0;--ok:#0A8F63;--ok-soft:#E2F4EC;--warn:#B8860B;--warn-soft:#FBF3E1;--red:#C93C3C}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{font:15px/1.5 Poppins,system-ui,sans-serif;background:var(--bg);color:var(--ink);overflow-x:clip}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.top{background:var(--indigo);color:#fff;padding:calc(18px + env(safe-area-inset-top)) 20px 70px;border-radius:0 0 28px 28px;position:relative;overflow:hidden}
+.top::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:var(--indigo-2)}
+.top>*{position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:10px;font:800 18px Montserrat,sans-serif}
+.brand b{width:36px;height:36px;border-radius:11px;background:#fff;color:var(--indigo);display:grid;place-items:center;font:800 22px Montserrat;position:relative}
+.brand b::after{content:"";position:absolute;right:5px;bottom:6px;width:6px;height:6px;border-radius:2px;background:var(--lime)}
+.row{display:flex;align-items:center;gap:10px}.between{justify-content:space-between}
+h1{font:800 clamp(26px,7vw,34px)/1.1 Montserrat,sans-serif;margin:22px 0 6px;letter-spacing:-.01em}
+.top p{margin:0;color:#c9cdf7}
+.pill{background:rgba(255,255,255,.14);color:#fff;border-radius:99px;padding:8px 14px;font-weight:600;font-size:13px}
+main{position:relative;z-index:2;max-width:560px;margin:-48px auto 0;padding:0 16px calc(32px + env(safe-area-inset-bottom));display:grid;gap:14px}
+.card{background:var(--card);border-radius:20px;padding:18px;box-shadow:0 8px 28px -16px rgba(23,21,143,.35)}
+.app{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center}
+.app .ic{width:64px;height:64px;border-radius:18px;background:center/cover;display:grid;place-items:center;font:800 13px Montserrat;color:#fff;text-align:center;line-height:1.05}
+.app h2{margin:0;font:800 18px Montserrat,sans-serif}
+.app .d{color:var(--muted);font-size:13.5px;margin-top:2px}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;margin-left:6px;vertical-align:2px}
+.tag.main{background:var(--lime);color:var(--indigo)}
+.tag.bonus{background:#E9EBFF;color:var(--indigo)}
+.app .act{grid-column:1/-1;display:flex;gap:8px;align-items:center}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 18px;border-radius:14px;background:var(--indigo);color:#fff;font-weight:600;text-decoration:none;flex:1}
+.btn.lime{background:var(--lime);color:var(--indigo)}
+.btn.ghost{background:var(--bg);color:var(--ink)}
+.btn:disabled{opacity:.6}
+.status{flex:1;min-height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;background:var(--warn-soft);color:var(--warn)}
+.sec{font:800 13px Montserrat;color:var(--muted);text-transform:none;margin:8px 4px -4px}
+.steps{display:grid;gap:12px;margin:0;padding:0;list-style:none;counter-reset:s}
+.steps li{display:grid;grid-template-columns:30px 1fr;gap:10px;font-size:14px;color:var(--muted)}
+.steps li::before{counter-increment:s;content:counter(s);width:30px;height:30px;border-radius:10px;background:#E9EBFF;color:var(--indigo);display:grid;place-items:center;font:800 14px Montserrat}
+.steps b{color:var(--ink)}
+.field{display:grid;gap:6px}.field label{font-size:13px;font-weight:600;color:var(--muted)}
+.field input{width:100%;min-height:50px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;font-size:16px;background:#fff;outline:none}
+.field input:focus{border-color:var(--indigo)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border-radius:12px;padding:4px}
+.tabs button{min-height:42px;border-radius:9px;font-weight:600;color:var(--muted)}
+.tabs button.on{background:#fff;color:var(--ink);box-shadow:0 2px 8px -4px rgba(23,21,143,.4)}
+.err{color:var(--red);font-size:14px;margin:0}.ok{color:var(--ok);font-size:14px;margin:0}
+.lk{color:var(--indigo);font-weight:600;font-size:14px;padding:8px;justify-self:center;text-decoration:underline}
+.credit{text-align:center;color:var(--muted);font-size:12.5px}
+/* painel do Kaique */
+.member{border-top:1px solid var(--line);padding:14px 0;display:grid;gap:10px}
+.member:first-of-type{border-top:0}
+.member .who b{display:block}.member .who span{color:var(--muted);font-size:12.5px;overflow-wrap:anywhere}.member .who a{color:var(--indigo)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;font-weight:600;padding:6px 10px;border-radius:99px;border:1.5px solid var(--line);color:var(--muted)}
+.chip.on{background:var(--ok-soft);border-color:var(--ok-soft);color:var(--ok)}
+.mini{min-height:40px;padding:0 14px;border-radius:11px;font-weight:600;font-size:13px;background:var(--indigo);color:#fff}
+.mini.ghost{background:var(--bg);color:var(--ink)}
+.count{background:var(--lime);color:var(--indigo);font-weight:700;border-radius:99px;padding:1px 8px;font-size:12px;margin-left:6px}
+.hidden{display:none!important}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;opacity:0;transition:.25s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="row between">
+    <div class="brand"><b>b</b>Belarmino Apps</div>
+    <button class="pill hidden" id="out">Sair</button>
+  </div>
+  <h1 id="hTitle">Seus apps, num só lugar.</h1>
+  <p id="hSub">Um login para acessar o Rendy e todos os bônus do pacote.</p>
+</header>
+<main id="view"><div class="card">Carregando…</div></main>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+{
+/* Mesmo projeto Firebase dos apps: um login vale para todos (mesmo site). */
+const CFG={apiKey:"AIzaSyBpl5GkIkQOtriiTyI0N5bsevM0E71hqq4",authDomain:"forja-f7ca8.firebaseapp.com",projectId:"forja-f7ca8",storageBucket:"forja-f7ca8.firebasestorage.app",messagingSenderId:"1011302668862",appId:"1:1011302668862:web:66c33e3c5f1579581e8f6f"};
+const ADMINS=["belarminokaique581@gmail.com"];
+const WHATS="5511953837208";
+const APPS=[
+  {col:"rendy",nome:"Rendy",tag:"main",d:"Finanças pessoais e do seu MEI: renda, gastos, fluxo de caixa e metas com porcentagem.",url:"/rendy/",ic:"/rendy/icon-192.png"},
+  {col:"users",nome:"Forja",tag:"bonus",d:"Treino e alimentação personalizados, em casa ou na academia.",url:"/forja/",ic:"/forja/icon-192.png"},
+  {col:"bfight",nome:"B-Fight",tag:"bonus",d:"Treino de luta: boxe, Muay Thai, Jiu-Jitsu e MMA, com timer de rounds.",url:"/b-fight/",ic:"",bg:"#E3262F",txt:"B-<br>FIGHT"},
+  {col:"organizacao",nome:"B-Foco",tag:"bonus",d:"Organize suas tarefas do dia e não esqueça mais nada.",url:"/organizacao/",ic:"/organizacao/icone-192.png"}
+];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const isAdmin=e=>ADMINS.includes(String(e||"").toLowerCase());
+const toast=t=>{const el=$("#toast");el.textContent=t;el.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("show"),1900)};
+const ERR={"auth/invalid-email":"E-mail inválido.","auth/invalid-credential":"E-mail ou senha incorretos.","auth/invalid-login-credentials":"E-mail ou senha incorretos.","auth/wrong-password":"E-mail ou senha incorretos.","auth/user-not-found":"E-mail ou senha incorretos.","auth/email-already-in-use":"Já existe conta com esse e-mail. Toque em Entrar (a senha é a mesma dos apps).","auth/weak-password":"A senha precisa ter pelo menos 6 caracteres.","auth/too-many-requests":"Muitas tentativas. Espere alguns minutos.","auth/network-request-failed":"Sem internet. Verifique a conexão.","permission-denied":"Sem permissão. Saia e entre de novo."};
+const errMsg=e=>ERR[e?.code]||"Algo deu errado. Tente de novo.";
+const waLink=w=>{const d=String(w||"").replace(/\D/g,"");return d.length<10?"":"https://wa.me/"+(d.length<=11?"55"+d:d)};
+const icon=a=>a.ic?`<div class="ic" style="background-image:url('${a.ic}')"></div>`:`<div class="ic" style="background:${a.bg}">${a.txt}</div>`;
+
+let fb, ME=null, mine={}, all={}, subs=[], tab="up", pendingProfile=null;
+const stop=()=>{subs.forEach(f=>f&&f());subs=[]};
+const newDoc=(email,nome,whats)=>({nome:String(nome).slice(0,40),whats:String(whats).slice(0,30),email:String(email).toLowerCase(),createdAt:Date.now(),aprovado:false,recusado:false});
+
+/* ---------- telas ---------- */
+function vendas(){
+  return `<div class="sec">O que vem no pacote</div>
+  ${APPS.map(a=>`<div class="card app">${icon(a)}<div><h2>${a.nome}<span class="tag ${a.tag}">${a.tag==="main"?"Principal":"Bônus"}</span></h2><div class="d">${a.d}</div></div></div>`).join("")}`;
+}
+function login(msg=""){
+  const up=tab==="up";
+  $("#out").classList.add("hidden");
+  $("#hTitle").textContent="Seus apps, num só lugar."; $("#hSub").textContent="Um login para acessar o Rendy e todos os bônus do pacote.";
+  $("#view").innerHTML=`<div class="card" style="display:grid;gap:12px">
+    <div class="tabs"><button data-t="up" class="${up?"on":""}">Criar conta</button><button data-t="in" class="${up?"":"on"}">Já tenho conta</button></div>
+    <form id="f" novalidate style="display:grid;gap:12px">
+      ${up?`<div class="field"><label>Seu nome</label><input id="nome" autocomplete="name" maxlength="40" placeholder="Nome e sobrenome"></div>
+      <div class="field"><label>WhatsApp</label><input id="whats" type="tel" inputmode="tel" maxlength="30" placeholder="(11) 99999-9999"></div>`:""}
+      <div class="field"><label>E-mail</label><input id="email" type="email" inputmode="email" autocomplete="email" placeholder="Use o mesmo e-mail da compra"></div>
+      <div class="field"><label>Senha</label><input id="pass" type="password" autocomplete="${up?"new-password":"current-password"}" placeholder="${up?"Mínimo 6 caracteres":""}"></div>
+      <p class="err" id="err">${esc(msg)}</p>
+      <button class="btn lime" id="go">${up?"Criar conta e pedir acesso":"Entrar"}</button>
+      ${up?"":`<button type="button" class="lk" id="reset">Esqueci a senha</button>`}
+    </form></div>
+  <div class="card"><ol class="steps"><li><span><b>Crie sua conta</b> com o mesmo e-mail que você usou na compra.</span></li><li><span><b>O Kaique libera seu acesso</b> a todos os apps de uma vez.</span></li><li><span><b>Abra qualquer app</b> daqui. Você já entra logado, sem digitar a senha de novo.</span></li></ol></div>
+  ${vendas()}
+  <p class="credit">Criado por <b>Kaique Belarmino</b> · belarmino agency</p>`;
+  document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{tab=b.dataset.t;login()});
+  $("#reset")?.addEventListener("click",async()=>{const e=$("#email").value.trim();if(!e){$("#err").textContent="Digite seu e-mail e toque de novo.";return}
+    try{await fb.auth.sendPasswordResetEmail(e);$("#err").className="ok";$("#err").textContent=`Link de nova senha enviado para ${e}. Veja também o spam.`}catch(x){$("#err").textContent=errMsg(x)}});
+  $("#f").onsubmit=async ev=>{ev.preventDefault();
+    const e=$("#email").value.trim(),p=$("#pass").value,b=$("#go"),lb=b.textContent;
+    const fail=m=>{$("#err").textContent=m;b.disabled=false;b.textContent=lb};
+    if(!e)return fail("Digite seu e-mail.");if(!p)return fail("Digite sua senha.");
+    if(up){const n=$("#nome").value.trim(),w=$("#whats").value.trim();if(!n)return fail("Digite seu nome.");if(w.replace(/\D/g,"").length<10)return fail("Digite seu WhatsApp com DDD.");pendingProfile={nome:n,whats:w}}
+    b.disabled=true;b.textContent="Aguarde…";
+    try{ if(up) await fb.auth.createUserWithEmailAndPassword(e,p); else await fb.auth.signInWithEmailAndPassword(e,p); }catch(x){pendingProfile=null;fail(errMsg(x))}
+  };
+}
+function askProfile(msg=""){
+  $("#view").innerHTML=`<div class="card" style="display:grid;gap:12px"><h2 style="margin:0;font:800 18px Montserrat">Falta pouco</h2><div class="d" style="color:var(--muted)">Confirme seus dados para pedir acesso ao pacote.</div>
+    <div class="field"><label>Seu nome</label><input id="nome" maxlength="40" value="${esc(Object.values(mine).find(Boolean)?.nome||"")}"></div>
+    <div class="field"><label>WhatsApp</label><input id="whats" type="tel" inputmode="tel" maxlength="30" placeholder="(11) 99999-9999" value="${esc(Object.values(mine).find(Boolean)?.whats||"")}"></div>
+    <p class="err" id="err">${esc(msg)}</p><button class="btn lime" id="go">Pedir acesso</button></div>`;
+  $("#go").onclick=async()=>{const n=$("#nome").value.trim(),w=$("#whats").value.trim();if(!n){$("#err").textContent="Digite seu nome.";return}if(w.replace(/\D/g,"").length<10){$("#err").textContent="Digite seu WhatsApp com DDD.";return}
+    $("#go").disabled=true;try{await requestAll(n,w)}catch(x){$("#go").disabled=false;$("#err").textContent=errMsg(x)}};
+}
+async function requestAll(nome,whats){
+  // pede acesso em cada app que ainda não tem pedido (o cliente nunca consegue se liberar sozinho)
+  await Promise.all(APPS.filter(a=>!mine[a.col]).map(a=>fb.fs.collection(a.col).doc(ME.uid).set(newDoc(ME.email,nome,whats))));
+}
+function home(){
+  const ok=APPS.filter(a=>mine[a.col]?.aprovado||ME.admin).length, nome=(Object.values(mine).find(x=>x?.nome)?.nome||"").split(" ")[0];
+  $("#out").classList.remove("hidden");
+  $("#hTitle").textContent=nome?`Olá, ${nome}!`:"Seus apps";
+  $("#hSub").textContent=ok===APPS.length?"Tudo liberado. Toque em um app para abrir.":ok?`${ok} de ${APPS.length} apps liberados.`:"Seu acesso está sendo liberado. Esta tela atualiza sozinha.";
+  const waiting=!ok&&!ME.admin;
+  const msg=encodeURIComponent(`Oi Kaique! Comprei o pacote Belarmino Apps e criei minha conta com o e-mail ${ME.email}. Pode liberar meu acesso?`);
+  $("#view").innerHTML=`${waiting?`<div class="card"><ol class="steps"><li><span><b>Conta criada</b> com ${esc(ME.email)}.</span></li><li><span><b>Aguardando liberação.</b> Assim que o Kaique liberar, os botões "Abrir" aparecem aqui sozinhos.</span></li></ol><a class="btn" style="margin-top:14px" href="https://wa.me/${WHATS}?text=${msg}" target="_blank" rel="noopener">Falar com o Kaique no WhatsApp</a></div>`:""}
+    ${ME.admin?adminCard():""}
+    <div class="sec">Seus apps</div>
+    ${APPS.map(a=>{const d=mine[a.col], lib=ME.admin||d?.aprovado;
+      return `<div class="card app">${icon(a)}<div><h2>${a.nome}<span class="tag ${a.tag}">${a.tag==="main"?"Principal":"Bônus"}</span></h2><div class="d">${a.d}</div></div>
+      <div class="act">${lib?`<a class="btn" href="${a.url}">Abrir ${a.nome}</a>`:`<div class="status">${d?.recusado?"Acesso não liberado":"Aguardando liberação"}</div>`}</div></div>`}).join("")}
+    <div class="card"><h2 style="margin:0 0 8px;font:800 16px Montserrat">Dica: instale no celular</h2><div class="d" style="color:var(--muted);font-size:14px">Abra cada app e use <b>"Adicionar à tela inicial"</b> no menu do navegador. Ele vira um ícone, igual a um app da loja. Seus dados ficam salvos no seu aparelho.</div></div>
+    <p class="credit">Criado por <b>Kaique Belarmino</b> · belarmino agency</p>`;
+  if(ME.admin) bindAdmin();
+}
+
+/* ---------- painel do Kaique: libera o pacote inteiro com um toque ---------- */
+function clientes(){
+  const m={};
+  APPS.forEach(a=>Object.entries(all[a.col]||{}).forEach(([id,d])=>{ if(isAdmin(d.email)) return; m[id]=m[id]||{id,nome:d.nome,email:d.email,whats:d.whats,createdAt:d.createdAt,apps:{}}; m[id].apps[a.col]=d; if(!m[id].nome)m[id].nome=d.nome; if((d.createdAt||0)>(m[id].createdAt||0))m[id].createdAt=d.createdAt; }));
+  return Object.values(m).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+}
+function adminCard(){
+  const cs=clientes(), full=c=>APPS.every(a=>c.apps[a.col]?.aprovado), pend=cs.filter(c=>!full(c)&&!APPS.some(a=>c.apps[a.col]?.recusado));
+  const row=c=>{const wa=waLink(c.whats);return `<div class="member"><div class="who"><b>${esc(c.nome||"Sem nome")}</b><span>${esc(c.email)}${c.whats?` · ${wa?`<a href="${wa}" target="_blank" rel="noopener">${esc(c.whats)}</a>`:esc(c.whats)}`:""}${c.createdAt?` · ${new Date(c.createdAt).toLocaleDateString("pt-BR")}`:""}</span></div>
+    <div class="chips">${APPS.map(a=>`<button class="chip ${c.apps[a.col]?.aprovado?"on":""}" data-one="${esc(c.id)}" data-col="${a.col}" title="Toque para liberar ou tirar só este app">${a.nome}</button>`).join("")}</div>
+    <div class="row">${full(c)?`<button class="mini ghost" data-off="${esc(c.id)}">Tirar acesso de tudo</button>`:`<button class="mini" data-on="${esc(c.id)}">Liberar pacote</button><button class="mini ghost" data-off="${esc(c.id)}">Recusar</button>`}</div></div>`};
+  return `<div class="card"><h2 style="margin:0;font:800 18px Montserrat">Clientes do pacote${pend.length?`<span class="count">${pend.length} novo${pend.length>1?"s":""}</span>`:""}</h2>
+    <div class="d" style="color:var(--muted);font-size:13px;margin:4px 0 6px">"Liberar pacote" libera os 4 apps de uma vez. Toque no nome de um app para liberar ou tirar só ele.</div>
+    <div id="adm">${cs.length?cs.map(row).join(""):`<div class="d" style="color:var(--muted);padding:10px 0">Ninguém criou conta ainda.</div>`}</div></div>`;
+}
+function setAccess(uid,cols,on){
+  const c=clientes().find(x=>x.id===uid)||{};
+  const base={nome:c.nome||"",whats:c.whats||"",email:(c.email||"").toLowerCase(),createdAt:c.createdAt||Date.now()};
+  return Promise.all(cols.map(col=>fb.fs.collection(col).doc(uid).set(all[col]?.[uid]?{aprovado:on,recusado:!on}:{...base,aprovado:on,recusado:!on},{merge:true})));
+}
+function bindAdmin(){
+  $("#adm").onclick=async e=>{const b=e.target.closest("button");if(!b)return;b.disabled=true;
+    try{
+      if(b.dataset.on){await setAccess(b.dataset.on,APPS.map(a=>a.col),true);toast("Pacote liberado")}
+      else if(b.dataset.off){await setAccess(b.dataset.off,APPS.map(a=>a.col),false);toast("Acesso retirado")}
+      else if(b.dataset.one){const on=!all[b.dataset.col]?.[b.dataset.one]?.aprovado;await setAccess(b.dataset.one,[b.dataset.col],on);toast(on?"App liberado":"App retirado")}
+    }catch(x){b.disabled=false;toast(errMsg(x))}};
+}
+
+/* ---------- início ---------- */
+function boot(){
+  if(typeof firebase==="undefined"){$("#view").innerHTML=`<div class="card">Sem conexão. Precisamos da internet para abrir. <button class="btn" style="margin-top:12px" onclick="location.reload()">Tentar de novo</button></div>`;return}
+  firebase.initializeApp(CFG);
+  fb={auth:firebase.auth(),fs:firebase.firestore()};
+  $("#out").onclick=async()=>{stop();await fb.auth.signOut();location.reload()};
+  fb.auth.onAuthStateChanged(async u=>{
+    stop(); mine={}; all={};
+    if(!u){ME=null;return login()}
+    ME={uid:u.uid,email:u.email,admin:isAdmin(u.email)};
+    $("#view").innerHTML=`<div class="card">Carregando…</div>`;
+    let asked=false;
+    APPS.forEach(a=>subs.push(fb.fs.collection(a.col).doc(u.uid).onSnapshot(d=>{
+      mine[a.col]=d.exists?d.data():null;
+      if(APPS.some(x=>!(x.col in mine))) return; // espera os 4 apps responderem
+      const missing=APPS.filter(x=>!mine[x.col]);
+      if(!ME.admin && missing.length && !asked){
+        asked=true;
+        const prof=pendingProfile||Object.values(mine).find(x=>x?.nome);
+        if(prof){ pendingProfile=null; requestAll(prof.nome,prof.whats||"").catch(x=>askProfile(errMsg(x))); }
+        else return askProfile();
+      }
+      home();
+    },x=>login(errMsg(x)))));
+    if(ME.admin) APPS.forEach(a=>subs.push(fb.fs.collection(a.col).onSnapshot(s=>{all[a.col]={};s.forEach(d=>all[a.col][d.id]=d.data());if(APPS.every(x=>x.col in mine))home()},()=>{})));
+  });
+}
+boot();
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+</script>
+</body>
+</html>
