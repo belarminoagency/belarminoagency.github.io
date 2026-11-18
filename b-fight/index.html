@@ -1,4 +1,42 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+#splash{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;overflow:hidden;transition:opacity .55s cubic-bezier(.22,.8,.24,1),transform .55s cubic-bezier(.22,.8,.24,1)}
+#splash.sai{opacity:0;transform:scale(1.04);pointer-events:none}
+#splash .sp-in{position:relative;display:flex;flex-direction:column;align-items:center;gap:16px}
+@media (prefers-reduced-motion: reduce){#splash *{animation:none!important;opacity:1!important;transform:none!important}}
+
+#splash{background:radial-gradient(circle at 50% 45%,#1d0f11 0%,#0E0E10 60%)}
+.bf-linhas i{position:absolute;left:0;top:var(--y);height:2px;width:45vw;background:linear-gradient(90deg,transparent,#E3262F,transparent);transform:translateX(-60vw);animation:bfLinha .45s var(--d) cubic-bezier(.4,0,.2,1) forwards;opacity:.8}
+.bf-flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,rgba(255,58,66,.55),transparent 55%);opacity:0;animation:bfFlash .5s .5s ease-out}
+.bf-marca{transform:translateX(-70vw) skewX(-18deg);filter:blur(6px);animation:bfEntra .4s .2s cubic-bezier(.2,.9,.3,1) forwards,bfTreme .35s .6s linear}
+.bf-b{opacity:0;transform-box:fill-box;transform-origin:center;animation:bfSoco .35s .55s cubic-bezier(.34,1.56,.64,1) forwards}
+.bf-vel{opacity:0;animation:bfAparece .2s .55s forwards}
+.bf-nome{font:400 46px/1 Anton,Impact,sans-serif;letter-spacing:.03em;color:#F3F1EE;font-style:italic;opacity:0;transform:translateX(40px) skewX(-10deg);animation:bfNome .45s .85s cubic-bezier(.2,.9,.3,1) forwards}
+.bf-nome span{color:#E3262F}
+.bf-tag{font:600 14px "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.3em;color:#A09DA6;opacity:0;animation:bfAparece .4s 1.25s forwards}
+@keyframes bfLinha{to{transform:translateX(130vw)}}
+@keyframes bfFlash{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+@keyframes bfEntra{to{transform:none;filter:none}}
+@keyframes bfTreme{0%,100%{transform:translate(0,0)}20%{transform:translate(-5px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,-1px)}}
+@keyframes bfSoco{from{opacity:0;transform:scale(1.8)}to{opacity:1;transform:scale(1)}}
+@keyframes bfAparece{to{opacity:1}}
+@keyframes bfNome{to{opacity:1;transform:skewX(-10deg)}}
+</style></head><body>
+<div id="splash" aria-hidden="true">
+  <div class="bf-linhas"><i style="--y:22%;--d:.05s"></i><i style="--y:38%;--d:.12s"></i><i style="--y:55%;--d:.02s"></i><i style="--y:68%;--d:.16s"></i><i style="--y:80%;--d:.08s"></i></div>
+  <div class="bf-flash"></div>
+  <div class="sp-in">
+    <svg class="bf-marca" viewBox="0 0 64 64" width="120" height="120">
+      <defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF3A42"/><stop offset="1" stop-color="#9E1219"/></linearGradient></defs>
+      <path d="M14 4h46l-10 56H4z" fill="url(#spg)"/>
+      <path class="bf-vel" d="M2 22h9M0 32h8M2 42h7" stroke="#F3F1EE" stroke-width="3" stroke-linecap="round"/>
+      <text class="bf-b" x="33" y="50" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="46" font-style="italic" fill="#F3F1EE" transform="skewX(-10) translate(9 0)">B</text>
+    </svg>
+    <div class="bf-nome">B<span>-</span>FIGHT</div>
+    <div class="bf-tag">Treino de luta</div>
+  </div>
+</div>
+<script>(function(){var sp=document.getElementById("splash");var calmo=false;try{calmo=matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){}
+setTimeout(function(){sp.classList.add("sai");setTimeout(function(){sp.remove()},600)},calmo?300:2100);})();</script>
 <div id="bfCover" style="position:fixed;inset:0;background:#0E0E10;z-index:9998"></div>
 <title>B-Fight</title>
 <meta name="claude:viewport-fit-sides" content="cover">
