@@ -20,7 +20,14 @@
 @keyframes bfSoco{from{opacity:0;transform:scale(1.8)}to{opacity:1;transform:scale(1)}}
 @keyframes bfAparece{to{opacity:1}}
 @keyframes bfNome{to{opacity:1;transform:skewX(-10deg)}}
-</style></head><body>
+</style><link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0E0E10">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="B-Fight">
+</head><body>
 <div id="splash" aria-hidden="true">
   <div class="bf-linhas"><i style="--y:22%;--d:.05s"></i><i style="--y:38%;--d:.12s"></i><i style="--y:55%;--d:.02s"></i><i style="--y:68%;--d:.16s"></i><i style="--y:80%;--d:.08s"></i></div>
   <div class="bf-flash"></div>
@@ -765,4 +772,5 @@ show("vArt");
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="acesso.js"></script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){})}</script>
 </body></html>
