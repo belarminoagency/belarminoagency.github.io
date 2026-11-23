@@ -63,3 +63,7 @@ Criado por Kaique e Evelyn, com a ajuda do Claude.
 Os versículos foram adaptados em linguagem atual. Para a leitura completa, o app abre a Bíblia NVI no YouVersion.
 
 > "Se não for o Senhor o construtor da casa, será inútil trabalhar na construção." (Salmo 127.1)
+
+## Login e nuvem
+
+No site (GitHub Pages), o app pede login com e-mail e senha no mesmo projeto Firebase do Rendy (`forja-f7ca8`). Na primeira vez, um dos dois cria o "espaço do casal" com o e-mail do outro. Os dados ficam em `altar_casais/{id}`, e o diário pessoal só pode ser lido pelo dono. As regras estão em `rendy/firestore.rules`, a cópia completa das regras do projeto. Também dá para usar sem login, mas aí fica salvo só no aparelho. O que já tinha sido feito sem login é levado para a conta no primeiro login.

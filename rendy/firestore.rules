@@ -52,5 +52,32 @@ service cloud.firestore {
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['aprovado', 'recusado', 'email']));
       allow delete: if admin();
     }
+
+    // ALTAR A DOIS: espaço do casal. Só os dois e-mails do casal entram.
+    match /altar_convites/{email} {
+      allow read: if request.auth != null && request.auth.token.email == email;
+      allow create: if request.auth != null
+        && request.auth.token.email in getAfter(/databases/$(database)/documents/altar_casais/$(request.resource.data.casal)).data.membros
+        && email in getAfter(/databases/$(database)/documents/altar_casais/$(request.resource.data.casal)).data.membros;
+      allow update, delete: if admin();
+    }
+    match /altar_casais/{cid} {
+      function membro() {
+        return request.auth != null && request.auth.token.email in
+          get(/databases/$(database)/documents/altar_casais/$(cid)).data.membros;
+      }
+      allow read: if request.auth != null && request.auth.token.email in resource.data.membros;
+      allow create: if request.auth != null
+        && request.resource.data.membros.size() == 2
+        && request.auth.token.email == request.resource.data.membros[0];
+      allow update, delete: if admin();
+      // Diário pessoal: só o dono lê e escreve
+      match /data/users/{uid}/{dia} {
+        allow read, write: if membro() && request.auth.uid == uid;
+      }
+      match /{area}/{doc} {
+        allow read, write: if membro() && area in ['casal', 'revisoes', 'perfis', 'pedidos'];
+      }
+    }
   }
 }

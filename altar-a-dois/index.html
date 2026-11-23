@@ -273,6 +273,26 @@ nav.tabbar button.on{color:var(--ink)} nav.tabbar button.on svg{transform:transl
 .who-btn:nth-child(2) .av{background:linear-gradient(150deg,var(--couple-2),var(--couple-1))}
 .who-btn.on{border-color:var(--gold);background:var(--gold-soft)}
 .who-btn:active{transform:scale(.96)}
+/* ---------- Login ---------- */
+#auth{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto;
+  background:radial-gradient(120% 80% at 70% 10%,rgba(216,178,106,.18),transparent 55%),linear-gradient(160deg,#1B2950,#0B1226 70%)}
+#auth[hidden]{display:none!important}
+#auth .panel{width:100%;max-width:400px;background:var(--surface);border-radius:24px;padding:26px 22px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow-lg);animation:sheetUp .5s var(--spring) both}
+#auth .a-top{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+#auth .a-top img{width:58px;height:58px}
+#auth h2{font-family:var(--serif);font-weight:600;font-size:30px;margin:0;line-height:1.1}
+#auth .hint{margin:0;color:var(--muted);font-size:14px}
+#auth .a-tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--surface-2);border-radius:14px;padding:4px}
+#auth .a-tabs button{border:0;background:transparent;border-radius:11px;padding:10px;font:700 14px var(--sans);color:var(--muted);cursor:pointer}
+#auth .a-tabs button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+#auth form{display:flex;flex-direction:column;gap:10px}
+#auth input{font:15px/1.5 var(--sans);color:var(--ink);background:var(--surface-2);border:1px solid transparent;border-radius:14px;padding:12px 14px;width:100%}
+#auth input:focus{outline:none;border-color:var(--gold);background:var(--surface);box-shadow:0 0 0 4px var(--gold-soft)}
+#auth .a-err{min-height:1em;margin:0;font-size:13.5px;color:#C0392B}
+#auth .a-err.ok{color:var(--ok)}
+#auth .a-link{background:none;border:0;padding:4px;font:600 13.5px var(--sans);color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.acct{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+.acct b{color:var(--ink);font-weight:700;word-break:break-all}
 details.edit summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--muted);list-style:none}
 details.edit summary::-webkit-details-marker{display:none}
 details.edit[open] summary{margin-bottom:10px}
@@ -317,11 +337,15 @@ details.edit[open] summary{margin-bottom:10px}
   </div>
 </header>
 
+<div id="auth" hidden role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="panel" id="authPanel"></div>
+</div>
+
 <div id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
   <div class="panel">
     <span class="kicker">Perfil</span>
     <h2 id="sheetTitle">Quem está usando?</h2>
-    <p class="hint" id="sheetHint">Escolha uma vez. Seu nome fica salvo na nuvem e aparece sempre que você abrir o app, em qualquer aparelho.</p>
+    <p class="hint" id="sheetHint">Escolha uma vez. Fica salvo na sua conta, em qualquer aparelho.</p>
     <div class="who-grid" id="whoGrid"></div>
     <details class="edit">
       <summary>Editar os nomes do casal</summary>
@@ -332,6 +356,7 @@ details.edit[open] summary{margin-bottom:10px}
       <button class="btn block" id="saveNames" type="button" style="margin-top:10px">Salvar nomes</button>
     </details>
     <button class="btn" id="sheetClose" type="button">Fechar</button>
+    <div class="acct" id="acct" hidden></div>
   </div>
 </div>
 
@@ -462,7 +487,7 @@ details.edit[open] summary{margin-bottom:10px}
         <button class="btn pri" type="submit" aria-label="Adicionar pedido"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
       </form>
     </section>
-    <div class="note" id="localNote" hidden>Modo local: tudo fica salvo só neste aparelho. Para dividir a aba "Nós dois", usem o link do app no Claude.</div>
+    <div class="note" id="localNote" hidden>Modo sem login: tudo fica salvo só neste aparelho. Entre com sua conta (no seu perfil, canto de cima) para salvar na nuvem e dividir a aba "Nós dois".</div>
   </section>
 
   <!-- ================= JORNADA ================= -->
@@ -487,6 +512,9 @@ details.edit[open] summary{margin-bottom:10px}
 </nav>
 <div id="toast" role="status"></div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 /* ================= CONTEÚDO ================= */
 const START = new Date(2026, 10, 23); // 23/11/2026
@@ -771,7 +799,7 @@ function openSheet(){
     grid.append(btn);
   });
   const [a, b] = coupleNames(); $("nome1").value = a; $("nome2").value = b;
-  $("sheetHint").textContent = state.local ? "Escolha uma vez. Neste modo seu nome fica salvo neste aparelho."
+  $("sheetHint").textContent = state.local ? "Escolha uma vez. Sem login, seu nome fica salvo só neste aparelho."
     : "Escolha uma vez. Seu nome fica salvo na nuvem, na sua conta, e aparece sempre que você abrir o app, em qualquer aparelho.";
   const dis = !state.uid; grid.querySelectorAll("button").forEach(x => x.disabled = dis); $("saveNames").disabled = dis;
   $("sheet").hidden = false;
@@ -1181,20 +1209,181 @@ function subscribe(db, uid){
   }, () => {});
 }
 
-(async () => {
-  if (!window.claude || !window.claude.use){
-    // Fora do Claude (ex.: GitHub Pages): salva neste aparelho
-    state.local = true; state.db = localDB(); state.uid = "local";
-    $("localNote").hidden = false; setSync("ok", "Neste aparelho");
-    renderEu(); renderNos(); subscribe(state.db, state.uid); return;
+/* ================= CONTA E NUVEM (Firebase) ================= */
+// Mesmo projeto Firebase do Rendy, Forja e B-Fight. Dados do app ficam em "altar_casais".
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBpl5GkIkQOtriiTyI0N5bsevM0E71hqq4",
+  authDomain: "forja-f7ca8.firebaseapp.com",
+  projectId: "forja-f7ca8",
+  storageBucket: "forja-f7ca8.firebasestorage.app",
+  messagingSenderId: "1011302668862",
+  appId: "1:1011302668862:web:66c33e3c5f1579581e8f6f"
+};
+const fb = {};
+const LOGO = '<img src="icon.svg" alt="">';
+function errMsg(x){
+  const c = (x && x.code) || "";
+  if (c.includes("invalid-credential") || c.includes("wrong-password") || c.includes("user-not-found")) return "E-mail ou senha incorretos.";
+  if (c.includes("email-already-in-use")) return "Esse e-mail já tem conta. Use a aba Entrar.";
+  if (c.includes("invalid-email")) return "E-mail inválido.";
+  if (c.includes("weak-password")) return "A senha precisa de pelo menos 6 caracteres.";
+  if (c.includes("too-many-requests")) return "Muitas tentativas. Espere um pouco e tente de novo.";
+  if (c.includes("network")) return "Sem internet. Confira a conexão.";
+  if (c.includes("permission-denied")) return "Sem permissão no servidor. Avise o Kaique.";
+  return "Não deu certo. Tente de novo.";
+}
+function authScreen(html){ $("authPanel").innerHTML = html; $("auth").hidden = false; }
+function hideAuth(){ $("auth").hidden = true; }
+
+function showLogin(tab){
+  tab = tab || "in";
+  authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">Altar a Dois</h2>
+      <p class="hint">Entre para salvar seu progresso na nuvem. Se trocar de celular, está tudo lá.</p></div>
+    <div class="a-tabs"><button type="button" data-t="in" class="${tab==="in"?"on":""}">Entrar</button><button type="button" data-t="up" class="${tab==="up"?"on":""}">Criar conta</button></div>
+    <form id="aForm" novalidate>
+      <input type="email" id="aEmail" placeholder="Seu e-mail" autocomplete="email" required>
+      <input type="password" id="aPass" placeholder="Senha${tab==="up"?" (mínimo 6)":""}" autocomplete="${tab==="up"?"new-password":"current-password"}" required>
+      <p class="a-err" id="aErr"></p>
+      <button class="btn pri block" type="submit" id="aGo">${tab==="up"?"Criar conta":"Entrar"}</button>
+    </form>
+    ${tab==="in"?'<button class="a-link" type="button" id="aForgot">Esqueci a senha</button>':""}
+    <button class="a-link" type="button" id="aLocal">Usar sem login (salva só neste aparelho)</button>`);
+  $("authPanel").querySelectorAll(".a-tabs button").forEach(b => b.onclick = () => showLogin(b.dataset.t));
+  const err = $("aErr");
+  $("aForm").onsubmit = async e => {
+    e.preventDefault();
+    const em = $("aEmail").value.trim().toLowerCase(), pw = $("aPass").value;
+    if (!em || !pw){ err.className = "a-err"; err.textContent = "Preencha e-mail e senha."; return; }
+    $("aGo").disabled = true; err.className = "a-err"; err.textContent = "";
+    try {
+      if (tab === "up") await fb.auth.createUserWithEmailAndPassword(em, pw);
+      else await fb.auth.signInWithEmailAndPassword(em, pw);
+    } catch(x){ err.textContent = errMsg(x); $("aGo").disabled = false; }
+  };
+  if ($("aForgot")) $("aForgot").onclick = async () => {
+    const em = $("aEmail").value.trim().toLowerCase();
+    if (!em){ err.className = "a-err"; err.textContent = "Digite seu e-mail acima e toque de novo."; return; }
+    try { await fb.auth.sendPasswordResetEmail(em); err.className = "a-err ok"; err.textContent = "Enviamos um link de nova senha para " + em + ". Veja também o spam."; }
+    catch(x){ err.className = "a-err"; err.textContent = errMsg(x); }
+  };
+  $("aLocal").onclick = () => { store("altar-modo", "local"); hideAuth(); startLocal(); };
+}
+
+function showCoupleSetup(u){
+  authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">Espaço do casal</h2>
+      <p class="hint">Digite o e-mail que seu par vai usar no app. Quando ele(a) criar a conta com esse e-mail, vocês já entram juntos.</p></div>
+    <form id="cForm" novalidate>
+      <input type="email" id="cEmail" placeholder="E-mail do seu par" autocomplete="off" required>
+      <p class="a-err" id="cErr"></p>
+      <button class="btn pri block" type="submit" id="cGo">Criar nosso espaço</button>
+    </form>
+    <p class="hint" style="font-size:13px;text-align:center">Seu par já criou e colocou o seu e-mail? Toque em "Verificar de novo".</p>
+    <button class="btn block" type="button" id="cRetry">Verificar de novo</button>
+    <button class="a-link" type="button" id="cOut">Sair (${u.email})</button>`);
+  const err = $("cErr");
+  $("cForm").onsubmit = async e => {
+    e.preventDefault();
+    const me = (u.email || "").toLowerCase(), par = $("cEmail").value.trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(par)){ err.textContent = "Digite um e-mail válido."; return; }
+    if (par === me){ err.textContent = "Coloque o e-mail do seu par, não o seu."; return; }
+    $("cGo").disabled = true; err.textContent = "";
+    try {
+      const ref = fb.fs.collection("altar_casais").doc();
+      const batch = fb.fs.batch();
+      batch.set(ref, {membros:[me, par], criado:Date.now(), criadoPor:me});
+      batch.set(fb.fs.doc("altar_convites/" + me), {casal:ref.id});
+      batch.set(fb.fs.doc("altar_convites/" + par), {casal:ref.id});
+      await batch.commit();
+      startCloud(u, ref.id);
+    } catch(x){
+      err.textContent = (x && x.code === "permission-denied") ? "Esse e-mail já está em outro casal, ou o servidor não liberou. Avise o Kaique." : errMsg(x);
+      $("cGo").disabled = false;
+    }
+  };
+  $("cRetry").onclick = () => connect(u);
+  $("cOut").onclick = logout;
+}
+
+async function connect(u){
+  setSync("busy", "Carregando");
+  try {
+    const inv = await fb.fs.doc("altar_convites/" + (u.email || "").toLowerCase()).get();
+    if (inv.exists && inv.data().casal){ startCloud(u, inv.data().casal); return; }
+    showCoupleSetup(u);
+  } catch(x){
+    authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">Não conectou</h2><p class="hint">${errMsg(x)}</p></div>
+      <button class="btn pri block" type="button" id="rTry">Tentar de novo</button><button class="a-link" type="button" id="rOut">Sair</button>`);
+    $("rTry").onclick = () => connect(u); $("rOut").onclick = logout;
   }
-  const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
-  state.user = user;
-  const uid = user ? await user.id() : null;
-  if (!db || !uid){ $("signNote").hidden = false; setSync("err", "Somente leitura"); return; }
-  state.db = db; state.uid = uid; setSync("busy", "Carregando");
-  renderEu(); renderNos();
-  subscribe(db, uid);
+}
+
+function cloudDB(cid){
+  const P = p => "altar_casais/" + cid + "/" + p;
+  return { doc: p => fb.fs.doc(P(p)), collection: c => fb.fs.collection(P(c)) };
+}
+
+// Leva o que já foi feito sem login (neste aparelho) para a conta, uma vez só.
+async function migrateLocal(uid){
+  let data = {};
+  try { data = JSON.parse(localStorage.getItem("permanecer-db") || "{}"); } catch(e){}
+  const paths = Object.keys(data); if (!paths.length || store("altar-migrado-" + uid)) return;
+  const fix = v => JSON.parse(JSON.stringify(v), (k, x) => x === "local" ? uid : x);
+  for (const p of paths){
+    const np = p.replace(/(^|[\/_])local(?=$|\/)/g, "$1" + uid);
+    try { const ref = state.db.doc(np); const cur = await ref.get(); if (!cur.exists) await ref.set(fix(data[p])); } catch(e){}
+  }
+  store("altar-migrado-" + uid, "1");
+}
+
+let started = false;
+async function startCloud(u, cid){
+  if (started) return; started = true;
+  hideAuth();
+  state.local = false; state.db = cloudDB(cid); state.uid = u.uid; state.email = u.email;
+  $("localNote").hidden = true; setSync("busy", "Carregando");
+  renderAcct(); renderEu(); renderNos();
+  await migrateLocal(u.uid);
+  subscribe(state.db, state.uid);
+}
+function startLocal(){
+  if (started) return; started = true;
+  state.local = true; state.db = localDB(); state.uid = "local";
+  $("localNote").hidden = false; setSync("ok", "Neste aparelho");
+  renderAcct(); renderEu(); renderNos(); subscribe(state.db, state.uid);
+}
+async function logout(){ try { await fb.auth.signOut(); } catch(e){} location.reload(); }
+function renderAcct(){
+  const a = $("acct"); a.hidden = false; a.textContent = "";
+  if (state.local){
+    a.append(el("span", {text:"Sem login: salvo só neste aparelho."}));
+    const b = el("button", {type:"button", class:"btn", text:"Entrar"});
+    b.onclick = () => { store("altar-modo", ""); location.reload(); };
+    a.append(b);
+  } else {
+    a.append(el("span", {}, document.createTextNode("Conta: "), el("b", {text:state.email || ""})));
+    const b = el("button", {type:"button", class:"btn", text:"Sair"});
+    b.onclick = logout; a.append(b);
+  }
+}
+
+(async () => {
+  if (window.claude && window.claude.use){
+    const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+    state.user = user;
+    const uid = user ? await user.id() : null;
+    if (!db || !uid){ $("signNote").hidden = false; setSync("err", "Somente leitura"); return; }
+    state.db = db; state.uid = uid; setSync("busy", "Carregando");
+    renderEu(); renderNos();
+    subscribe(db, uid); return;
+  }
+  if (store("altar-modo") === "local" || !window.firebase){ startLocal(); return; }
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    fb.auth = firebase.auth(); fb.fs = firebase.firestore();
+    fb.fs.enablePersistence().catch(() => {});
+  } catch(e){ startLocal(); return; }
+  setSync("busy", "Conectando");
+  fb.auth.onAuthStateChanged(u => { if (u) connect(u); else if (!started) showLogin("in"); });
 })();
 </script>
 </body>
