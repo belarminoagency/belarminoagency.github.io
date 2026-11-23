@@ -291,6 +291,13 @@ nav.tabbar button.on{color:var(--ink)} nav.tabbar button.on svg{transform:transl
 #auth .a-err{min-height:1em;margin:0;font-size:13.5px;color:#C0392B}
 #auth .a-err.ok{color:var(--ok)}
 #auth .a-link{background:none;border:0;padding:4px;font:600 13.5px var(--sans);color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.link-card{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.link-card[hidden]{display:none!important}
+.link-card .ic{flex:none;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--gold-soft);color:var(--gold)}
+.link-card .ic svg{width:20px;height:20px}
+.link-card .tx{min-width:0;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
+.link-card .tx b{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.link-card .tx span{word-break:break-all;color:var(--ink);font-weight:600}
 #reqAccess{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
 #reqAccess[hidden]{display:none!important}
 .acc-req{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--gold-soft);border:1.5px solid var(--gold);border-radius:18px;padding:14px 16px}
@@ -446,6 +453,7 @@ details.edit[open] summary{margin-bottom:10px}
 
   <!-- ================= NÓS DOIS ================= -->
   <section class="view" id="tab-nos" hidden>
+    <div class="link-card" id="linkCard" hidden></div>
     <div class="hero couple" aria-live="polite">
       <div>
         <div class="couple-names" id="coupleNames">Kaique <em>&amp;</em> Evelyn</div>
@@ -1341,6 +1349,19 @@ async function connect(u){
   }
 }
 
+// Mostra o vínculo do casal (os dois e-mails) na aba Nós dois
+function watchLink(cid){
+  fb.fs.doc("altar_casais/" + cid).onSnapshot(d => {
+    const c = $("linkCard"); if (!d.exists){ c.hidden = true; return; }
+    const m = d.data().membros || []; c.textContent = "";
+    const ic = el("div", {class:"ic"}); ic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>';
+    const tx = el("div", {class:"tx"}, el("b", {text: m.length >= 2 ? "Casal vinculado" : "Aguardando seu par"}));
+    m.forEach(e => tx.append(el("span", {text:e})));
+    if (m.length < 2) tx.append(document.createTextNode("Peça para seu par criar a conta e pedir acesso."));
+    c.append(ic, tx); c.hidden = false;
+  }, () => {});
+}
+
 // Kaique vê os pedidos e libera
 function watchRequests(cid){
   fb.fs.collection("altar_pedidos").onSnapshot(snap => {
@@ -1396,6 +1417,7 @@ async function startCloud(u, cid){
   await migrateLocal(u.uid);
   subscribe(state.db, state.uid);
   if (isAdmin(u.email)) watchRequests(cid);
+  watchLink(cid);
 }
 function startLocal(){
   if (started) return; started = true;
