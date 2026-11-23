@@ -62,6 +62,14 @@ p{margin:0}
 .sp-name{font-family:var(--serif);font-weight:600;font-size:44px;letter-spacing:.02em;color:#F6F4EE;line-height:1;animation:rise .7s .85s var(--ease) both}
 .sp-sub{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:#D8B26A;font-weight:700;animation:rise .7s 1.05s var(--ease) both}
 .sp-verse{font-family:var(--serif);font-style:italic;font-size:17px;color:rgba(246,244,238,.7);max-width:30ch;animation:rise .7s 1.3s var(--ease) both}
+.sp-mark{position:relative;display:grid;place-items:center}
+.sp-mark .sp-logo{position:relative}
+.sp-glow{position:absolute;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(216,178,106,.55) 0%,rgba(216,178,106,.18) 35%,transparent 70%);opacity:0;transform:scale(.4);animation:glow 1.4s 1.15s var(--ease) forwards}
+.sp-rays{position:absolute;width:260px;height:260px;opacity:0;animation:rays 1.6s 1.1s var(--ease) forwards}
+.sp-rays i{position:absolute;left:50%;top:50%;width:2px;height:120px;margin:-120px 0 0 -1px;transform-origin:50% 100%;background:linear-gradient(to top,transparent 45%,rgba(216,178,106,.5));transform:rotate(var(--r))}
+@media (prefers-reduced-motion: reduce){#splash *{animation:none!important;opacity:1!important;transform:none!important;stroke-dashoffset:0!important}.sp-glow,.sp-rays{display:none}}
+@keyframes glow{60%{opacity:1;transform:scale(1.08)}to{opacity:.75;transform:scale(1)}}
+@keyframes rays{to{opacity:.6;transform:rotate(12deg)}}
 @keyframes draw{to{stroke-dashoffset:0}}
 @keyframes leaf{to{transform:scale(1)}}
 @keyframes spPop{from{transform:scale(.7);opacity:0}to{transform:none;opacity:1}}
@@ -279,6 +287,7 @@ details.edit[open] summary{margin-bottom:10px}
 
 <div id="splash" aria-hidden="true">
   <div class="sp-in">
+    <div class="sp-mark"><div class="sp-rays"><i style="--r:0deg"></i><i style="--r:30deg"></i><i style="--r:60deg"></i><i style="--r:90deg"></i><i style="--r:120deg"></i><i style="--r:150deg"></i><i style="--r:180deg"></i><i style="--r:210deg"></i><i style="--r:240deg"></i><i style="--r:270deg"></i><i style="--r:300deg"></i><i style="--r:330deg"></i></div><div class="sp-glow"></div>
     <svg class="sp-logo" viewBox="0 0 64 64" fill="none">
       <defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2A3F6E"/><stop offset="1" stop-color="#121B33"/></linearGradient></defs>
       <rect width="64" height="64" rx="16" fill="url(#spg)"/>
@@ -286,7 +295,7 @@ details.edit[open] summary{margin-bottom:10px}
       <path class="strand s2" d="M39 12C25 19 25 26 32 32S39 45 25 52" stroke="#B88A3E" stroke-width="3" stroke-linecap="round"/>
       <path class="draw" d="M32 10v44" stroke="#F6F4EE" stroke-width="3.4" stroke-linecap="round"/>
       <path class="draw" d="M23 21h18" stroke="#F6F4EE" stroke-width="3.4" stroke-linecap="round"/>
-    </svg>
+    </svg></div>
     <div class="sp-name">Altar a Dois</div>
     <div class="sp-sub">21 dias com Deus</div>
     <div class="sp-verse">"O cordão de três dobras não se rompe com facilidade." Eclesiastes 4.12</div>
@@ -1132,10 +1141,9 @@ document.querySelectorAll("nav.tabbar button").forEach(b => b.onclick = () => { 
 /* ================= ABERTURA ================= */
 (function splash(){
   const s = $("splash");
-  if (REDUCE || sstore("permanecer-splash")){ s.remove(); return; }
-  sstore("permanecer-splash", "1");
+  if (!s) return;
   const close = () => { s.classList.add("out"); setTimeout(() => s.remove(), 700); };
-  const t = setTimeout(close, 2600);
+  const t = setTimeout(close, REDUCE ? 400 : 2700);
   s.addEventListener("click", () => { clearTimeout(t); close(); });
 })();
 
@@ -1163,7 +1171,7 @@ function subscribe(db, uid){
   db.collection("perfis").onSnapshot(snap => {
     snap.docs.forEach(d => { const path = "perfis/" + d.id; if (!isWriting(path)){ state.profiles[d.id] = d.data(); cache[path] = Object.assign({}, d.data()); } });
     renderIdentity(); renderNos();
-    if (!snap.metadata.fromCache && !state.sheetAsked){ state.sheetAsked = true; if (!myName()) setTimeout(openSheet, $("splash") ? 2900 : 300); }
+    if (!snap.metadata.fromCache && !state.sheetAsked){ state.sheetAsked = true; if (!myName()) setTimeout(openSheet, $("splash") ? 3000 : 300); }
   }, () => {});
   db.collection("pedidos").onSnapshot(async snap => {
     const local = {}; state.pedidos.forEach(p => local[p.id] = p);
