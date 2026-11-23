@@ -1,0 +1,14 @@
+{
+  "name": "Altar a Dois",
+  "short_name": "Altar a Dois",
+  "description": "21 dias com Deus: devocional pessoal e do casal.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0B1226",
+  "theme_color": "#16213D",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
