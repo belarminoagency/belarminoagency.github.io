@@ -291,6 +291,15 @@ nav.tabbar button.on{color:var(--ink)} nav.tabbar button.on svg{transform:transl
 #auth .a-err{min-height:1em;margin:0;font-size:13.5px;color:#C0392B}
 #auth .a-err.ok{color:var(--ok)}
 #auth .a-link{background:none;border:0;padding:4px;font:600 13.5px var(--sans);color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+#reqAccess{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+#reqAccess[hidden]{display:none!important}
+.acc-req{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--gold-soft);border:1.5px solid var(--gold);border-radius:18px;padding:14px 16px}
+.acc-req b{display:block;font-size:15px}
+.acc-req span{font-size:13px;color:var(--muted);word-break:break-all}
+.acc-btns{display:flex;gap:8px}
+.acc-btns .btn{padding:10px 14px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.pri{background:var(--gold);border-color:var(--gold);color:#121B33}}
+:root[data-theme="dark"] .btn.pri{background:var(--gold);border-color:var(--gold);color:#121B33}
 .acct{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
 .acct b{color:var(--ink);font-weight:700;word-break:break-all}
 details.edit summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--muted);list-style:none}
@@ -361,6 +370,7 @@ details.edit[open] summary{margin-bottom:10px}
 </div>
 
 <main class="wrap">
+  <div id="reqAccess" hidden></div>
   <div class="note" id="signNote" hidden>Entre na sua conta do Claude para salvar seu progresso. Você ainda pode ler todos os devocionais.</div>
 
   <!-- ================= EU ================= -->
@@ -1269,52 +1279,93 @@ function showLogin(tab){
   $("aLocal").onclick = () => { store("altar-modo", "local"); hideAuth(); startLocal(); };
 }
 
-function showCoupleSetup(u){
-  authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">Espaço do casal</h2>
-      <p class="hint">Digite o e-mail que seu par vai usar no app. Quando ele(a) criar a conta com esse e-mail, vocês já entram juntos.</p></div>
-    <form id="cForm" novalidate>
-      <input type="email" id="cEmail" placeholder="E-mail do seu par" autocomplete="off" required>
-      <p class="a-err" id="cErr"></p>
-      <button class="btn pri block" type="submit" id="cGo">Criar nosso espaço</button>
-    </form>
-    <p class="hint" style="font-size:13px;text-align:center">Seu par já criou e colocou o seu e-mail? Toque em "Verificar de novo".</p>
-    <button class="btn block" type="button" id="cRetry">Verificar de novo</button>
-    <button class="a-link" type="button" id="cOut">Sair (${u.email})</button>`);
-  const err = $("cErr");
-  $("cForm").onsubmit = async e => {
-    e.preventDefault();
-    const me = (u.email || "").toLowerCase(), par = $("cEmail").value.trim().toLowerCase();
-    if (!/^\S+@\S+\.\S+$/.test(par)){ err.textContent = "Digite um e-mail válido."; return; }
-    if (par === me){ err.textContent = "Coloque o e-mail do seu par, não o seu."; return; }
-    $("cGo").disabled = true; err.textContent = "";
-    try {
-      const ref = fb.fs.collection("altar_casais").doc();
-      const batch = fb.fs.batch();
-      batch.set(ref, {membros:[me, par], criado:Date.now(), criadoPor:me});
-      batch.set(fb.fs.doc("altar_convites/" + me), {casal:ref.id});
-      batch.set(fb.fs.doc("altar_convites/" + par), {casal:ref.id});
-      await batch.commit();
-      startCloud(u, ref.id);
-    } catch(x){
-      err.textContent = (x && x.code === "permission-denied") ? "Esse e-mail já está em outro casal, ou o servidor não liberou. Avise o Kaique." : errMsg(x);
-      $("cGo").disabled = false;
-    }
-  };
-  $("cRetry").onclick = () => connect(u);
-  $("cOut").onclick = logout;
+const ADMIN_EMAILS = ["belarminokaique581@gmail.com"];
+const isAdmin = em => ADMIN_EMAILS.includes((em || "").toLowerCase());
+let waitUnsub = null;
+
+// Quem pede acesso: fica aguardando o Kaique liberar
+function showRequest(u, pedido){
+  const em = (u.email || "").toLowerCase();
+  if (pedido){
+    authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">Aguardando liberação</h2>
+        <p class="hint">Seu pedido foi enviado. Assim que for liberado, o app abre sozinho.</p></div>
+      <button class="btn block" type="button" id="wRetry">Verificar de novo</button>
+      <button class="a-link" type="button" id="wOut">Sair (${em})</button>`);
+    $("wRetry").onclick = () => connect(u); $("wOut").onclick = logout;
+  } else {
+    authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">Pedir acesso</h2>
+        <p class="hint">Peça para entrar no espaço do casal. Seu par recebe o pedido no app e libera.</p></div>
+      <form id="rForm" novalidate>
+        <input type="text" id="rNome" placeholder="Seu nome" maxlength="30" autocomplete="given-name">
+        <p class="a-err" id="rErr"></p>
+        <button class="btn pri block" type="submit" id="rGo">Pedir acesso</button>
+      </form>
+      <button class="a-link" type="button" id="wOut">Sair (${em})</button>`);
+    $("wOut").onclick = logout;
+    $("rForm").onsubmit = async e => {
+      e.preventDefault();
+      const nome = $("rNome").value.trim();
+      if (!nome){ $("rErr").textContent = "Digite seu nome."; return; }
+      $("rGo").disabled = true;
+      try { await fb.fs.doc("altar_pedidos/" + u.uid).set({email:em, nome, criado:Date.now()}); showRequest(u, true); }
+      catch(x){ $("rErr").textContent = errMsg(x); $("rGo").disabled = false; }
+    };
+  }
+  // Entra sozinho quando for liberado
+  if (!waitUnsub) waitUnsub = fb.fs.doc("altar_convites/" + em).onSnapshot(d => {
+    if (d.exists && d.data().casal){ waitUnsub(); waitUnsub = null; startCloud(u, d.data().casal); }
+  }, () => {});
 }
 
 async function connect(u){
   setSync("busy", "Carregando");
+  const em = (u.email || "").toLowerCase();
   try {
-    const inv = await fb.fs.doc("altar_convites/" + (u.email || "").toLowerCase()).get();
+    const inv = await fb.fs.doc("altar_convites/" + em).get();
     if (inv.exists && inv.data().casal){ startCloud(u, inv.data().casal); return; }
-    showCoupleSetup(u);
+    if (isAdmin(em)){
+      // Kaique: cria o espaço do casal na hora
+      const ref = fb.fs.collection("altar_casais").doc();
+      const batch = fb.fs.batch();
+      batch.set(ref, {membros:[em], dono:em, criado:Date.now()});
+      batch.set(fb.fs.doc("altar_convites/" + em), {casal:ref.id});
+      await batch.commit();
+      startCloud(u, ref.id); return;
+    }
+    const ped = await fb.fs.doc("altar_pedidos/" + u.uid).get();
+    showRequest(u, ped.exists);
   } catch(x){
     authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">Não conectou</h2><p class="hint">${errMsg(x)}</p></div>
       <button class="btn pri block" type="button" id="rTry">Tentar de novo</button><button class="a-link" type="button" id="rOut">Sair</button>`);
     $("rTry").onclick = () => connect(u); $("rOut").onclick = logout;
   }
+}
+
+// Kaique vê os pedidos e libera
+function watchRequests(cid){
+  fb.fs.collection("altar_pedidos").onSnapshot(snap => {
+    const box = $("reqAccess"); box.textContent = "";
+    snap.docs.forEach(d => {
+      const p = d.data();
+      const ok = el("button", {type:"button", class:"btn pri", text:"Liberar"});
+      const no = el("button", {type:"button", class:"btn", text:"Recusar"});
+      ok.onclick = async () => {
+        ok.disabled = no.disabled = true;
+        try {
+          const batch = fb.fs.batch();
+          batch.update(fb.fs.doc("altar_casais/" + cid), {membros: firebase.firestore.FieldValue.arrayUnion(p.email)});
+          batch.set(fb.fs.doc("altar_convites/" + p.email), {casal:cid});
+          batch.delete(d.ref);
+          await batch.commit(); toast((p.nome || p.email) + " entrou no espaço do casal.");
+        } catch(x){ toast(errMsg(x)); ok.disabled = no.disabled = false; }
+      };
+      no.onclick = async () => { try { await d.ref.delete(); } catch(x){ toast(errMsg(x)); } };
+      box.append(el("div", {class:"acc-req"},
+        el("div", {}, el("b", {text:(p.nome || "Alguém") + " quer entrar"}), el("span", {text:p.email})),
+        el("div", {class:"acc-btns"}, no, ok)));
+    });
+    box.hidden = !snap.size;
+  }, () => {});
 }
 
 function cloudDB(cid){
@@ -1344,6 +1395,7 @@ async function startCloud(u, cid){
   renderAcct(); renderEu(); renderNos();
   await migrateLocal(u.uid);
   subscribe(state.db, state.uid);
+  if (isAdmin(u.email)) watchRequests(cid);
 }
 function startLocal(){
   if (started) return; started = true;

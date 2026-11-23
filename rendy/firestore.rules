@@ -61,6 +61,12 @@ service cloud.firestore {
         && email in getAfter(/databases/$(database)/documents/altar_casais/$(request.resource.data.casal)).data.membros;
       allow update, delete: if admin();
     }
+    // Pedido de acesso: a pessoa pede, o Kaique (admin) libera ou recusa
+    match /altar_pedidos/{uid} {
+      allow read: if admin() || dono(uid);
+      allow create: if dono(uid) && request.resource.data.email == request.auth.token.email;
+      allow delete: if admin() || dono(uid);
+    }
     match /altar_casais/{cid} {
       function membro() {
         return request.auth != null && request.auth.token.email in
@@ -68,7 +74,7 @@ service cloud.firestore {
       }
       allow read: if request.auth != null && request.auth.token.email in resource.data.membros;
       allow create: if request.auth != null
-        && request.resource.data.membros.size() == 2
+        && request.resource.data.membros.size() == 1
         && request.auth.token.email == request.resource.data.membros[0];
       allow update, delete: if admin();
       // Diário pessoal: só o dono lê e escreve
