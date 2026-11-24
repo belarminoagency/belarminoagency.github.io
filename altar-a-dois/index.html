@@ -700,7 +700,7 @@ const BLOCOS = [
  {k:"adoracao", n:"Adoração", min:10, d:"Coloque um louvor, agradeça e entregue o dia."},
  {k:"leitura", n:"Leitura da Palavra", min:20, d:"Leia o texto do dia com calma, mais de uma vez."},
  {k:"meditacao", n:"Meditação e diário", min:15, d:"Responda a pergunta e escreva o que Deus falou."},
- {k:"oracao", n:"Oração", min:15, d:"Ore pelo tema do dia, pelo namoro, pela agência e pelos pedidos."}
+ {k:"oracao", n:"Oração", min:15, d:"Ore pelo tema do dia, pela família, pelo trabalho e pelos pedidos."}
 ];
 
 const FRASES_EU = [
@@ -1015,13 +1015,72 @@ $("btnDone").onclick = e => {
 };
 
 /* ---- Cronômetro ---- */
-const timer = {day:null, idx:0, left:BLOCOS[0].min*60, running:false, h:null, lock:null};
+// O cronômetro conta pelo relógio (endAt): sair do app, abrir Spotify ou a Bíblia não pausa nem zera.
+const timer = {day:null, idx:0, left:BLOCOS[0].min*60, running:false, endAt:0, warned:-1, h:null, lock:null};
 function loadTimer(){
   if (timer.running) stopTimer();
-  timer.day = state.day; timer.idx = 0; timer.left = BLOCOS[0].min*60;
-  try { const s = JSON.parse(store("permanecer-timer") || "null"); if (s && s.day === state.day){ timer.idx = s.idx; timer.left = s.left; } } catch(e){}
+  timer.day = state.day; timer.idx = 0; timer.left = BLOCOS[0].min*60; timer.endAt = 0; timer.warned = -1;
+  try {
+    const s = JSON.parse(store("permanecer-timer") || "null");
+    if (s && s.day === state.day){
+      timer.idx = s.idx; timer.left = s.left; timer.warned = s.warned == null ? -1 : s.warned;
+      if (s.running && s.endAt){ timer.endAt = s.endAt; resumeTimer(); }
+    }
+  } catch(e){}
 }
-function persistTimer(){ store("permanecer-timer", JSON.stringify({day:timer.day, idx:timer.idx, left:timer.left})); }
+function persistTimer(){ store("permanecer-timer", JSON.stringify({day:timer.day, idx:timer.idx, left:timer.left, running:timer.running, endAt:timer.endAt, warned:timer.warned})); }
+const hhmm = t => { const d = new Date(t); return pad(d.getHours()) + ":" + pad(d.getMinutes()); };
+function tick(){
+  if (!timer.running) return;
+  const now = Date.now();
+  // Recupera o tempo que passou com o app fechado (pode pular etapas inteiras)
+  while (timer.running && now >= timer.endAt){ nextBlock(true); }
+  if (!timer.running) return;
+  timer.left = Math.max(0, Math.ceil((timer.endAt - now) / 1000));
+  if (timer.left <= 60 && timer.warned !== timer.idx){ timer.warned = timer.idx; warnOneMin(); persistTimer(); }
+  renderSteps();
+}
+/* ---------- Avisos: som, vibração e notificação ---------- */
+let actx = null;
+function chime(n){
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === "suspended") actx.resume();
+    for (let i = 0; i < (n || 2); i++){
+      const t = actx.currentTime + i * 0.28, o = actx.createOscillator(), g = actx.createGain();
+      o.type = "sine"; o.frequency.value = i % 2 ? 880 : 660;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.25, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 0.65);
+    }
+  } catch(e){}
+}
+function buzz(p){ try { navigator.vibrate && navigator.vibrate(p); } catch(e){} }
+let swReg = null;
+if ("serviceWorker" in navigator && location.protocol === "https:"){
+  navigator.serviceWorker.register("sw.js").then(r => swReg = r).catch(() => {});
+}
+async function askNotify(){
+  try { if ("Notification" in window && Notification.permission === "default") await Notification.requestPermission(); } catch(e){}
+}
+function canNotify(){ return swReg && "Notification" in window && Notification.permission === "granted"; }
+function notify(title, body, opts){
+  if (!canNotify()) return;
+  swReg.showNotification(title, Object.assign({body, icon:"icon.svg", badge:"icon.svg", tag:"altar-timer", renotify:false, silent:true, requireInteraction:true, data:{url:location.href}}, opts || {})).catch(() => {});
+}
+function clearNotify(){ if (!swReg) return; swReg.getNotifications({tag:"altar-timer"}).then(ns => ns.forEach(n => n.close())).catch(() => {}); }
+function ongoingNotify(){
+  if (!timer.running || timer.idx >= BLOCOS.length) return;
+  const blk = BLOCOS[timer.idx];
+  let fim = timer.endAt; for (let i = timer.idx + 1; i < BLOCOS.length; i++) fim += BLOCOS[i].min * 60000;
+  notify("Sua hora com Deus · " + blk.n, "Etapa " + (timer.idx + 1) + "/4 termina às " + hhmm(timer.endAt) + " · tudo termina às " + hhmm(fim) + ". Toque para voltar.");
+}
+function warnOneMin(){
+  const blk = BLOCOS[timer.idx], last = timer.idx === BLOCOS.length - 1;
+  const msg = "Falta 1 min para terminar " + blk.n + (last ? " e sua hora com Deus." : ".");
+  toast(msg); buzz([200, 120, 200]); if (!document.hidden) chime(2);
+  notify("Falta 1 minuto", msg, {silent:false, renotify:true, vibrate:[200, 120, 200]});
+  setTimeout(ongoingNotify, 8000);
+}
 function buildSteps(){
   const box = $("steps");
   BLOCOS.forEach((b, i) => {
@@ -1058,24 +1117,51 @@ function setBlock(k, v){
   saveDoc(pPath(state.day), {blocos, dia: state.day});
   renderSteps();
 }
-function nextBlock(){
+function nextBlock(auto){
   if (timer.idx < BLOCOS.length){ setBlock(BLOCOS[timer.idx].k, true); toast(BLOCOS[timer.idx].n + " concluída"); }
+  const prevEnd = timer.endAt;
   timer.idx++;
-  if (timer.idx >= BLOCOS.length){ stopTimer(); timer.left = 0; burst($("tRing")); toast("Sua hora com Deus terminou. Agora é só concluir o dia."); }
-  else timer.left = BLOCOS[timer.idx].min*60;
+  if (timer.idx >= BLOCOS.length){
+    stopTimer(); timer.left = 0; timer.endAt = 0; burst($("tRing"));
+    toast("Sua hora com Deus terminou. Agora é só concluir o dia.");
+    buzz([300, 150, 300, 150, 300]); if (!document.hidden) chime(4);
+    notify("Sua hora com Deus terminou", "Volte ao app para concluir o dia.", {silent:false, renotify:true, requireInteraction:false});
+  } else {
+    timer.left = BLOCOS[timer.idx].min*60;
+    if (timer.running){
+      // Automático: a próxima etapa começa quando a anterior acabou. Pulando: começa agora.
+      timer.endAt = (auto && prevEnd ? prevEnd : Date.now()) + timer.left * 1000;
+      timer.left = Math.max(0, Math.ceil((timer.endAt - Date.now()) / 1000));
+      if (auto){ buzz([150, 100, 150]); if (!document.hidden) chime(2); }
+      ongoingNotify();
+    }
+  }
   persistTimer(); renderSteps();
+}
+async function lockScreen(){ try { if (navigator.wakeLock && !document.hidden) timer.lock = await navigator.wakeLock.request("screen"); } catch(e){} }
+function resumeTimer(){
+  timer.running = true;
+  clearInterval(timer.h); timer.h = setInterval(tick, 1000);
+  lockScreen(); tick(); ongoingNotify(); renderHero();
 }
 async function startTimer(){
   if (timer.running || timer.idx >= BLOCOS.length) return;
-  timer.running = true;
-  try { if (navigator.wakeLock) timer.lock = await navigator.wakeLock.request("screen"); } catch(e){}
-  timer.h = setInterval(() => { timer.left--; if (timer.left <= 0) nextBlock(); else { if (timer.left % 10 === 0) persistTimer(); renderSteps(); } }, 1000);
-  renderSteps(); renderHero();
+  askNotify().then(ongoingNotify);
+  try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); actx.resume(); } catch(e){}
+  timer.endAt = Date.now() + timer.left * 1000;
+  if (timer.left > 60 && timer.warned === timer.idx) timer.warned = -1;
+  resumeTimer(); persistTimer();
 }
-function stopTimer(){ timer.running = false; clearInterval(timer.h); try { timer.lock && timer.lock.release(); } catch(e){} timer.lock = null; persistTimer(); renderSteps(); renderHero(); }
+function stopTimer(){
+  if (timer.running && timer.endAt) timer.left = Math.max(0, Math.ceil((timer.endAt - Date.now()) / 1000));
+  timer.running = false; clearInterval(timer.h);
+  try { timer.lock && timer.lock.release(); } catch(e){} timer.lock = null;
+  clearNotify(); persistTimer(); renderSteps(); renderHero();
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden && timer.running){ tick(); lockScreen(); } });
 $("tStart").onclick = () => timer.running ? stopTimer() : startTimer();
-$("tSkip").onclick = () => { if (timer.idx < BLOCOS.length) nextBlock(); };
-$("tReset").onclick = () => { stopTimer(); timer.idx = 0; timer.left = BLOCOS[0].min*60; persistTimer(); renderSteps(); };
+$("tSkip").onclick = () => { if (timer.idx < BLOCOS.length) nextBlock(false); };
+$("tReset").onclick = () => { stopTimer(); timer.idx = 0; timer.left = BLOCOS[0].min*60; timer.endAt = 0; timer.warned = -1; persistTimer(); renderSteps(); };
 
 /* ================= ABA NÓS DOIS ================= */
 function buildSeg(){
