@@ -298,6 +298,28 @@ nav.tabbar button.on{color:var(--ink)} nav.tabbar button.on svg{transform:transl
 .link-card .tx{min-width:0;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
 .link-card .tx b{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .link-card .tx span{word-break:break-all;color:var(--ink);font-weight:600}
+#tab-nos.sem-casal > :not(#casalSetup){display:none!important}
+.cs-card{display:flex;flex-direction:column;gap:12px}
+.cs-card[hidden]{display:none!important}
+.cs-t{font-family:var(--serif);font-weight:600;font-size:28px;line-height:1.1;margin:0}
+.cs-p{margin:0;color:var(--muted);font-size:14.5px}
+.cs-or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.2em}
+.cs-or::before,.cs-or::after{content:"";flex:1;height:1px;background:var(--line)}
+.cs-join{display:flex;gap:8px;align-items:stretch}
+.cs-join input{flex:1;min-width:0;font:15px/1.5 var(--sans);color:var(--ink);background:var(--surface-2);border:1px solid transparent;border-radius:14px;padding:12px 14px}
+#csCode{text-transform:uppercase;letter-spacing:.2em;font-weight:700}
+.cs-code{font:800 28px/1 var(--sans);letter-spacing:.28em;color:var(--ink);margin:6px 0 4px}
+.cs-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.cs-row .btn{padding:10px 14px;text-decoration:none;font-size:13.5px}
+#sheetExtra{display:flex;flex-direction:column;gap:12px}
+#sheetExtra[hidden]{display:none!important}
+#sheetExtra .f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:var(--muted)}
+.adm{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:14px}
+.adm-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.adm-row b{display:block;font-size:14px}
+.adm-row span{font-size:12.5px;color:var(--muted);word-break:break-all}
+.adm-row .btn{padding:8px 12px;font-size:13px;flex:none}
+.adm .hint{margin:0;color:var(--muted);font-size:13px}
 #reqAccess{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
 #reqAccess[hidden]{display:none!important}
 .acc-req{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--gold-soft);border:1.5px solid var(--gold);border-radius:18px;padding:14px 16px}
@@ -371,6 +393,7 @@ details.edit[open] summary{margin-bottom:10px}
       </div>
       <button class="btn block" id="saveNames" type="button" style="margin-top:10px">Salvar nomes</button>
     </details>
+    <div id="sheetExtra" hidden></div>
     <button class="btn" id="sheetClose" type="button">Fechar</button>
     <div class="acct" id="acct" hidden></div>
   </div>
@@ -453,6 +476,7 @@ details.edit[open] summary{margin-bottom:10px}
 
   <!-- ================= NÓS DOIS ================= -->
   <section class="view" id="tab-nos" hidden>
+    <div class="card cs-card" id="casalSetup" hidden></div>
     <div class="link-card" id="linkCard" hidden></div>
     <div class="hero couple" aria-live="polite">
       <div>
@@ -505,7 +529,7 @@ details.edit[open] summary{margin-bottom:10px}
         <button class="btn pri" type="submit" aria-label="Adicionar pedido"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
       </form>
     </section>
-    <div class="note" id="localNote" hidden>Modo sem login: tudo fica salvo só neste aparelho. Entre com sua conta (no seu perfil, canto de cima) para salvar na nuvem e dividir a aba "Nós dois".</div>
+    <div class="note" id="localNote" hidden>Sem conexão com a conta: o que você fizer agora fica salvo só neste aparelho.</div>
   </section>
 
   <!-- ================= JORNADA ================= -->
@@ -797,9 +821,15 @@ const state = { tab:"eu", day:clampDay(T), week:weekOf(clampDay(T)), uid:null, d
   personal:{}, shared:{}, revisoes:{}, pedidos:[], names:{}, avatars:{}, profiles:{}, profilesLoaded:false, sheetAsked:false };
 
 /* ================= PERFIL ================= */
-const DEFAULT_NOMES = ["Kaique", "Evelyn"];
-const coupleNames = () => { const n = (state.shared.config || {}).nomes; return Array.isArray(n) && n.length === 2 && n[0] && n[1] ? n : DEFAULT_NOMES; };
-const myName = () => (state.profiles[state.uid] || {}).nome || "";
+const DEFAULT_NOMES = ["Você", "Seu par"];
+const myName = () => (state.profiles[state.uid] || {}).nome || (typeof ME !== "undefined" && ME && ME.nome) || "";
+const coupleNames = () => {
+  const n = (state.shared.config || {}).nomes;
+  if (Array.isArray(n) && n.length === 2 && n[0] && n[1]) return n;
+  const c = state.casal;
+  if (c && (c.membros || []).length === 2) return c.membros.map(i => (c.nomes || {})[i] || "—");
+  return [myName() || DEFAULT_NOMES[0], DEFAULT_NOMES[1]];
+};
 function greeting(){ const h = new Date().getHours(); return h < 5 ? "Boa noite" : h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite"; }
 function renderIdentity(){
   const me = myName(), [a, b] = coupleNames();
@@ -820,6 +850,13 @@ function openSheet(){
   $("sheetHint").textContent = state.local ? "Escolha uma vez. Sem login, seu nome fica salvo só neste aparelho."
     : "Escolha uma vez. Seu nome fica salvo na nuvem, na sua conta, e aparece sempre que você abrir o app, em qualquer aparelho.";
   const dis = !state.uid; grid.querySelectorAll("button").forEach(x => x.disabled = dis); $("saveNames").disabled = dis;
+  const cloud = !state.local && !!fb.fs && !!ME;
+  grid.hidden = cloud; document.querySelector("#sheet details.edit").hidden = cloud;
+  if (cloud){
+    $("sheetTitle").textContent = myName() ? "Olá, " + myName() : "Seu perfil";
+    $("sheetHint").textContent = state.casalId ? "Sua área pessoal é só sua. A aba Nós dois é dividida com seu par." : "Sua área pessoal é só sua. Na aba Nós dois você pode criar a página do casal.";
+  }
+  renderSheetExtra();
   $("sheet").hidden = false;
 }
 function closeSheet(){ $("sheet").hidden = true; }
@@ -1228,7 +1265,8 @@ function subscribe(db, uid){
 }
 
 /* ================= CONTA E NUVEM (Firebase) ================= */
-// Mesmo projeto Firebase do Rendy, Forja e B-Fight. Dados do app ficam em "altar_casais".
+// Mesmo projeto Firebase do Rendy, Forja e B-Fight.
+// altar/{uid}: cadastro e liberação · altar_u/{uid}: área pessoal · altar_casais/{id}: página do casal · altar_codigos/{código}
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBpl5GkIkQOtriiTyI0N5bsevM0E71hqq4",
   authDomain: "forja-f7ca8.firebaseapp.com",
@@ -1237,8 +1275,13 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "1011302668862",
   appId: "1:1011302668862:web:66c33e3c5f1579581e8f6f"
 };
+const ADMIN_EMAILS = ["belarminokaique581@gmail.com"];
+const WHATSAPP = "5524992060655";
+const isAdmin = em => ADMIN_EMAILS.includes((em || "").toLowerCase());
 const fb = {};
+var ME = null, signupNome = "", started = false;
 const LOGO = '<img src="icon.svg" alt="">';
+const esc = t => String(t == null ? "" : t).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function errMsg(x){
   const c = (x && x.code) || "";
   if (c.includes("invalid-credential") || c.includes("wrong-password") || c.includes("user-not-found")) return "E-mail ou senha incorretos.";
@@ -1246,35 +1289,39 @@ function errMsg(x){
   if (c.includes("invalid-email")) return "E-mail inválido.";
   if (c.includes("weak-password")) return "A senha precisa de pelo menos 6 caracteres.";
   if (c.includes("too-many-requests")) return "Muitas tentativas. Espere um pouco e tente de novo.";
-  if (c.includes("network")) return "Sem internet. Confira a conexão.";
-  if (c.includes("permission-denied")) return "Sem permissão no servidor. Avise o Kaique.";
+  if (c.includes("network") || c.includes("unavailable")) return "Sem internet. Confira a conexão.";
+  if (c.includes("permission-denied")) return "Sem permissão no servidor.";
   return "Não deu certo. Tente de novo.";
 }
 function authScreen(html){ $("authPanel").innerHTML = html; $("auth").hidden = false; }
 function hideAuth(){ $("auth").hidden = true; }
+function waLink(msg){ return "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); }
 
+/* ---------- Entrar / criar conta ---------- */
 function showLogin(tab){
   tab = tab || "in";
   authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">Altar a Dois</h2>
-      <p class="hint">Entre para salvar seu progresso na nuvem. Se trocar de celular, está tudo lá.</p></div>
+      <p class="hint">${tab === "up" ? "Crie sua conta. Depois que o acesso for liberado, é só entrar." : "Entre na sua conta. Seu progresso fica salvo em qualquer aparelho."}</p></div>
     <div class="a-tabs"><button type="button" data-t="in" class="${tab==="in"?"on":""}">Entrar</button><button type="button" data-t="up" class="${tab==="up"?"on":""}">Criar conta</button></div>
     <form id="aForm" novalidate>
+      ${tab === "up" ? '<input type="text" id="aNome" placeholder="Seu nome" maxlength="30" autocomplete="given-name" required>' : ""}
       <input type="email" id="aEmail" placeholder="Seu e-mail" autocomplete="email" required>
       <input type="password" id="aPass" placeholder="Senha${tab==="up"?" (mínimo 6)":""}" autocomplete="${tab==="up"?"new-password":"current-password"}" required>
       <p class="a-err" id="aErr"></p>
       <button class="btn pri block" type="submit" id="aGo">${tab==="up"?"Criar conta":"Entrar"}</button>
     </form>
-    ${tab==="in"?'<button class="a-link" type="button" id="aForgot">Esqueci a senha</button>':""}
-    <button class="a-link" type="button" id="aLocal">Usar sem login (salva só neste aparelho)</button>`);
+    ${tab==="in"?'<button class="a-link" type="button" id="aForgot">Esqueci a senha</button>':""}`);
   $("authPanel").querySelectorAll(".a-tabs button").forEach(b => b.onclick = () => showLogin(b.dataset.t));
   const err = $("aErr");
   $("aForm").onsubmit = async e => {
     e.preventDefault();
     const em = $("aEmail").value.trim().toLowerCase(), pw = $("aPass").value;
+    const nome = tab === "up" ? $("aNome").value.trim() : "";
+    if (tab === "up" && !nome){ err.className = "a-err"; err.textContent = "Digite seu nome."; return; }
     if (!em || !pw){ err.className = "a-err"; err.textContent = "Preencha e-mail e senha."; return; }
     $("aGo").disabled = true; err.className = "a-err"; err.textContent = "";
     try {
-      if (tab === "up") await fb.auth.createUserWithEmailAndPassword(em, pw);
+      if (tab === "up"){ signupNome = nome; await fb.auth.createUserWithEmailAndPassword(em, pw); }
       else await fb.auth.signInWithEmailAndPassword(em, pw);
     } catch(x){ err.textContent = errMsg(x); $("aGo").disabled = false; }
   };
@@ -1284,141 +1331,263 @@ function showLogin(tab){
     try { await fb.auth.sendPasswordResetEmail(em); err.className = "a-err ok"; err.textContent = "Enviamos um link de nova senha para " + em + ". Veja também o spam."; }
     catch(x){ err.className = "a-err"; err.textContent = errMsg(x); }
   };
-  $("aLocal").onclick = () => { store("altar-modo", "local"); hideAuth(); startLocal(); };
 }
 
-const ADMIN_EMAILS = ["belarminokaique581@gmail.com"];
-const isAdmin = em => ADMIN_EMAILS.includes((em || "").toLowerCase());
-let waitUnsub = null;
-
-// Quem pede acesso: fica aguardando o Kaique liberar
-function showRequest(u, pedido){
-  const em = (u.email || "").toLowerCase();
-  if (pedido){
-    authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">Aguardando liberação</h2>
-        <p class="hint">Seu pedido foi enviado. Assim que for liberado, o app abre sozinho.</p></div>
-      <button class="btn block" type="button" id="wRetry">Verificar de novo</button>
-      <button class="a-link" type="button" id="wOut">Sair (${em})</button>`);
-    $("wRetry").onclick = () => connect(u); $("wOut").onclick = logout;
-  } else {
-    authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">Pedir acesso</h2>
-        <p class="hint">Peça para entrar no espaço do casal. Seu par recebe o pedido no app e libera.</p></div>
-      <form id="rForm" novalidate>
-        <input type="text" id="rNome" placeholder="Seu nome" maxlength="30" autocomplete="given-name">
-        <p class="a-err" id="rErr"></p>
-        <button class="btn pri block" type="submit" id="rGo">Pedir acesso</button>
-      </form>
-      <button class="a-link" type="button" id="wOut">Sair (${em})</button>`);
-    $("wOut").onclick = logout;
-    $("rForm").onsubmit = async e => {
-      e.preventDefault();
-      const nome = $("rNome").value.trim();
-      if (!nome){ $("rErr").textContent = "Digite seu nome."; return; }
-      $("rGo").disabled = true;
-      try { await fb.fs.doc("altar_pedidos/" + u.uid).set({email:em, nome, criado:Date.now()}); showRequest(u, true); }
-      catch(x){ $("rErr").textContent = errMsg(x); $("rGo").disabled = false; }
-    };
-  }
-  // Entra sozinho quando for liberado
-  if (!waitUnsub) waitUnsub = fb.fs.doc("altar_convites/" + em).onSnapshot(d => {
-    if (d.exists && d.data().casal){ waitUnsub(); waitUnsub = null; startCloud(u, d.data().casal); }
-  }, () => {});
+/* ---------- Liberação de acesso ---------- */
+function showComplete(u){
+  authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">Quase lá</h2>
+      <p class="hint">Como você quer ser chamado(a) no app?</p></div>
+    <form id="cForm" novalidate>
+      <input type="text" id="cNome" placeholder="Seu nome" maxlength="30" autocomplete="given-name">
+      <p class="a-err" id="cErr"></p>
+      <button class="btn pri block" type="submit" id="cGo">Pedir acesso</button>
+    </form>
+    <button class="a-link" type="button" id="cOut">Sair (${esc(u.email)})</button>`);
+  $("cOut").onclick = logout;
+  $("cForm").onsubmit = async e => {
+    e.preventDefault();
+    const nome = $("cNome").value.trim(); if (!nome){ $("cErr").textContent = "Digite seu nome."; return; }
+    $("cGo").disabled = true;
+    try { await fb.fs.doc("altar/" + u.uid).set({email:(u.email||"").toLowerCase(), nome, aprovado:false, recusado:false, criado:Date.now()}); watchMe(u); }
+    catch(x){ $("cErr").textContent = errMsg(x); $("cGo").disabled = false; }
+  };
+}
+function showWaiting(u, refused){
+  const nome = (ME && ME.nome) || "";
+  const msg = refused ? `Oi! Sou ${nome} (${u.email}) e queria acesso ao Altar a Dois.` : `Oi! Sou ${nome} (${u.email}) e acabei de criar minha conta no Altar a Dois. Pode liberar meu acesso?`;
+  authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">${refused ? "Acesso não liberado" : "Aguardando liberação"}</h2>
+      <p class="hint">${refused ? "Seu acesso não foi liberado. Fale com a gente pelo WhatsApp." : "Sua conta foi criada. Assim que o acesso for liberado, o app abre sozinho."}</p></div>
+    <a class="btn pri block" id="wWa" href="${waLink(msg)}" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">Falar no WhatsApp</a>
+    <button class="a-link" type="button" id="wOut">Sair (${esc(u.email)})</button>`);
+  $("wOut").onclick = logout;
+}
+function showError(u, x){
+  authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">Não conectou</h2><p class="hint">${esc(errMsg(x))}</p></div>
+    <button class="btn pri block" type="button" id="rTry">Tentar de novo</button><button class="a-link" type="button" id="rOut">Sair</button>`);
+  $("rTry").onclick = () => connect(u); $("rOut").onclick = logout;
 }
 
 async function connect(u){
   setSync("busy", "Carregando");
   const em = (u.email || "").toLowerCase();
   try {
-    const inv = await fb.fs.doc("altar_convites/" + em).get();
-    if (inv.exists && inv.data().casal){ startCloud(u, inv.data().casal); return; }
-    if (isAdmin(em)){
-      // Kaique: cria o espaço do casal na hora
-      const ref = fb.fs.collection("altar_casais").doc();
-      const batch = fb.fs.batch();
-      batch.set(ref, {membros:[em], dono:em, criado:Date.now()});
-      batch.set(fb.fs.doc("altar_convites/" + em), {casal:ref.id});
-      await batch.commit();
-      startCloud(u, ref.id); return;
+    const ref = fb.fs.doc("altar/" + u.uid);
+    const d = await ref.get();
+    if (!d.exists){
+      if (isAdmin(em)) await ref.set({email:em, nome:signupNome || "Kaique", aprovado:true, recusado:false, criado:Date.now()});
+      else if (signupNome) await ref.set({email:em, nome:signupNome, aprovado:false, recusado:false, criado:Date.now()});
+      else { showComplete(u); return; }
     }
-    const ped = await fb.fs.doc("altar_pedidos/" + u.uid).get();
-    showRequest(u, ped.exists);
-  } catch(x){
-    authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">Não conectou</h2><p class="hint">${errMsg(x)}</p></div>
-      <button class="btn pri block" type="button" id="rTry">Tentar de novo</button><button class="a-link" type="button" id="rOut">Sair</button>`);
-    $("rTry").onclick = () => connect(u); $("rOut").onclick = logout;
-  }
+    watchMe(u);
+  } catch(x){ showError(u, x); }
+}
+let meUnsub = null;
+function watchMe(u){
+  if (meUnsub) meUnsub();
+  meUnsub = fb.fs.doc("altar/" + u.uid).onSnapshot(d => {
+    if (!d.exists){ showComplete(u); return; }
+    ME = Object.assign({}, d.data());
+    const ok = isAdmin(u.email) || ME.aprovado === true;
+    if (!ok){ if (started){ location.reload(); return; } showWaiting(u, ME.recusado === true); return; }
+    if (!started){ startCloud(u); return; }
+    if ((state.casalId || null) !== (ME.casal || null)){ location.reload(); return; }
+    renderIdentity(); renderNos();
+  }, x => showError(u, x));
 }
 
-// Mostra o vínculo do casal (os dois e-mails) na aba Nós dois
-function watchLink(cid){
-  fb.fs.doc("altar_casais/" + cid).onSnapshot(d => {
-    const c = $("linkCard"); if (!d.exists){ c.hidden = true; return; }
-    const m = d.data().membros || []; c.textContent = "";
-    const ic = el("div", {class:"ic"}); ic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>';
-    const tx = el("div", {class:"tx"}, el("b", {text: m.length >= 2 ? "Casal vinculado" : "Aguardando seu par"}));
-    m.forEach(e => tx.append(el("span", {text:e})));
-    if (m.length < 2) tx.append(document.createTextNode("Peça para seu par criar a conta e pedir acesso."));
-    c.append(ic, tx); c.hidden = false;
-  }, () => {});
+/* ---------- Dados: área pessoal + página do casal ---------- */
+function cloudDB(uid, cid){
+  const route = p => p.startsWith("data/") ? "altar_u/" + uid + "/" + p : (cid ? "altar_casais/" + cid + "/" + p : null);
+  const noopDoc = p => ({ id:p.split("/").pop(), set: async () => {}, delete: async () => {}, get: async () => ({exists:false}) });
+  return {
+    doc: p => { const r = route(p); return r ? fb.fs.doc(r) : noopDoc(p); },
+    collection: c => { const r = route(c); return r ? fb.fs.collection(r) : { doc: () => ({id:"x" + Date.now().toString(36)}), onSnapshot: () => () => {} }; }
+  };
 }
 
-// Kaique vê os pedidos e libera
-function watchRequests(cid){
-  fb.fs.collection("altar_pedidos").onSnapshot(snap => {
-    const box = $("reqAccess"); box.textContent = "";
-    snap.docs.forEach(d => {
-      const p = d.data();
-      const ok = el("button", {type:"button", class:"btn pri", text:"Liberar"});
-      const no = el("button", {type:"button", class:"btn", text:"Recusar"});
-      ok.onclick = async () => {
-        ok.disabled = no.disabled = true;
-        try {
-          const batch = fb.fs.batch();
-          batch.update(fb.fs.doc("altar_casais/" + cid), {membros: firebase.firestore.FieldValue.arrayUnion(p.email)});
-          batch.set(fb.fs.doc("altar_convites/" + p.email), {casal:cid});
-          batch.delete(d.ref);
-          await batch.commit(); toast((p.nome || p.email) + " entrou no espaço do casal.");
-        } catch(x){ toast(errMsg(x)); ok.disabled = no.disabled = false; }
-      };
-      no.onclick = async () => { try { await d.ref.delete(); } catch(x){ toast(errMsg(x)); } };
-      box.append(el("div", {class:"acc-req"},
-        el("div", {}, el("b", {text:(p.nome || "Alguém") + " quer entrar"}), el("span", {text:p.email})),
-        el("div", {class:"acc-btns"}, no, ok)));
-    });
-    box.hidden = !snap.size;
-  }, () => {});
-}
-
-function cloudDB(cid){
-  const P = p => "altar_casais/" + cid + "/" + p;
-  return { doc: p => fb.fs.doc(P(p)), collection: c => fb.fs.collection(P(c)) };
-}
-
-// Leva o que já foi feito sem login (neste aparelho) para a conta, uma vez só.
+// Leva o progresso feito sem login (neste aparelho) para a conta, uma vez só.
 async function migrateLocal(uid){
   let data = {};
   try { data = JSON.parse(localStorage.getItem("permanecer-db") || "{}"); } catch(e){}
-  const paths = Object.keys(data); if (!paths.length || store("altar-migrado-" + uid)) return;
-  const fix = v => JSON.parse(JSON.stringify(v), (k, x) => x === "local" ? uid : x);
+  const paths = Object.keys(data).filter(p => p.startsWith("data/users/local/"));
+  if (!paths.length || store("altar-migrado-" + uid)) return;
   for (const p of paths){
-    const np = p.replace(/(^|[\/_])local(?=$|\/)/g, "$1" + uid);
-    try { const ref = state.db.doc(np); const cur = await ref.get(); if (!cur.exists) await ref.set(fix(data[p])); } catch(e){}
+    try { const ref = state.db.doc(p.replace("/local/", "/" + uid + "/")); const cur = await ref.get(); if (!cur.exists) await ref.set(data[p]); } catch(e){}
   }
   store("altar-migrado-" + uid, "1");
 }
 
-let started = false;
-async function startCloud(u, cid){
+async function startCloud(u){
   if (started) return; started = true;
   hideAuth();
-  state.local = false; state.db = cloudDB(cid); state.uid = u.uid; state.email = u.email;
+  state.local = false; state.uid = u.uid; state.email = u.email; state.casalId = ME.casal || null;
+  state.db = cloudDB(u.uid, state.casalId);
   $("localNote").hidden = true; setSync("busy", "Carregando");
-  renderAcct(); renderEu(); renderNos();
+  renderAcct(); renderCasal(); renderIdentity(); renderEu(); renderNos();
   await migrateLocal(u.uid);
   subscribe(state.db, state.uid);
-  if (isAdmin(u.email)) watchRequests(cid);
-  watchLink(cid);
+  if (state.casalId) watchCasal(state.casalId);
+  if (isAdmin(u.email)) watchAdmin();
 }
+
+/* ---------- Página do casal (código) ---------- */
+const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const genCode = () => Array.from({length:6}, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join("");
+function watchCasal(cid){
+  let first = true;
+  fb.fs.doc("altar_casais/" + cid).onSnapshot(d => {
+    if (!d.exists || !(d.data().membros || []).includes(state.uid)){
+      // Saiu ou foi desvinculado: limpa o vínculo
+      fb.fs.doc("altar/" + state.uid).update({casal: firebase.firestore.FieldValue.delete()}).catch(() => {});
+      return;
+    }
+    state.casal = d.data();
+    if (first){ first = false; if (!(state.profiles[state.uid] || {}).nome) saveDoc("perfis/" + state.uid, {nome: myName()}); }
+    renderCasal(); renderIdentity(); renderNos();
+  }, () => {});
+}
+function renderCasal(){
+  const tab = $("tab-nos"), setup = $("casalSetup"), card = $("linkCard");
+  if (state.local || !fb.fs){ setup.hidden = true; card.hidden = true; tab.classList.remove("sem-casal"); return; }
+  if (!state.casalId){
+    tab.classList.add("sem-casal"); card.hidden = true; setup.hidden = false;
+    setup.innerHTML = `<span class="kicker">Página do casal</span>
+      <h2 class="cs-t">Façam o devocional a dois juntos</h2>
+      <p class="cs-p">Crie a página do casal e mande o código para seu par. Ou digite o código que seu par te mandou. Só vocês dois entram.</p>
+      <button class="btn pri block" type="button" id="csCreate">Criar página do casal</button>
+      <div class="cs-or"><span>ou</span></div>
+      <form class="cs-join" id="csJoin" novalidate>
+        <input type="text" id="csCode" placeholder="Código do seu par" maxlength="8" autocomplete="off" autocapitalize="characters">
+        <button class="btn" type="submit" id="csGo">Entrar</button>
+      </form>
+      <p class="a-err" id="csErr"></p>`;
+    $("csCreate").onclick = createCasal;
+    $("csJoin").onsubmit = e => { e.preventDefault(); joinCasal($("csCode").value); };
+    return;
+  }
+  tab.classList.remove("sem-casal"); setup.hidden = true;
+  const c = state.casal; if (!c){ card.hidden = true; return; }
+  const m = c.membros || [], nomes = c.nomes || {};
+  card.textContent = "";
+  const ic = el("div", {class:"ic"}); ic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>';
+  const tx = el("div", {class:"tx"});
+  if (m.length >= 2){
+    tx.append(el("b", {text:"Casal vinculado"}), el("span", {text: m.map(i => nomes[i] || "—").join(" & ")}));
+  } else {
+    tx.append(el("b", {text:"Aguardando seu par"}), document.createTextNode("Mande este código para seu par entrar:"));
+    const code = el("div", {class:"cs-code", text:c.codigo || ""});
+    const row = el("div", {class:"cs-row"});
+    const cp = el("button", {type:"button", class:"btn", text:"Copiar"});
+    cp.onclick = async () => { try { await navigator.clipboard.writeText(c.codigo); toast("Código copiado."); } catch(e){ toast("Código: " + c.codigo); } };
+    const wa = el("a", {class:"btn pri", text:"Enviar no WhatsApp", href:"https://wa.me/?text=" + encodeURIComponent("Vamos fazer o Altar a Dois juntos? Entra no app, vai em \"Nós dois\" e digita o código " + c.codigo + "\nhttps://belarminoagency.github.io/altar-a-dois/"), target:"_blank", rel:"noopener"});
+    row.append(cp, wa); tx.append(code, row);
+  }
+  card.append(ic, tx); card.hidden = false;
+}
+async function createCasal(){
+  const b0 = $("csCreate"); b0.disabled = true;
+  for (let i = 0; i < 5; i++){
+    const cref = fb.fs.collection("altar_casais").doc(), code = genCode();
+    try {
+      const b = fb.fs.batch();
+      b.set(cref, {membros:[state.uid], nomes:{[state.uid]: myName()}, codigo:code, criado:Date.now()});
+      b.set(fb.fs.doc("altar_codigos/" + code), {casal:cref.id, dono:state.uid});
+      b.update(fb.fs.doc("altar/" + state.uid), {casal:cref.id});
+      await b.commit(); return; // watchMe recarrega com a página do casal
+    } catch(x){ if (i === 4){ $("csErr").textContent = errMsg(x); b0.disabled = false; } }
+  }
+}
+async function joinCasal(raw){
+  const code = String(raw || "").toUpperCase().replace(/[^A-Z0-9]/g, ""), err = $("csErr");
+  if (code.length < 6){ err.textContent = "Digite o código de 6 letras e números."; return; }
+  $("csGo").disabled = true; err.textContent = "";
+  try {
+    const c = await fb.fs.doc("altar_codigos/" + code).get();
+    if (!c.exists){ err.textContent = "Código não encontrado. Confira com seu par."; $("csGo").disabled = false; return; }
+    const cid = c.data().casal, b = fb.fs.batch();
+    b.update(fb.fs.doc("altar_casais/" + cid), {membros: firebase.firestore.FieldValue.arrayUnion(state.uid), ["nomes." + state.uid]: myName()});
+    b.update(fb.fs.doc("altar/" + state.uid), {casal:cid});
+    await b.commit();
+  } catch(x){
+    err.textContent = (x && String(x.code).includes("permission")) ? "Essa página de casal já tem duas pessoas." : errMsg(x);
+    $("csGo").disabled = false;
+  }
+}
+async function leaveCasal(){
+  if (!state.casalId || !confirmLeave()) return;
+  try {
+    const b = fb.fs.batch();
+    b.update(fb.fs.doc("altar_casais/" + state.casalId), {membros: firebase.firestore.FieldValue.arrayRemove(state.uid)});
+    b.update(fb.fs.doc("altar/" + state.uid), {casal: firebase.firestore.FieldValue.delete()});
+    await b.commit();
+  } catch(x){ toast(errMsg(x)); }
+}
+let leaveArmed = 0;
+function confirmLeave(){ if (Date.now() - leaveArmed < 4000) return true; leaveArmed = Date.now(); toast("Toque de novo para sair da página do casal."); return false; }
+
+/* ---------- Painel do Kaique: liberar acessos ---------- */
+let adminUsers = [];
+function watchAdmin(){
+  fb.fs.collection("altar").onSnapshot(snap => {
+    adminUsers = snap.docs.map(d => Object.assign({id:d.id}, d.data())).filter(x => !isAdmin(x.email)).sort((a, b) => (b.criado || 0) - (a.criado || 0));
+    const box = $("reqAccess"); box.textContent = "";
+    adminUsers.filter(x => !x.aprovado && !x.recusado).forEach(x => {
+      const ok = el("button", {type:"button", class:"btn pri", text:"Liberar"});
+      const no = el("button", {type:"button", class:"btn", text:"Recusar"});
+      ok.onclick = () => setAccess(x.id, true, ok, no);
+      no.onclick = () => setAccess(x.id, false, ok, no);
+      box.append(el("div", {class:"acc-req"},
+        el("div", {}, el("b", {text:(x.nome || "Alguém") + " quer acesso"}), el("span", {text:x.email})),
+        el("div", {class:"acc-btns"}, no, ok)));
+    });
+    box.hidden = !box.children.length;
+    if (!$("sheet").hidden) renderSheetExtra();
+  }, () => {});
+}
+async function setAccess(id, yes, ...btns){
+  btns.forEach(b => b && (b.disabled = true));
+  try { await fb.fs.doc("altar/" + id).update(yes ? {aprovado:true, recusado:false} : {aprovado:false, recusado:true}); toast(yes ? "Acesso liberado." : "Acesso bloqueado."); }
+  catch(x){ toast(errMsg(x)); btns.forEach(b => b && (b.disabled = false)); }
+}
+
+/* ---------- Perfil (conta, nome, casal, acessos) ---------- */
+function renderSheetExtra(){
+  const box = $("sheetExtra"); box.textContent = "";
+  if (state.local || !fb.fs || !ME) { box.hidden = true; return; }
+  box.hidden = false;
+  const inp = el("input", {type:"text", maxlength:"30", value: myName()}); inp.value = myName();
+  const sv = el("button", {type:"button", class:"btn", text:"Salvar"});
+  sv.onclick = async () => {
+    const n = inp.value.trim(); if (!n){ toast("Digite seu nome."); return; }
+    sv.disabled = true;
+    try {
+      await fb.fs.doc("altar/" + state.uid).update({nome:n});
+      if (state.casalId){
+        state.profiles[state.uid] = {nome:n}; saveDoc("perfis/" + state.uid, {nome:n});
+        await fb.fs.doc("altar_casais/" + state.casalId).update({["nomes." + state.uid]: n});
+      }
+      renderIdentity(); renderNos(); toast("Nome salvo.");
+    } catch(x){ toast(errMsg(x)); }
+    sv.disabled = false;
+  };
+  box.append(el("label", {class:"f"}, document.createTextNode("Seu nome"), el("div", {class:"cs-join"}, inp, sv)));
+  if (state.casalId){
+    const lv = el("button", {type:"button", class:"btn block", text:"Sair da página do casal"});
+    lv.onclick = leaveCasal; box.append(lv);
+  }
+  if (isAdmin(state.email)){
+    const list = el("div", {class:"adm"}, el("span", {class:"kicker", text:"Acessos (" + adminUsers.length + ")"}));
+    if (!adminUsers.length) list.append(el("p", {class:"hint", text:"Ninguém pediu acesso ainda."}));
+    adminUsers.forEach(x => {
+      const st = x.aprovado ? "Liberado" : x.recusado ? "Bloqueado" : "Aguardando";
+      const bt = el("button", {type:"button", class:"btn" + (x.aprovado ? "" : " pri"), text: x.aprovado ? "Bloquear" : "Liberar"});
+      bt.onclick = () => setAccess(x.id, !x.aprovado, bt);
+      list.append(el("div", {class:"adm-row"}, el("div", {}, el("b", {text:x.nome || "—"}), el("span", {text:x.email + " · " + st})), bt));
+    });
+    box.append(list);
+  }
+}
+
 function startLocal(){
   if (started) return; started = true;
   state.local = true; state.db = localDB(); state.uid = "local";
@@ -1428,16 +1597,10 @@ function startLocal(){
 async function logout(){ try { await fb.auth.signOut(); } catch(e){} location.reload(); }
 function renderAcct(){
   const a = $("acct"); a.hidden = false; a.textContent = "";
-  if (state.local){
-    a.append(el("span", {text:"Sem login: salvo só neste aparelho."}));
-    const b = el("button", {type:"button", class:"btn", text:"Entrar"});
-    b.onclick = () => { store("altar-modo", ""); location.reload(); };
-    a.append(b);
-  } else {
-    a.append(el("span", {}, document.createTextNode("Conta: "), el("b", {text:state.email || ""})));
-    const b = el("button", {type:"button", class:"btn", text:"Sair"});
-    b.onclick = logout; a.append(b);
-  }
+  if (state.local){ a.append(el("span", {text:"Salvo só neste aparelho."})); return; }
+  a.append(el("span", {}, document.createTextNode("Conta: "), el("b", {text:state.email || ""})));
+  const b = el("button", {type:"button", class:"btn", text:"Sair"});
+  b.onclick = logout; a.append(b);
 }
 
 (async () => {
@@ -1450,7 +1613,11 @@ function renderAcct(){
     renderEu(); renderNos();
     subscribe(db, uid); return;
   }
-  if (store("altar-modo") === "local" || !window.firebase){ startLocal(); return; }
+  if (!window.firebase){
+    authScreen(`<div class="a-top">${LOGO}<h2 id="authTitle">Sem conexão</h2><p class="hint">Não deu para carregar o app. Confira a internet e abra de novo.</p></div>
+      <button class="btn pri block" type="button" onclick="location.reload()">Tentar de novo</button>`);
+    return;
+  }
   try {
     firebase.initializeApp(FIREBASE_CONFIG);
     fb.auth = firebase.auth(); fb.fs = firebase.firestore();

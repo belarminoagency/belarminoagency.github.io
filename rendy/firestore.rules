@@ -53,36 +53,57 @@ service cloud.firestore {
       allow delete: if admin();
     }
 
-    // ALTAR A DOIS: espaço do casal. Só os dois e-mails do casal entram.
-    match /altar_convites/{email} {
-      allow read: if request.auth != null && request.auth.token.email == email;
-      allow create: if request.auth != null
-        && request.auth.token.email in getAfter(/databases/$(database)/documents/altar_casais/$(request.resource.data.casal)).data.membros
-        && email in getAfter(/databases/$(database)/documents/altar_casais/$(request.resource.data.casal)).data.membros;
-      allow update, delete: if admin();
+    // ALTAR A DOIS: cada pessoa pede acesso e o Kaique libera (igual Rendy)
+    function altarOk() {
+      return admin() || (request.auth != null
+        && get(/databases/$(database)/documents/altar/$(request.auth.uid)).data.aprovado == true);
     }
-    // Pedido de acesso: a pessoa pede, o Kaique (admin) libera ou recusa
-    match /altar_pedidos/{uid} {
+    match /altar/{uid} {
       allow read: if admin() || dono(uid);
-      allow create: if dono(uid) && request.resource.data.email == request.auth.token.email;
-      allow delete: if admin() || dono(uid);
+      allow create: if admin() || (dono(uid)
+        && request.resource.data.aprovado == false
+        && request.resource.data.recusado == false);
+      allow update: if admin() || (dono(uid)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['aprovado', 'recusado', 'email']));
+      allow delete: if admin();
     }
+    // Área pessoal: só o dono
+    match /altar_u/{uid}/{rest=**} {
+      allow read, write: if dono(uid) && altarOk();
+    }
+    // Código da página do casal: só pega quem sabe o código (não dá para listar)
+    match /altar_codigos/{code} {
+      allow get: if altarOk();
+      allow create: if altarOk() && request.resource.data.dono == request.auth.uid
+        && request.auth.uid in getAfter(/databases/$(database)/documents/altar_casais/$(request.resource.data.casal)).data.membros;
+      allow delete: if admin();
+    }
+    // Página do casal: no máximo 2 pessoas
     match /altar_casais/{cid} {
-      function membro() {
-        return request.auth != null && request.auth.token.email in
+      function membroC() {
+        return request.auth != null && request.auth.uid in
           get(/databases/$(database)/documents/altar_casais/$(cid)).data.membros;
       }
-      allow read: if request.auth != null && request.auth.token.email in resource.data.membros;
-      allow create: if request.auth != null
-        && request.resource.data.membros.size() == 1
-        && request.auth.token.email == request.resource.data.membros[0];
-      allow update, delete: if admin();
-      // Diário pessoal: só o dono lê e escreve
-      match /data/users/{uid}/{dia} {
-        allow read, write: if membro() && request.auth.uid == uid;
-      }
+      allow read: if request.auth != null && request.auth.uid in resource.data.membros;
+      allow create: if altarOk() && request.resource.data.membros == [request.auth.uid];
+      allow update: if altarOk()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['membros', 'nomes'])
+        && (
+          // entrar com o código (só se tiver 1 pessoa)
+          (resource.data.membros.size() == 1 && !(request.auth.uid in resource.data.membros)
+            && request.resource.data.membros.size() == 2
+            && request.auth.uid in request.resource.data.membros
+            && request.resource.data.membros.hasAll(resource.data.membros))
+          // sair da página
+          || (request.auth.uid in resource.data.membros && !(request.auth.uid in request.resource.data.membros)
+            && resource.data.membros.hasAll(request.resource.data.membros)
+            && request.resource.data.membros.size() == resource.data.membros.size() - 1)
+          // trocar o próprio nome
+          || (request.auth.uid in resource.data.membros && request.resource.data.membros == resource.data.membros)
+        );
+      allow delete: if admin();
       match /{area}/{doc} {
-        allow read, write: if membro() && area in ['casal', 'revisoes', 'perfis', 'pedidos'];
+        allow read, write: if membroC() && area in ['casal', 'revisoes', 'perfis', 'pedidos'];
       }
     }
   }

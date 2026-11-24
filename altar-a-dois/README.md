@@ -64,6 +64,9 @@ Os versículos foram adaptados em linguagem atual. Para a leitura completa, o ap
 
 > "Se não for o Senhor o construtor da casa, será inútil trabalhar na construção." (Salmo 127.1)
 
-## Login e nuvem
+## Login, acesso e página do casal
 
-No site (GitHub Pages), o app pede login com e-mail e senha no mesmo projeto Firebase do Rendy (`forja-f7ca8`). O Kaique entra e o espaço do casal é criado na hora. A outra pessoa cria a conta, pede acesso e o Kaique libera dentro do app. Os dados ficam em `altar_casais/{id}`, e o diário pessoal só pode ser lido pelo dono. As regras estão em `rendy/firestore.rules`, a cópia completa das regras do projeto. Também dá para usar sem login, mas aí fica salvo só no aparelho. O que já tinha sido feito sem login é levado para a conta no primeiro login.
+- **Acesso:** a pessoa cria a conta (nome, e-mail e senha) e fica em "Aguardando liberação", com um botão de WhatsApp. O Kaique libera no próprio app: o pedido aparece no topo da tela, e a lista completa fica no perfil, em Acessos. Mesmo Firebase do Rendy (`forja-f7ca8`).
+- **Área pessoal:** a aba Eu e o diário ficam em `altar_u/{uid}`. Só o dono lê.
+- **Página do casal (opcional):** na aba Nós dois, a pessoa cria a página e recebe um código de 6 letras e números. O par digita o código e entra. São no máximo 2 pessoas por página, e cada casal tem a sua. Dá para sair da página pelo perfil.
+- As regras estão em `rendy/firestore.rules`, a cópia completa das regras do projeto.
