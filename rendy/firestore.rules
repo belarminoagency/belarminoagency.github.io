@@ -106,5 +106,9 @@ service cloud.firestore {
         allow read, write: if membroC() && area in ['casal', 'revisoes', 'perfis', 'pedidos'];
       }
     }
-  }
+      // NORTE: diário e metas pessoal, só o Kaique lê e escreve
+    match /norte/{uid}/{rest=**} {
+      allow read, write: if dono(uid) && admin();
+    }
+}
 }

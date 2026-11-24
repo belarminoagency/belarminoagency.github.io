@@ -148,6 +148,7 @@ label{display:block;font-size:14px;color:var(--mut);margin:14px 0 6px;font-weigh
 .toast.on{transform:translate(-50%,0)}
 .burst{position:fixed;pointer-events:none;z-index:61;width:10px;height:10px;border-radius:3px;animation:burst .9s ease-out forwards}
 @keyframes burst{to{transform:translate(var(--x),var(--y)) rotate(320deg);opacity:0}}
+#gate{position:fixed;inset:0;z-index:48;background:linear-gradient(165deg,#1c2530,#0e1217);display:none;overflow:auto}#gate.on{display:block}.gin{max-width:420px;margin:0 auto;padding:max(48px,env(safe-area-inset-top)) 22px 40px;display:flex;flex-direction:column;gap:12px}.gin .err{color:#ff9b8f;font-size:14px;min-height:1em}.gin .okm{color:#8fdccf;font-size:14px}.lnk{color:var(--mut);text-decoration:underline;min-height:44px;font-weight:600}.sync{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);font-weight:700}.sync i{width:8px;height:8px;border-radius:50%;background:var(--mut)}.sync.on i{background:var(--ac)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -155,19 +156,23 @@ label{display:block;font-size:14px;color:var(--mut);margin:14px 0 6px;font-weigh
 <div id="splash" class="g-sun"><div class="ring"></div><div class="ring" style="animation-delay:1s"></div><svg class="star" viewBox="0 0 100 100"><path d="M50 4l9 37 37 9-37 9-9 37-9-37-37-9 37-9z" fill="#d4a24c"/><path d="M50 4l9 37 37 9-37 9z" fill="#f0cf8a"/></svg><h1>Norte</h1><p>Seu espaço. Seu caminho.</p></div>
 <div id="lock" class="g-ind"><svg width="60" height="60" viewBox="0 0 100 100"><path d="M50 4l9 37 37 9-37 9-9 37-9-37-37-9 37-9z" fill="#ffd27a"/></svg><h2 id="lockT" style="margin-top:14px">Bem-vindo de volta</h2><p id="lockS" style="opacity:.85;margin-top:6px">Digite seu PIN</p><div class="pin" id="pinDots"></div><div class="pad" id="pad"></div></div>
 
+<div id="gate"><div class="gin" id="gin"></div></div>
 <div class="app"><main id="view"></main></div>
 <div id="fabWrap"></div>
 <nav class="tabs" id="tabs"></nav>
 <div class="drawer-bg" id="dbg"></div><aside class="drawer" id="drawer"></aside>
 <div class="ov" id="ov"></div><div class="sheet" id="sheet"></div>
 <div class="toast" id="toast"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
 {
 const K='norte_v1';
 const DEF={pin:null,cats:['Geral','Relacionamento','Vida espiritual','Família','Trabalho','Ansiedade'],entries:[],goals:[],answers:{},missions:{},custom:[],points:0};
 let S;try{S=Object.assign(structuredClone(DEF),JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){S=structuredClone(DEF)}
-const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){};if(window.NORTE_push)NORTE_push()};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=id=>document.getElementById(id);
 const dk=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -256,7 +261,7 @@ function openDrawer(){$('drawer').innerHTML=`<div class="row" style="padding:4px
   <div style="height:1px;background:var(--line);margin:10px 8px"></div>
   <button class="dl" id="dBreath"><i class="g-sky">${ic('wind')}</i>Respira</button>
   <button class="dl" id="dCats"><i style="">${ic('tag')}</i>Categorias de desabafo</button>
-  <button class="dl" id="dCfg"><i style="">${ic('lock')}</i>PIN e backup</button>`;
+  <button class="dl" id="dCfg"><i style="">${ic('lock')}</i>PIN, backup e conta</button><p style="padding:14px 12px 0">${syncTag()}</p>`;
   $('drawer').classList.add('on');$('dbg').classList.add('on');
   $('dClose').onclick=closeDrawer;$('drawer').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
   $('dBreath').onclick=()=>{closeDrawer();breathSheet()};$('dCats').onclick=()=>{closeDrawer();catSheet()};$('dCfg').onclick=()=>{closeDrawer();cfgSheet()};}
@@ -354,12 +359,14 @@ function breathSheet(){
 
 function cfgSheet(){
   const standalone=window.top===window;
-  openSheet(`<div class="row"><h2 class="grow">PIN e backup</h2><button class="ib" style="background:var(--sf)" id="sx" aria-label="Fechar">${ic('x')}</button></div>
-  <div class="card" style="margin-top:14px;background:var(--sf)"><h3>PIN de acesso</h3><p class="mut" style="margin:4px 0 12px">${S.pin?'Seu app está protegido.':'Sem PIN: qualquer um com seu celular pode abrir.'}</p><div class="row"><button class="btn g-ind" id="sp">${S.pin?'Trocar PIN':'Criar PIN'}</button>${S.pin?'<button class="btn danger" id="sr">Remover</button>':''}</div></div>
+  openSheet(`<div class="row"><h2 class="grow">PIN, backup e conta</h2><button class="ib" style="background:var(--sf)" id="sx" aria-label="Fechar">${ic('x')}</button></div>
+  <div class="card" style="margin-top:14px;background:var(--sf)"><h3>Conta na nuvem</h3><p class="mut" style="margin:4px 0 12px">${CLOUD.user?'Conectado como '+esc(CLOUD.user.email)+'. Tudo fica salvo na nuvem e aparece em qualquer aparelho em que você entrar.':'Você está usando sem conta: os dados ficam só neste aparelho.'}</p><div class="row">${syncTag()}<span class="grow"></span>${CLOUD.user?'<button class="btn danger sm" id="sOut">Sair da conta</button>':(CLOUD.ok?'<button class="btn sm" id="sIn">Entrar</button>':'')}</div></div>
+  <div class="card" style="background:var(--sf)"><h3>PIN de acesso</h3><p class="mut" style="margin:4px 0 12px">${S.pin?'Seu app está protegido.':'Sem PIN: qualquer um com seu celular pode abrir.'}</p><div class="row"><button class="btn g-ind" id="sp">${S.pin?'Trocar PIN':'Criar PIN'}</button>${S.pin?'<button class="btn danger" id="sr">Remover</button>':''}</div></div>
   <div class="card" style="background:var(--sf)"><h3>Backup</h3><p class="mut" style="margin:4px 0 12px">Seus dados ficam só neste aparelho. Faça backup antes de trocar de celular ou limpar o navegador.</p>
   <div class="row">${standalone?'<button class="btn" id="se">Baixar backup</button>':''}<button class="btn soft" id="sc">Copiar backup</button></div>
   <label for="si">Restaurar de arquivo</label><input type="file" id="si" accept=".json,application/json">
   <label for="st">Ou cole o backup aqui</label><textarea id="st" style="min-height:70px"></textarea><button class="btn soft full" id="sb" style="margin-top:8px">Restaurar texto colado</button></div>`);
+  if($('sOut'))$('sOut').onclick=()=>NORTE_out();if($('sIn'))$('sIn').onclick=()=>{closeSheet();gate()};
   $('sx').onclick=closeSheet;$('sp').onclick=()=>{closeSheet();lock('new')};
   if($('sr'))$('sr').onclick=()=>{S.pin=null;save();cfgSheet();toast('PIN removido')};
   const data=()=>JSON.stringify(S);
@@ -376,7 +383,7 @@ const dots=()=>$('pinDots').innerHTML=[0,1,2,3].map(i=>`<i class="${i<pb.length?
 $('pad').innerHTML=['1','2','3','4','5','6','7','8','9','','0','⌫'].map(k=>k?`<button data-k="${k}">${k}</button>`:'<span></span>').join('');
 $('pad').addEventListener('click',e=>{const k=e.target.closest('[data-k]')?.dataset.k;if(!k)return;if(k==='⌫'){pb=pb.slice(0,-1);dots();return}if(pb.length>=4)return;pb+=k;dots();if(pb.length===4)setTimeout(pinDone,160)});
 function pinDone(){const dd=$('pinDots');
-  if(pm==='open'){if(pb===S.pin){$('lock').classList.remove('on')}else{$('lockS').textContent='PIN errado, tenta de novo';dd.classList.remove('shake');void dd.offsetWidth;dd.classList.add('shake');pb='';dots()}return}
+  if(pm==='open'){if(pb===S.pin){unlocked=true;$('lock').classList.remove('on')}else{$('lockS').textContent='PIN errado, tenta de novo';dd.classList.remove('shake');void dd.offsetWidth;dd.classList.add('shake');pb='';dots()}return}
   if(!pf){pf=pb;pb='';$('lockT').textContent='Confirme o PIN';dots();return}
   if(pb===pf){S.pin=pb;save();$('lock').classList.remove('on');toast('PIN criado 🔒')}else{pf='';pb='';$('lockT').textContent='Não bateu. Crie de novo';dd.classList.add('shake');dots()}}
 
@@ -401,6 +408,66 @@ function bind(){
     $('myMis').onclick=myMisSheet;
   }
 }
+
+/* ---------- Nuvem (Firebase, mesmo projeto dos outros apps) ---------- */
+const CLOUD={ok:typeof firebase!=='undefined',user:null,state:'local'};
+const syncTag=()=>`<span class="sync ${CLOUD.state==='on'?'on':''}"><i></i>${{local:'Só neste aparelho',wait:'Sincronizando…',on:'Salvo na nuvem',off:'Sem internet: salva quando voltar'}[CLOUD.state]}</span>`;
+const ADMIN='belarminokaique581@gmail.com';
+let unlocked=false;
+function gate(msg=''){
+  const g=$('gate');g.classList.add('on');
+  $('gin').innerHTML=`<svg width="54" height="54" viewBox="0 0 100 100"><path d="M50 4l9 37 37 9-37 9-9 37-9-37-37-9 37-9z" fill="#d4a24c"/></svg><h1>Entre no Norte</h1><p class="mut">Com sua conta, tudo fica salvo na nuvem. Se trocar de celular, é só entrar de novo. Use o mesmo e-mail e senha dos seus outros apps.</p>
+  <form id="gf" novalidate style="display:flex;flex-direction:column;gap:12px"><div><label for="ge">E-mail</label><input id="ge" type="email" autocomplete="email" value="${ADMIN}"></div><div><label for="gpw">Senha</label><input id="gpw" type="password" autocomplete="current-password"></div><p class="err" id="gx" role="alert">${esc(msg)}</p><button class="btn full g-tea" id="gb">Entrar</button></form>
+  <button class="lnk" id="gr">Esqueci a senha</button><button class="lnk" id="gl">Usar só neste aparelho</button>`;
+  const ERR={'auth/invalid-credential':'E-mail ou senha incorretos.','auth/wrong-password':'Senha incorreta.','auth/user-not-found':'Conta não encontrada.','auth/too-many-requests':'Muitas tentativas. Espere alguns minutos.','auth/network-request-failed':'Sem internet.','auth/invalid-email':'E-mail inválido.'};
+  $('gf').onsubmit=async e=>{e.preventDefault();const b=$('gb');b.disabled=true;b.textContent='Entrando…';
+    try{await firebase.auth().signInWithEmailAndPassword($('ge').value.trim(),$('gpw').value)}catch(er){$('gx').textContent=ERR[er.code]||'Não deu certo. Tente de novo.';b.disabled=false;b.textContent='Entrar'}};
+  $('gr').onclick=async()=>{const em=$('ge').value.trim();try{await firebase.auth().sendPasswordResetEmail(em);$('gx').outerHTML=`<p class="okm">Link de nova senha enviado para ${esc(em)}. Veja o spam também.</p>`}catch(er){$('gx').textContent=ERR[er.code]||'Digite seu e-mail.'}};
+  $('gl').onclick=()=>{try{localStorage.setItem('norte_local','1')}catch(e){};g.classList.remove('on')};
+}
+// Divide os dados em partes: base + um documento por mês (cabe bem no limite do Firebase)
+const pack=o=>{const d={base:{pin:o.pin,cats:o.cats,goals:o.goals,custom:o.custom,points:o.points,missions:o.missions}};
+  const m=k=>(d['m'+k]=d['m'+k]||{entries:[],answers:{}});
+  o.entries.forEach(e=>m(e.date.slice(0,7)).entries.push(e));
+  Object.keys(o.answers).forEach(k=>m(k.slice(0,7)).answers[k]=o.answers[k]);
+  const r={};for(const k in d)r[k]=JSON.stringify(d[k]);return r};
+const unpack=docs=>{const o=structuredClone(DEF);const b=docs.base?JSON.parse(docs.base):{};Object.assign(o,b);o.entries=[];o.answers={};
+  for(const k in docs){if(k[0]!=='m')continue;const x=JSON.parse(docs[k]);o.entries.push(...(x.entries||[]));Object.assign(o.answers,x.answers||{})}
+  o.entries.sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));return o};
+let col=null,sent={},pt=null;
+window.NORTE_push=()=>{if(!col)return;clearTimeout(pt);pt=setTimeout(async()=>{const p=pack(S);
+  for(const k in sent)if(!(k in p)&&k[0]==='m')p[k]=JSON.stringify({entries:[],answers:{}});
+  CLOUD.state=navigator.onLine?'wait':'off';
+  try{await Promise.all(Object.keys(p).filter(k=>p[k]!==sent[k]).map(k=>{sent[k]=p[k];return col.doc(k).set({j:p[k],u:Date.now()})}));CLOUD.state='on'}catch(e){CLOUD.state='off'}},800)};
+window.NORTE_out=async()=>{try{await firebase.auth().signOut()}catch(e){};try{localStorage.removeItem(K);localStorage.removeItem('norte_local')}catch(e){};location.reload()};
+function startSync(uid){
+  col=firebase.firestore().collection('norte').doc(uid).collection('d');CLOUD.state='wait';
+  let first=true;
+  col.onSnapshot(snap=>{
+    if(snap.metadata.hasPendingWrites)return;
+    const docs={};snap.forEach(d=>docs[d.id]=d.data().j);
+    if(first){first=false;
+      if(!Object.keys(docs).length){NORTE_push()}
+      else{const r=unpack(docs),ids=new Set(r.entries.map(e=>e.id));
+        r.entries=r.entries.concat(S.entries.filter(e=>!ids.has(e.id)));for(const k in S.answers)if(!r.answers[k])r.answers[k]=S.answers[k];
+        if(!r.pin&&S.pin)r.pin=S.pin;S=r;sent=Object.assign({},docs);try{localStorage.setItem(K,JSON.stringify(S))}catch(e){};NORTE_push()}
+      CLOUD.state='on';render();if(S.pin&&!unlocked&&!$('lock').classList.contains('on'))lock('open');return}
+    let changed=false;for(const k in docs)if(docs[k]!==sent[k]){changed=true;sent[k]=docs[k]}
+    if(changed&&!$('sheet').classList.contains('on')){S=unpack(sent);try{localStorage.setItem(K,JSON.stringify(S))}catch(e){};render()}
+    CLOUD.state='on';
+  },()=>{CLOUD.state='off'});
+}
+if(CLOUD.ok){
+  try{firebase.initializeApp({apiKey:"AIzaSyBpl5GkIkQOtriiTyI0N5bsevM0E71hqq4",authDomain:"forja-f7ca8.firebaseapp.com",projectId:"forja-f7ca8",storageBucket:"forja-f7ca8.firebasestorage.app",messagingSenderId:"1011302668862",appId:"1:1011302668862:web:66c33e3c5f1579581e8f6f"});
+  firebase.firestore().enablePersistence().catch(()=>{});
+  firebase.auth().onAuthStateChanged(u=>{
+    if(u&&String(u.email).toLowerCase()!==ADMIN){firebase.auth().signOut();gate('O Norte é pessoal: só a conta do Kaique entra.');return}
+    CLOUD.user=u;
+    if(u){$('gate').classList.remove('on');try{localStorage.removeItem('norte_local')}catch(e){};startSync(u.uid)}
+    else{let local=false;try{local=localStorage.getItem('norte_local')==='1'}catch(e){};if(!local)gate()}
+  });}catch(e){CLOUD.ok=false}
+}
+addEventListener('online',()=>{if(col){CLOUD.state='wait';NORTE_push()}});
 
 addEventListener('hashchange',()=>{const t=location.hash.slice(1);if(SCR[t]&&t!==scr)go(t)});
 render();
