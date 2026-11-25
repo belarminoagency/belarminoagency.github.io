@@ -621,7 +621,7 @@ const MAXF={ini:3,int:4,ava:5};
 const evoK=()=>art+"-"+mode+"-"+opt.level;
 function evoAtual(){return evo[evoK()]||{fase:0,desde:new Date().toISOString(),treinos:0,rounds:0,total:0}}
 function faseAtual(){return art&&mode?evoAtual().fase:0}
-function salvaEvo(){store.set(EVO_KEY,evo);try{const u=window.firebase&&firebase.auth().currentUser;if(u)firebase.firestore().collection("bfight").doc(u.uid).set({evo:JSON.stringify(evo)},{merge:true}).catch(()=>{})}catch(e){}}
+function salvaEvo(){store.set(EVO_KEY,evo);try{const u=window.firebase&&firebase.apps&&firebase.apps.length&&firebase.auth().currentUser;if(u)firebase.firestore().collection("bfight").doc(u.uid).set({evo:JSON.stringify(evo)},{merge:true}).catch(()=>{})}catch(e){}}
 function carregaEvoNuvem(n){try{const u=window.firebase&&firebase.apps&&firebase.apps.length&&firebase.auth().currentUser;
   if(!u){if((n||0)<40)setTimeout(()=>carregaEvoNuvem((n||0)+1),1500);return}
   firebase.firestore().collection("bfight").doc(u.uid).get().then(d=>{const v=d.exists&&d.data().evo;if(!v)return;let nv={};try{nv=JSON.parse(v)}catch(e){return}
@@ -1043,14 +1043,38 @@ function toast(t){const el=$("toast");el.textContent=t;el.hidden=false;clearTime
   }catch(e){note("Salvo neste aparelho.")}
 })();
 
+/* ---------- Progresso na conta (Firebase): vale em qualquer aparelho ---------- */
+let contaUid=null;
+const chaveT=h=>h.date+"|"+(h.art||"")+"|"+(h.mode||"");
+function juntaHist(a,b){const m=new Map();[...a,...b].forEach(h=>{if(h&&h.date){const c=Object.assign({},h);delete c.id;m.set(chaveT(c),c)}});return [...m.values()].sort((x,y)=>y.date<x.date?-1:1)}
+function docConta(){return firebase.firestore().collection("bfight").doc(contaUid)}
+function sobeConta(){if(!contaUid)return Promise.resolve();
+  return docConta().set({treinos:JSON.stringify(hist.slice(0,600)),perfilNome:prof.name||"",evo:JSON.stringify(evo)},{merge:true})
+    .then(()=>note("Salvo na sua conta. Aparece em qualquer aparelho que você entrar."))
+    .catch(()=>note("Sem internet agora. Fica salvo aqui e sobe pra conta quando voltar."))}
+function conectaConta(n){try{
+  const u=window.firebase&&firebase.apps&&firebase.apps.length&&firebase.auth().currentUser;
+  if(!u){if((n||0)<60)setTimeout(()=>conectaConta((n||0)+1),1500);return}
+  contaUid=u.uid;note("Carregando seu progresso da conta…");
+  docConta().get().then(d=>{
+    const x=d.exists?d.data():{};let nuvem=[];try{nuvem=x.treinos?JSON.parse(x.treinos):[]}catch(e){}
+    const local=store.get(LH,[]),antes=JSON.stringify(nuvem.length)+"|"+(x.perfilNome||"");
+    hist=juntaHist(nuvem,local);store.set(LH,hist);
+    if(!prof.name&&x.perfilNome){prof=Object.assign({},prof,{name:x.perfilNome});store.set(LP,prof)}
+    renderProg();
+    if(hist.length!==nuvem.length||(prof.name||"")!==(x.perfilNome||""))sobeConta();else note("Salvo na sua conta. Aparece em qualquer aparelho que você entrar.");
+  }).catch(()=>note("Não deu pra carregar da conta agora. Seu progresso deste aparelho continua aqui."));
+}catch(e){}}
+setTimeout(conectaConta,1200);
+
 async function saveProfile(n){
-  prof=Object.assign({},prof,{name:n});store.set(LP,prof);renderProg();
+  prof=Object.assign({},prof,{name:n});store.set(LP,prof);renderProg();sobeConta();
   if(cloud){try{await cloud.doc(pp()).set({name:n,createdAt:prof.createdAt||new Date().toISOString()})}catch(e){cloudFail()}}
 }
 async function addSession(s){
   if(cloud){try{await cloud.doc(pp()).collection("treinos").add(s);return true}catch(e){
     if(e&&e.code==="quota_exceeded"){toast("Espaço cheio. Não deu pra salvar.");return false}cloudFail()}}
-  hist=[s,...store.get(LH,[])];store.set(LH,hist);renderProg();return true;
+  hist=juntaHist([s],store.get(LH,[]));store.set(LH,hist);renderProg();sobeConta();return true;
 }
 async function saveSession(){
   if(saved||!art||!mode)return;
