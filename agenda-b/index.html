@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agenda B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rye&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: barbearia clássica com energia de app moderno — confiante, rápido, organizado
+   IDEA: o poste de barbeiro (listras girando) e o cartão fidelidade de papel carimbado
+   PICTURE: o próprio app — assistente em 3 etapas, "próximo cliente" em destaque, cartões carimbados
+   COLOUR and TYPE: índigo #17158F dominante, vermelho barber #C8102E apoio, verde-limão #D7E928 acento; Rye (marca), Bebas Neue (títulos/horários), Poppins
+   LAYOUT: cabeçalho índigo com faixa listrada animada, uma coluna, barra de abas embaixo no celular */
+:root{color-scheme:light dark;--bg:light-dark(#F4F5FA,#0b0a33);--card:light-dark(#fff,#15145a);--ink:light-dark(#0f0e3a,#eef0ff);--mute:light-dark(#5b5d80,#aab8ff);--ind:#17158F;--red:#C8102E;--lime:#D7E928;--sky:#AAB8FF;--line:light-dark(#e2e4f0,#2a2980);--soft:light-dark(#eceefb,#1d1c6a);--ok:#1f9d55;--hi:light-dark(#17158F,#D7E928)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Poppins,system-ui,sans-serif;overflow-x:clip}
+h2,h3,.bb{font-family:"Bebas Neue",Impact,sans-serif;font-weight:400;letter-spacing:.5px;line-height:1;margin:0}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+header{background:var(--ind);color:#fff;position:relative}
+.top{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px max(5vw,16px) 18px}
+.pole{width:22px;height:56px;border-radius:11px;flex:none;border:3px solid #fff;background:repeating-linear-gradient(-45deg,var(--red) 0 7px,#fff 7px 14px,var(--sky) 14px 21px,#fff 21px 28px);background-size:100% 39.6px;animation:spin 1.6s linear infinite}
+@keyframes spin{to{background-position:0 39.6px}}
+.brand{font-family:Rye,Georgia,serif;font-size:clamp(22px,5vw,32px);line-height:1.05}
+.top small{display:block;font-size:13px;color:var(--sky)}
+.stripe{height:10px;background:repeating-linear-gradient(-45deg,var(--red) 0 12px,#fff 12px 24px,var(--sky) 24px 36px,#fff 36px 48px);background-size:68px 100%;animation:slide 2.4s linear infinite}
+@keyframes slide{to{background-position:68px 0}}
+nav{display:flex;gap:6px;max-width:860px;margin:0 auto;padding:12px max(5vw,16px) 0}
+nav button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--card);border:1.5px solid var(--line);color:var(--mute);font:600 15px Poppins;padding:10px 12px;border-radius:14px;cursor:pointer;min-height:48px;transition:background .2s,color .2s,transform .15s}
+nav button:active{transform:scale(.97)}
+nav button[aria-selected=true]{background:var(--ind);border-color:var(--ind);color:#fff}
+main{max-width:860px;margin:0 auto;padding:22px max(5vw,16px) 60px}
+section[hidden]{display:none}
+.pane{animation:in .35s ease both}
+@keyframes in{from{opacity:0;transform:translateY(12px)}}
+h2{font-size:clamp(34px,7vw,48px)}h3{font-size:24px;margin-bottom:12px}
+.sub{color:var(--mute);margin:6px 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px}
+/* stepper */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 18px}
+.steps div{font-size:13px;font-weight:600;color:var(--mute)}
+.steps div::before{content:"";display:block;height:6px;border-radius:3px;background:var(--line);margin-bottom:6px;transition:background .3s}
+.steps .on{color:var(--hi)}.steps .on::before{background:var(--red)}
+.svcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.svc-b{display:flex;flex-direction:column;align-items:flex-start;gap:10px;text-align:left;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:20px;padding:18px;cursor:pointer;font:inherit;transition:transform .15s,border-color .2s,box-shadow .2s}
+.svc-b:hover{transform:translateY(-3px);border-color:var(--ind);box-shadow:0 10px 24px -14px #17158F}
+.svc-b .ic{width:48px;height:48px;border-radius:14px;background:var(--ind);color:var(--lime);display:grid;place-items:center}
+.svc-b .ic svg{width:26px;height:26px}
+.svc-b b{font-size:17px}.svc-b span{color:var(--mute);font-size:14px}
+.svc-b .pr{font:28px "Bebas Neue";color:var(--red);line-height:1}
+.svc-b[aria-pressed=true]{border-color:var(--red);box-shadow:0 0 0 3px color-mix(in srgb,var(--red) 25%,transparent)}
+.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory}
+.day{flex:none;scroll-snap-align:start;width:72px;padding:10px 0;border-radius:16px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font:inherit;text-align:center;transition:transform .15s}
+.day small{display:block;font-size:13px;color:var(--mute);font-weight:600}.day b{display:block;font:32px "Bebas Neue";line-height:1.1}
+.day[aria-pressed=true]{background:var(--ind);border-color:var(--ind);color:#fff}.day[aria-pressed=true] small{color:var(--lime)}
+.per{font-size:13px;font-weight:700;color:var(--mute);margin:18px 0 8px}
+.times{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
+.tm{min-height:46px;border-radius:12px;border:1.5px solid var(--line);background:var(--soft);color:var(--ink);font:24px "Bebas Neue";cursor:pointer;transition:transform .12s,background .2s}
+.tm:hover:not(:disabled){transform:scale(1.05)}
+.tm[aria-pressed=true]{background:var(--red);border-color:var(--red);color:#fff}
+.tm:disabled{opacity:.3;cursor:not-allowed;text-decoration:line-through}
+label{display:block;font-size:14px;font-weight:600;margin:12px 0 6px}
+input{width:100%;font:16px Poppins;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);min-height:46px}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:12px 18px;font:600 15px Poppins;cursor:pointer;min-height:46px;text-decoration:none;white-space:nowrap;transition:transform .12s,filter .2s}
+.btn:active{transform:scale(.97)}.btn:hover{filter:brightness(1.06)}
+.btn svg.i{width:18px;height:18px}
+.pri{background:var(--lime);color:#0f0e3a}.sec{background:var(--ind);color:#fff}.ghost{background:none;border:1.5px solid var(--line);color:var(--ink)}.wa{background:var(--ok);color:#fff}.red{background:var(--red);color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.nav2{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+.resumo{background:var(--ind);color:#fff;border-radius:20px;padding:18px 20px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.resumo small{display:block;color:var(--sky);font-size:13px}.resumo b{font:26px "Bebas Neue";white-space:nowrap}
+.ok{background:var(--ind);color:#fff;border-radius:24px;padding:28px 22px;text-align:center;position:relative;overflow:hidden}
+.ok::before{content:"";position:absolute;inset:0 0 auto;height:10px;background:repeating-linear-gradient(-45deg,var(--red) 0 12px,#fff 12px 24px,var(--sky) 24px 36px,#fff 36px 48px)}
+.ok .check{width:72px;height:72px;border-radius:50%;background:var(--lime);color:var(--ind);display:grid;place-items:center;margin:8px auto 14px;animation:pop .5s cubic-bezier(.3,1.6,.5,1) both}
+.ok .check svg{width:38px;height:38px;stroke-width:3}
+.ok h2{color:#fff}.ok p{color:#dfe3ff}
+@keyframes pop{from{transform:scale(0)}}
+/* agenda */
+.next{background:var(--red);color:#fff;border-radius:22px;padding:20px;margin-bottom:16px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center}
+.next .bt{font:clamp(52px,12vw,72px) "Bebas Neue";line-height:.9}
+.next small{display:block;font-size:13px;font-weight:600;color:#ffd9de}.next .nm{font-size:19px;font-weight:700}
+.next .btn{margin-top:10px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.stat b{display:block;font:clamp(26px,6vw,34px) "Bebas Neue";color:var(--hi);white-space:nowrap;line-height:1.1}.stat span{font-size:13px;color:var(--mute)}
+.prog{height:10px;border-radius:5px;background:var(--line);overflow:hidden;margin:0 0 18px}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--ind),var(--red));border-radius:5px;transition:width .6s}
+.tl{position:relative;padding-left:4px}
+.slot{display:grid;grid-template-columns:70px 16px minmax(0,1fr);gap:12px;padding:12px 0}
+.time{font:30px "Bebas Neue";color:var(--hi);white-space:nowrap;line-height:1}
+.dot{position:relative}.dot::before{content:"";position:absolute;left:50%;top:0;bottom:-24px;width:2px;background:var(--line);transform:translateX(-50%)}
+.slot:last-child .dot::before{bottom:0}
+.dot i{position:relative;display:block;width:16px;height:16px;border-radius:50%;background:var(--card);border:3px solid var(--sky);margin-top:6px}
+.s-concluido .dot i{background:var(--ok);border-color:var(--ok)}.s-faltou .dot i{background:var(--red);border-color:var(--red)}
+.s-concluido .info,.s-faltou .info{opacity:.6}
+.who{font-weight:700}.what{color:var(--mute);font-size:14px}
+.tag{display:inline-block;font-size:13px;font-weight:600;border-radius:8px;padding:1px 8px;margin-left:6px;vertical-align:1px}
+.t-marcado{background:var(--soft);color:var(--hi)}.t-concluido{background:var(--ok);color:#fff}.t-faltou{background:var(--red);color:#fff}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.acts .btn{padding:8px 12px;font-size:14px;min-height:44px}
+.empty{color:var(--mute);text-align:center;padding:28px 0}
+/* fidelidade */
+.alert{border:2px solid var(--red)}
+.alert h3{color:var(--red)}
+.cli{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;padding:12px 0;border-top:1px solid var(--line)}.cli:first-of-type{border-top:0}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.lc{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;position:relative}
+.lc::before{content:"";display:block;height:8px;background:repeating-linear-gradient(-45deg,var(--red) 0 10px,#fff 10px 20px,var(--ind) 20px 30px,#fff 30px 40px)}
+.lc .in{padding:16px}
+.lc .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.lc .hd b{font-size:16px}.lc .hd span{font:26px "Bebas Neue";color:var(--hi);white-space:nowrap}
+.stamps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:12px 0 8px}
+.stamps i{aspect-ratio:1;border-radius:50%;border:2px dashed var(--line);display:grid;place-items:center;color:transparent}
+.stamps i svg.i{width:58%;height:58%}
+.stamps i.on{background:var(--ind);border:2px solid var(--ind);color:var(--lime)}
+.stamps i.last{background:var(--red);border-color:var(--red);color:#fff}
+.stamps i.new{animation:pop .5s cubic-bezier(.3,1.6,.5,1) both}
+.lc .ft{font-size:13px;color:var(--mute)}
+.lc.full{border:2px solid var(--lime)}
+/* modo demo */
+.mode{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 12px;background:var(--lime);color:#0f0e3a;font-size:13px;font-weight:600}
+.mode a{color:#0f0e3a;text-decoration:none;padding:6px 12px;border-radius:10px;border:1.5px solid #0f0e3a;min-height:34px;display:inline-flex;align-items:center}
+.mode a[aria-current=true]{background:#0f0e3a;color:var(--lime)}
+/* cliente: cartão grande e infos */
+.big{background:var(--ind);color:#fff;border-radius:24px;overflow:hidden;margin-bottom:16px}
+.big::before{content:"";display:block;height:12px;background:repeating-linear-gradient(-45deg,var(--red) 0 12px,#fff 12px 24px,var(--sky) 24px 36px,#fff 36px 48px);background-size:68px 100%;animation:slide 2.4s linear infinite}
+.big .in{padding:22px}
+.big .shop{font-family:Rye,Georgia,serif;font-size:20px}
+.big .who{font-size:17px;margin-top:4px;color:var(--sky);font-weight:600}
+.big .count{font:clamp(56px,14vw,80px) "Bebas Neue";color:var(--lime);line-height:1;margin-top:10px}
+.big .stamps i{border-color:#4744c4}.big .stamps i.on{background:var(--lime);border-color:var(--lime);color:var(--ind)}
+.big .msg{color:#dfe3ff}
+.bk{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}.bk:first-of-type{border-top:0}
+.bk .d{background:var(--ind);color:#fff;border-radius:14px;padding:8px 12px;text-align:center;min-width:70px}
+.bk .d small{display:block;font-size:12px;color:var(--lime);font-weight:600}.bk .d b{font:26px "Bebas Neue";line-height:1}
+.inf{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}.inf:first-of-type{border-top:0}
+.inf svg.i{color:var(--red);margin-top:2px}
+.pl{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px dashed var(--line)}.pl:first-of-type{border-top:0}.pl b{white-space:nowrap}
+/* config */
+.svc{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) 46px;gap:8px;align-items:end;margin-bottom:8px}
+.x{background:none;border:1.5px solid var(--line);color:var(--red);border-radius:12px;min-height:46px;cursor:pointer;font-size:20px}
+.note{font-size:13px;color:var(--mute);margin-top:24px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--ind);color:#fff;padding:12px 18px;border-radius:14px;font-weight:600;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:9;border-left:6px solid var(--lime);max-width:90vw}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
+@media(max-width:600px){
+  nav{position:fixed;left:0;right:0;bottom:0;z-index:8;background:var(--card);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom));gap:4px}
+  nav button{flex-direction:column;gap:2px;font-size:13px;border:0;padding:6px 2px;background:none}
+  nav button[aria-selected=true]{background:var(--soft);color:var(--hi)}
+  main{padding-bottom:110px}.toast{bottom:96px}
+  .cards{grid-template-columns:minmax(0,1fr)}
+  .svcs{gap:10px}.svc-b{padding:14px;gap:8px}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .resumo b{font-size:22px}
+  .next{grid-template-columns:minmax(0,1fr);gap:6px}
+  .slot{grid-template-columns:56px 16px minmax(0,1fr);gap:10px}.time{font-size:26px}
+  .svc{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 46px}.svc .nm{grid-column:1/-1}
+}
+.mode{display:none}
+.center{max-width:460px;margin:0 auto}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--soft);padding:4px;border-radius:14px;margin-bottom:8px}
+.seg button{border:0;background:none;color:var(--mute);font:600 15px Poppins;border-radius:10px;min-height:44px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--card);color:var(--hi);box-shadow:0 1px 4px #0002}
+.linkbox{display:flex;gap:8px;margin-top:8px}.linkbox input{font-size:14px}
+.load{color:var(--mute);text-align:center;padding:40px 0}
+.err{color:var(--red);font-size:14px;font-weight:600;min-height:20px;margin-top:8px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="pole" aria-hidden="true"></div>
+    <div><div class="brand" id="shopName">Agenda B</div><small id="subt">Agendamento para barbearias</small></div>
+  </div>
+  <div class="stripe" aria-hidden="true"></div>
+</header>
+<nav role="tablist" id="nav" hidden></nav>
+<main>
+  <section id="boot"><div class="load">Carregando…</div></section>
+  <section id="login" hidden></section>
+  <section id="criar" hidden></section>
+  <section id="cliente" hidden></section>
+  <section id="meus" hidden></section>
+  <section id="cartao" hidden></section>
+  <section id="sobre" hidden></section>
+  <section id="agenda" hidden></section>
+  <section id="fidelidade" hidden></section>
+  <section id="config" hidden></section>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+{
+const SB_URL='https://yhfwdjbnrgttlukyvhct.supabase.co';
+const SB_KEY='sb_publishable_MFAxP3JUFBcoi8fexwodtA_O3n3_Hzm';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+const P={
+  tesoura:'<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/>',
+  barba:'<path d="M12 10.5c-2-3-6.5-3-9 .5 1.5 4 6 4 9 .5 3 3.5 7.5 3.5 9-.5-2.5-3.5-7-3.5-9-.5z"/>',
+  combo:'<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.6l-5.3 2.8 1.2-6-4.5-4.1 6-.7z"/>',
+  sobrancelha:'<path d="M3 13c4-6 14-6 18 0"/><path d="M7 16.5c3-1.5 7-1.5 10 0"/>',
+  cal:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  rel:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+  wa:'<path d="M4 20l1.4-4.1A8 8 0 1 1 8.2 18.7z"/><path d="M9 9.5c.5 2 2 3.5 4 4.5l1.2-1.2 1.8.8v1.5c-3.5.5-7.5-3.5-7-7h1.5l.8 1.8z"/>',
+  ok:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  back:'<path d="M15 5l-7 7 7 7"/>',
+  pin:'<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  insta:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".6"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+  link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'
+};
+const ic=(k,c='i')=>`<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true">${P[k]||P.tesoura}</svg>`;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const today=ymd(new Date());
+const brl=v=>'R$ '+Number(v||0).toFixed(2).replace('.',',');
+const brl0=v=>'R$ '+Math.round(Number(v||0));
+const digits=s=>String(s||'').replace(/\D/g,'');
+const waNum=s=>{let d=digits(s);if(d.length<=11)d='55'+d;return d};
+const uid=()=>Math.random().toString(36).slice(2,9);
+const first=n=>String(n||'').split(' ')[0];
+const DIAS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const fmtDia=k=>k===today?'Hoje':String(k).split('-').reverse().slice(0,2).join('/');
+const diasDesde=d=>d?Math.round((new Date(today)-new Date(d))/864e5):null;
+const slugify=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40);
+const $=id=>document.getElementById(id);
+const toastEl=$('toast');let tt;
+const toast=m=>{toastEl.textContent=m;toastEl.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>toastEl.classList.remove('on'),2600)};
+const ERR={horario_ocupado:'Esse horário acabou de ser ocupado. Escolha outro.',dados_invalidos:'Confira seu nome e WhatsApp com DDD.',data_invalida:'Escolha uma data a partir de hoje.',servico_invalido:'Serviço indisponível. Escolha outro.',barbearia_nao_encontrada:'Barbearia não encontrada.'};
+const errMsg=e=>{const m=String(e&&e.message||e||'');for(const k in ERR)if(m.includes(k))return ERR[k];
+  if(m.includes('Invalid login'))return 'E-mail ou senha incorretos.';if(m.includes('Email not confirmed'))return 'Confirme seu e-mail antes de entrar (veja sua caixa de entrada).';
+  if(m.includes('already registered'))return 'Esse e-mail já tem conta. Use "Entrar".';if(m.includes('duplicate key')&&m.includes('slug'))return 'Esse link já está em uso. Escolha outro.';
+  if(m.includes('Password'))return 'A senha precisa ter pelo menos 6 caracteres.';return 'Algo deu errado. Tente de novo.'};
+
+const qs=new URLSearchParams(location.search);
+const SLUG=(qs.get('b')||'').toLowerCase();
+const MODE=SLUG&&location.hash!=='#painel'?'cliente':'painel';
+const BASE=location.origin+location.pathname;
+let SHOP=null,tab=null;
+const svcById=id=>((SHOP&&SHOP.services)||[]).find(s=>s.id===id)||{name:'Serviço',price:0,icon:'tesoura'};
+const MODES={cliente:[['cliente','Agendar','cal'],['meus','Horários','rel'],['cartao','Cartão','combo'],['sobre','Barbearia','pin']],painel:[['agenda','Agenda','rel'],['fidelidade','Fidelidade','combo'],['config','Ajustes','gear']]};
+const nav=$('nav');
+function show(id){document.querySelectorAll('main section').forEach(s=>s.hidden=s.id!==id)}
+function renderNav(){nav.hidden=false;nav.innerHTML=MODES[MODE].map(([k,l,i])=>`<button role="tab" data-tab="${k}" aria-selected="${tab===k}">${ic(i)}${l}</button>`).join('')}
+const R=()=>({cliente:renderCliente,meus:renderMeus,cartao:renderCartao,sobre:renderSobre,agenda:renderAgenda,fidelidade:renderFid,config:renderConfig});
+function go(t){tab=t;renderNav();show(t);R()[t]();window.scrollTo({top:0})}
+nav.onclick=e=>{const b=e.target.closest('[data-tab]');if(b)go(b.dataset.tab)};
+const setHead=()=>{$('shopName').textContent=SHOP?SHOP.name:'Agenda B';$('subt').textContent=MODE==='painel'?'Painel do barbeiro':'Agende em 3 toques · '+(SHOP.days||'')};
+
+/* ================= CLIENTE ================= */
+const ME_KEY='agendaB_me_'+SLUG;
+let me='';try{me=localStorage.getItem(ME_KEY)||''}catch(e){}
+const setMe=v=>{me=v;try{v?localStorage.setItem(ME_KEY,v):localStorage.removeItem(ME_KEY)}catch(e){}};
+let B={step:1,service:null,date:today,time:null,done:null};
+let draft={n:'',t:''};
+const busyCache={};
+async function loadBusy(date,force){if(!busyCache[date]||force){const {data,error}=await sb.rpc('get_busy',{p_slug:SLUG,p_date:date});if(error)throw error;busyCache[date]=new Set(data||[])}return busyCache[date]}
+function slotsFor(date,busy){
+  const out=[];const now=new Date();
+  for(let h=SHOP.open;h<SHOP.close;h++)for(const m of [0,30]){
+    const t=pad(h)+':'+pad(m);
+    const past=date===today&&(h<now.getHours()||(h===now.getHours()&&m<=now.getMinutes()));
+    out.push({t,h,off:busy.has(t)||past});
+  }
+  return out;
+}
+const steps=n=>`<div class="steps">${['Serviço','Dia e horário','Confirmar'].map((l,i)=>`<div class="${i<n?'on':''}">${i+1}. ${l}</div>`).join('')}</div>`;
+async function renderCliente(){
+  const el=$('cliente');
+  if(B.done){const b=B.done,s=svcById(b.service);
+    el.innerHTML=`<div class="ok pane"><div class="check">${ic('ok')}</div><h2>Tá marcado, ${esc(first(b.client))}!</h2><p>${esc(s.name)} · ${esc(fmtDia(b.date))} às <b>${esc(b.time)}</b> · ${brl(s.price)}</p><p>Você recebe um lembrete no WhatsApp antes do horário.</p><div class="row" style="justify-content:center"><button class="btn pri" id="vm">Ver meus horários</button><button class="btn ghost" style="color:#fff;border-color:#4744c4" id="novo">Agendar outro</button></div></div>`;
+    el.querySelector('#vm').onclick=()=>{B={step:1,service:null,date:today,time:null,done:null};go('meus')};
+    el.querySelector('#novo').onclick=()=>{B={step:1,service:null,date:today,time:null,done:null};renderCliente()};return}
+  if(B.step===1){
+    el.innerHTML=`<div class="pane"><h2>Qual vai ser hoje?</h2><p class="sub">${esc(SHOP.name)} · escolha o serviço</p>${steps(1)}
+    <div class="svcs">${SHOP.services.map(s=>`<button class="svc-b" data-s="${esc(s.id)}" aria-pressed="${B.service===s.id}"><div class="ic">${ic(s.icon)}</div><div><b>${esc(s.name)}</b><br><span>${esc(s.min)} min</span></div><div class="pr">${brl0(s.price)}</div></button>`).join('')}</div></div>`;
+    el.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{B.service=b.dataset.s;B.step=2;renderCliente()});
+    return}
+  if(B.step===2){
+    const days=[...Array(14)].map((_,i)=>addDays(new Date(),i));
+    const dayBar=`<div class="days">${days.map((d,i)=>{const k=ymd(d);return `<button class="day" data-d="${k}" aria-pressed="${B.date===k}"><small>${i===0?'Hoje':i===1?'Amanhã':DIAS[d.getDay()]}</small><b>${pad(d.getDate())}</b></button>`}).join('')}</div>`;
+    el.innerHTML=`<div class="pane"><h2>Quando fica bom?</h2><p class="sub">${esc(svcById(B.service).name)}</p>${steps(2)}<div class="card">${dayBar}<div id="slots"><div class="load">Buscando horários livres…</div></div></div>
+    <div class="nav2"><button class="btn ghost" id="bk">${ic('back')}Voltar</button></div></div>`;
+    el.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{B.date=b.dataset.d;B.time=null;renderCliente()});
+    el.querySelector('#bk').onclick=()=>{B.step=1;renderCliente()};
+    const date=B.date;
+    try{const busy=await loadBusy(date,true);if(B.step!==2||B.date!==date)return;
+      const sl=slotsFor(date,busy);const livre=sl.filter(s=>!s.off).length;
+      const grp=[['Manhã',h=>h<12],['Tarde',h=>h>=12&&h<18],['Noite',h=>h>=18]].map(([n,f])=>[n,sl.filter(s=>f(s.h))]).filter(g=>g[1].length);
+      el.querySelector('.sub').textContent=`${svcById(B.service).name} · ${livre} horário${livre===1?'':'s'} livre${livre===1?'':'s'} neste dia`;
+      $('slots').innerHTML=grp.map(([n,arr])=>`<div class="per">${n}</div><div class="times">${arr.map(s=>`<button class="tm" data-t="${s.t}" ${s.off?'disabled':''}>${s.t}</button>`).join('')}</div>`).join('')+(livre?'':'<div class="empty">Esse dia lotou. Escolha outro dia.</div>');
+      $('slots').querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{B.time=b.dataset.t;B.step=3;renderCliente()});
+    }catch(e){$('slots').innerHTML='<div class="empty">Não foi possível carregar os horários. Verifique sua internet.</div>'}
+    return}
+  if(!draft.t&&me)draft={n:'',t:me};
+  const s=svcById(B.service);
+  el.innerHTML=`<div class="pane"><h2>Só falta você</h2><p class="sub">Confira e confirme</p>${steps(3)}
+  <div class="resumo"><div><small>Serviço</small><b>${esc(s.name)}</b></div><div><small>Quando</small><b>${esc(fmtDia(B.date))} · ${esc(B.time)}</b></div><div><small>Valor</small><b>${brl(s.price)}</b></div></div>
+  <form class="card" id="fCli">
+    <label for="cNome">Seu nome</label><input id="cNome" autocomplete="name" required value="${esc(draft.n)}">
+    <label for="cTel">WhatsApp com DDD</label><input id="cTel" inputmode="tel" autocomplete="tel" placeholder="(24) 99999-0000" required value="${esc(draft.t)}">
+    <div class="err" id="cErr"></div>
+    <div class="nav2"><button type="button" class="btn ghost" id="bk">${ic('back')}Voltar</button><button class="btn red" id="cOk">${ic('ok')}Confirmar horário</button></div>
+  </form></div>`;
+  const n=el.querySelector('#cNome'),t=el.querySelector('#cTel');
+  n.oninput=t.oninput=()=>{draft={n:n.value,t:t.value}};
+  el.querySelector('#bk').onclick=()=>{B.step=2;renderCliente()};
+  el.querySelector('#fCli').onsubmit=async e=>{e.preventDefault();
+    const name=n.value.trim(),phone=digits(t.value),btn=el.querySelector('#cOk');
+    if(!name||phone.length<10){$('cErr').textContent='Preencha nome e WhatsApp com DDD.';return}
+    btn.disabled=true;btn.textContent='Confirmando…';
+    const {data,error}=await sb.rpc('create_booking',{p_slug:SLUG,p_date:B.date,p_time:B.time,p_service:B.service,p_name:name,p_phone:phone});
+    if(error){const m=errMsg(error);toast(m);if(m===ERR.horario_ocupado){B.step=2;B.time=null;renderCliente()}else{btn.disabled=false;btn.innerHTML=ic('ok')+'Confirmar horário';$('cErr').textContent=m}return}
+    setMe(phone);draft={n:'',t:''};B.done=data;renderCliente()};
+}
+function askPhone(el,title,sub){
+  el.innerHTML=`<div class="pane"><h2>${title}</h2><p class="sub">${sub}</p><form class="card" id="fMe"><label for="mTel">Seu WhatsApp com DDD</label><input id="mTel" inputmode="tel" placeholder="(24) 99999-0000"><button class="btn red" style="margin-top:14px">${ic('user')}Entrar</button></form></div>`;
+  el.querySelector('#fMe').onsubmit=e=>{e.preventDefault();const p=digits(el.querySelector('#mTel').value);if(p.length<10){toast('Digite o WhatsApp com DDD');return}setMe(p);R()[tab]()};
+}
+async function myData(){const {data,error}=await sb.rpc('my_data',{p_slug:SLUG,p_phone:me});if(error)throw error;return data||{client:null,bookings:[]}}
+let cancelId=null;
+async function renderMeus(){
+  const el=$('meus');
+  if(!me)return askPhone(el,'Meus horários','Veja, remarque ou cancele seus horários.');
+  el.innerHTML='<div class="load">Carregando seus horários…</div>';
+  let d;try{d=await myData()}catch(e){el.innerHTML='<div class="empty">Não foi possível carregar. Verifique sua internet.</div>';return}
+  const prox=d.bookings.filter(b=>b.status==='marcado'&&b.date>=today);
+  const hist=d.bookings.filter(b=>b.status==='concluido').reverse();
+  const nome=d.client?d.client.name:'';
+  const dd=k=>{const x=new Date(k+'T12:00');return `<small>${k===today?'Hoje':DIAS[x.getDay()]}</small><b>${pad(x.getDate())}/${pad(x.getMonth()+1)}</b>`};
+  el.innerHTML=`<div class="pane"><h2>${nome?'Oi, '+esc(first(nome))+'!':'Meus horários'}</h2><p class="sub">Seus próximos horários na ${esc(SHOP.name)}.</p>
+  <div class="card"><h3>Próximos</h3>${prox.length?prox.map(b=>`<div class="bk"><div class="d">${dd(b.date)}</div><div><div class="who">${esc(b.time)} · ${esc(svcById(b.service).name)}</div><div class="what">${brl(svcById(b.service).price)}</div>
+    <div class="acts">${cancelId===b.id?`<button class="btn red" data-cc="${esc(b.id)}">Sim, cancelar</button><button class="btn ghost" data-nc>Manter</button>`:`<button class="btn ghost" data-rm="${esc(b.id)}" data-sv="${esc(b.service)}" data-dt="${esc(b.date)}">Remarcar</button><button class="btn ghost" data-c="${esc(b.id)}">Cancelar</button>`}</div></div></div>`).join(''):`<div class="empty">Nenhum horário marcado.</div>`}
+    <button class="btn pri" id="ag" style="margin-top:8px">${ic('cal')}Agendar horário</button></div>
+  ${hist.length?`<div class="card"><h3>Já fui</h3>${hist.slice(0,5).map(b=>`<div class="pl"><span>${esc(fmtDia(b.date))} · ${esc(svcById(b.service).name)}</span><b>${brl(svcById(b.service).price)}</b></div>`).join('')}</div>`:''}
+  <button class="btn ghost" id="troca">Não é você? Trocar número</button></div>`;
+  el.querySelector('#ag').onclick=()=>go('cliente');
+  el.querySelector('#troca').onclick=()=>{setMe('');renderMeus()};
+  el.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{cancelId=b.dataset.c;renderMeus()});
+  el.querySelectorAll('[data-nc]').forEach(b=>b.onclick=()=>{cancelId=null;renderMeus()});
+  el.querySelectorAll('[data-cc]').forEach(b=>b.onclick=async()=>{b.disabled=true;const {error}=await sb.rpc('cancel_booking',{p_slug:SLUG,p_id:b.dataset.cc,p_phone:me});cancelId=null;toast(error?errMsg(error):'Horário cancelado.');renderMeus()});
+  el.querySelectorAll('[data-rm]').forEach(b=>b.onclick=async()=>{b.disabled=true;const {error}=await sb.rpc('cancel_booking',{p_slug:SLUG,p_id:b.dataset.rm,p_phone:me});if(error){toast(errMsg(error));return}
+    draft={n:nome,t:me};B={step:2,service:b.dataset.sv,date:b.dataset.dt<today?today:b.dataset.dt,time:null,done:null};go('cliente');toast('Escolha o novo dia e horário')});
+}
+async function renderCartao(){
+  const el=$('cartao');
+  if(!me)return askPhone(el,'Meu cartão','Veja quantos carimbos faltam para o seu corte grátis.');
+  el.innerHTML='<div class="load">Carregando seu cartão…</div>';
+  let d;try{d=await myData()}catch(e){el.innerHTML='<div class="empty">Não foi possível carregar. Verifique sua internet.</div>';return}
+  const c=d.client||{name:'',stamps:0};
+  el.innerHTML=`<div class="pane"><h2>Meu cartão</h2><p class="sub">Cada atendimento vale 1 carimbo. No 10º, o corte é por nossa conta.</p>
+  <div class="big"><div class="in"><div class="shop">${esc(SHOP.name)}</div><div class="who">${esc(c.name||'Cliente')}</div>
+    <div class="count">${c.stamps}/10</div>
+    <div class="stamps" aria-label="${c.stamps} de 10 carimbos">${[...Array(10)].map((_,i)=>`<i class="${i<c.stamps?'on':''} ${i===9?'last':''}">${ic(i===9?'combo':'tesoura')}</i>`).join('')}</div>
+    <p class="msg">${c.stamps>=10?'<b>Cartão completo!</b> Mostre esta tela no balcão e ganhe seu corte grátis.':c.stamps===9?'Falta só 1 para o seu corte grátis!':`Faltam ${10-c.stamps} atendimentos para o seu corte grátis.`}</p></div></div>
+  <div class="row"><button class="btn pri" id="ag">${ic('cal')}Agendar e ganhar carimbo</button><button class="btn ghost" id="troca">Trocar número</button></div></div>`;
+  el.querySelector('#ag').onclick=()=>go('cliente');
+  el.querySelector('#troca').onclick=()=>{setMe('');renderCartao()};
+}
+function renderSobre(){
+  const el=$('sobre');const sh=SHOP;
+  const wa=`https://wa.me/${waNum(sh.wpp)}?text=${encodeURIComponent('Olá! Vim pelo app de agendamento.')}`;
+  el.innerHTML=`<div class="pane"><h2>${esc(sh.name)}</h2><p class="sub">Tudo o que você precisa saber antes de vir.</p>
+  <div class="card">${sh.addr?`<div class="inf">${ic('pin')}<div><b>Endereço</b><div class="what">${esc(sh.addr)}</div></div></div>`:''}
+    <div class="inf">${ic('rel')}<div><b>Funcionamento</b><div class="what">${esc(sh.days)} · ${pad(sh.open)}h às ${pad(sh.close)}h</div></div></div>
+    ${sh.wpp?`<div class="inf">${ic('wa')}<div><b>WhatsApp</b><div class="what">${esc(sh.wpp)}</div></div></div>`:''}
+    ${sh.insta?`<div class="inf">${ic('insta')}<div><b>Instagram</b><div class="what">@${esc(sh.insta)}</div></div></div>`:''}</div>
+  <div class="card"><h3>Serviços e preços</h3>${sh.services.map(s=>`<div class="pl"><span>${esc(s.name)} · ${esc(s.min)} min</span><b>${brl(s.price)}</b></div>`).join('')}</div>
+  <div class="row"><button class="btn red" id="ag">${ic('cal')}Agendar agora</button>${sh.wpp?`<a class="btn wa" href="${esc(wa)}" target="_blank" rel="noopener">${ic('wa')}Falar no WhatsApp</a>`:''}${sh.insta?`<a class="btn ghost" href="https://instagram.com/${esc(encodeURIComponent(sh.insta))}" target="_blank" rel="noopener">${ic('insta')}Instagram</a>`:''}</div></div>`;
+  el.querySelector('#ag').onclick=()=>go('cliente');
+}
+
+/* ================= PAINEL ================= */
+let authMode='entrar';
+function renderLogin(msg){
+  nav.hidden=true;show('login');SHOP=null;setHead();
+  const el=$('login');
+  el.innerHTML=`<div class="pane center"><h2>Área do barbeiro</h2><p class="sub">Agenda, lembretes no WhatsApp e cartão fidelidade dos seus clientes.</p>
+  <form class="card" id="fAuth"><div class="seg"><button type="button" data-am="entrar" aria-pressed="${authMode==='entrar'}">Entrar</button><button type="button" data-am="criar" aria-pressed="${authMode==='criar'}">Criar conta</button></div>
+    <label for="aEmail">E-mail</label><input id="aEmail" type="email" autocomplete="email" required>
+    <label for="aPass">Senha</label><input id="aPass" type="password" autocomplete="${authMode==='criar'?'new-password':'current-password'}" minlength="6" required>
+    <div class="err" id="aErr">${esc(msg||'')}</div>
+    <button class="btn red" style="width:100%;margin-top:8px" id="aGo">${authMode==='criar'?'Criar minha conta':'Entrar'}</button>
+  </form></div>`;
+  el.querySelectorAll('[data-am]').forEach(b=>b.onclick=()=>{authMode=b.dataset.am;renderLogin()});
+  el.querySelector('#fAuth').onsubmit=async e=>{e.preventDefault();
+    const email=$('aEmail').value.trim(),password=$('aPass').value,btn=$('aGo');btn.disabled=true;
+    if(authMode==='criar'){const {data,error}=await sb.auth.signUp({email,password});btn.disabled=false;
+      if(error){$('aErr').textContent=errMsg(error);return}
+      if(!data.session){el.innerHTML=`<div class="ok pane"><div class="check">${ic('ok')}</div><h2>Confirme seu e-mail</h2><p>Mandamos um link para <b>${esc(email)}</b>. Clique nele para ativar sua conta e voltar para cá.</p></div>`}
+    }else{const {error}=await sb.auth.signInWithPassword({email,password});btn.disabled=false;if(error)$('aErr').textContent=errMsg(error)}
+  };
+}
+function renderCriar(){
+  nav.hidden=true;show('criar');
+  const el=$('criar');
+  el.innerHTML=`<div class="pane center"><h2>Sua barbearia</h2><p class="sub">Isso cria o link que seus clientes vão usar para agendar.</p>
+  <form class="card" id="fNew">
+    <label for="nNome">Nome da barbearia</label><input id="nNome" required>
+    <label for="nSlug">Link</label><input id="nSlug" required pattern="[a-z0-9-]{3,40}">
+    <p class="what" id="nPrev"></p>
+    <label for="nW">WhatsApp da barbearia</label><input id="nW" inputmode="tel" placeholder="(24) 99999-0000">
+    <div class="err" id="nErr"></div>
+    <button class="btn red" style="width:100%;margin-top:8px" id="nGo">Criar minha barbearia</button>
+    <button type="button" class="btn ghost" style="width:100%;margin-top:8px" id="sair">Sair</button>
+  </form></div>`;
+  let touched=false;
+  const upd=()=>{$('nPrev').textContent=BASE+'?b='+($('nSlug').value||'...')};
+  $('nNome').oninput=()=>{if(!touched)$('nSlug').value=slugify($('nNome').value);upd()};
+  $('nSlug').oninput=()=>{touched=true;$('nSlug').value=slugify($('nSlug').value);upd()};upd();
+  $('sair').onclick=()=>sb.auth.signOut();
+  $('fNew').onsubmit=async e=>{e.preventDefault();$('nGo').disabled=true;
+    const {data,error}=await sb.from('shops').insert({name:$('nNome').value.trim(),slug:$('nSlug').value,wpp:digits($('nW').value)}).select().single();
+    $('nGo').disabled=false;if(error){$('nErr').textContent=errMsg(error);return}
+    SHOP=data;setHead();go('config');toast('Barbearia criada! Copie seu link abaixo.')};
+}
+let agDate=today,agTimer=null;
+const lembrete=b=>`https://wa.me/${waNum(b.phone)}?text=${encodeURIComponent(`Olá, ${first(b.client)}! Passando para lembrar do seu horário na ${SHOP.name} ${b.date===today?'hoje':'dia '+fmtDia(b.date)} às ${b.time} (${svcById(b.service).name}). Posso confirmar?`)}`;
+async function renderAgenda(){
+  const el=$('agenda');
+  const days=[...Array(7)].map((_,i)=>addDays(new Date(),i));
+  const dayBar=`<div class="days" style="margin-bottom:16px">${days.map((d,i)=>{const k=ymd(d);return `<button class="day" data-ad="${k}" aria-pressed="${agDate===k}"><small>${i===0?'Hoje':i===1?'Amanhã':DIAS[d.getDay()]}</small><b>${pad(d.getDate())}</b></button>`}).join('')}</div>`;
+  if(!el.querySelector('.pane'))el.innerHTML='<div class="load">Carregando agenda…</div>';
+  const date=agDate;
+  const {data,error}=await sb.from('bookings').select('*').eq('shop_id',SHOP.id).eq('date',date).neq('status','cancelado').order('time');
+  if(tab!=='agenda'||agDate!==date)return;
+  if(error){el.innerHTML='<div class="empty">Não foi possível carregar a agenda.</div>';return}
+  const list=data||[];
+  const done=list.filter(b=>b.status==='concluido'),faltas=list.filter(b=>b.status==='faltou').length;
+  const fat=done.reduce((s,b)=>s+Number(svcById(b.service).price),0);
+  const prev=list.filter(b=>b.status!=='faltou').reduce((s,b)=>s+Number(svcById(b.service).price),0);
+  const pct=list.length?Math.round((done.length+faltas)/list.length*100):0;
+  const now=new Date(),nowT=pad(now.getHours())+':'+pad(now.getMinutes());
+  const nx=list.find(b=>b.status==='marcado'&&(date!==today||b.time>=nowT))||list.find(b=>b.status==='marcado');
+  let quando='';
+  if(nx&&date===today){const [h,m]=nx.time.split(':').map(Number);const d=h*60+m-(now.getHours()*60+now.getMinutes());quando=d>=60?`em ${Math.floor(d/60)}h${d%60?pad(d%60):''}`:d>0?`em ${d} min`:'agora / atrasado'}
+  el.innerHTML=`<div class="pane"><div class="topbar"><h2>Agenda</h2><button class="btn ghost" id="atu">Atualizar</button></div><p class="sub">Mande o lembrete, marque quem veio e cada atendimento vira carimbo no cartão.</p>${dayBar}
+  ${nx?`<div class="next"><div class="bt">${esc(nx.time)}</div><div><small>Próximo cliente${quando?' · '+esc(quando):''}</small><div class="nm">${esc(nx.client)}</div><div>${esc(svcById(nx.service).name)} · ${brl(svcById(nx.service).price)}</div><a class="btn pri" href="${esc(lembrete(nx))}" target="_blank" rel="noopener">${ic('wa')}Mandar lembrete</a></div></div>`:''}
+  <div class="stats"><div class="stat"><b>${list.length}</b><span>agendados</span></div><div class="stat"><b>${done.length}</b><span>atendidos</span></div><div class="stat"><b>${brl0(fat)}</b><span>no caixa</span></div><div class="stat"><b>${brl0(prev)}</b><span>previsto</span></div></div>
+  <div class="prog" title="${pct}% do dia resolvido"><i style="width:${pct}%"></i></div>
+  <div class="card"><h3>Linha do dia</h3>${list.length?`<div class="tl">${list.map(b=>`<div class="slot s-${esc(b.status)}"><div class="time">${esc(b.time)}</div><div class="dot"><i></i></div><div><div class="info"><div class="who">${esc(b.client)}<span class="tag t-${esc(b.status)}">${b.status==='marcado'?'Marcado':b.status==='concluido'?'Atendido':'Faltou'}</span></div>
+    <div class="what">${esc(svcById(b.service).name)} · ${brl(svcById(b.service).price)}</div></div>
+    <div class="acts">${b.status==='marcado'?`<a class="btn wa" href="${esc(lembrete(b))}" target="_blank" rel="noopener">${ic('wa')}Lembrete</a><button class="btn sec" data-ok="${esc(b.id)}">${ic('ok')}Atendido</button><button class="btn ghost" data-no="${esc(b.id)}">Faltou</button>`:`<button class="btn ghost" data-undo="${esc(b.id)}">Desfazer</button>`}</div>
+  </div></div>`).join('')}</div>`:`<div class="empty">Nenhum horário neste dia ainda. Divulgue seu link na bio do Instagram!</div>`}</div></div>`;
+  el.querySelector('#atu').onclick=()=>renderAgenda();
+  el.querySelectorAll('[data-ad]').forEach(b=>b.onclick=()=>{agDate=b.dataset.ad;el.innerHTML='';renderAgenda()});
+  const byId=id=>list.find(x=>x.id===id);
+  el.querySelectorAll('[data-ok]').forEach(b=>b.onclick=()=>setStatus(byId(b.dataset.ok),'concluido',b));
+  el.querySelectorAll('[data-no]').forEach(b=>b.onclick=()=>setStatus(byId(b.dataset.no),'faltou',b));
+  el.querySelectorAll('[data-undo]').forEach(b=>b.onclick=()=>setStatus(byId(b.dataset.undo),'marcado',b));
+}
+async function setStatus(b,st,btn){
+  if(!b)return;btn.disabled=true;
+  const {error}=await sb.from('bookings').update({status:st}).eq('id',b.id);
+  if(error){toast(st==='marcado'?'Esse horário já foi ocupado por outra pessoa.':errMsg(error));btn.disabled=false;return}
+  const {data:c}=await sb.from('clients').select('*').eq('shop_id',SHOP.id).eq('phone',b.phone).maybeSingle();
+  let stamps=c?c.stamps:0,last=c?c.last:null;
+  if(b.status==='concluido'&&st!=='concluido')stamps=Math.max(0,stamps-1);
+  if(st==='concluido'&&b.status!=='concluido'){stamps=Math.min(10,stamps+1);if(!last||b.date>last)last=b.date;
+    toast(stamps>=10?`${first(b.client)} completou o cartão: corte grátis!`:`+1 carimbo para ${first(b.client)} (${stamps}/10)`)}
+  await sb.from('clients').upsert({shop_id:SHOP.id,phone:b.phone,name:c?c.name:b.client,stamps,last});
+  renderAgenda();
+}
+async function renderFid(){
+  const el=$('fidelidade');
+  el.innerHTML='<div class="load">Carregando clientes…</div>';
+  const {data,error}=await sb.from('clients').select('*').eq('shop_id',SHOP.id).order('stamps',{ascending:false});
+  if(tab!=='fidelidade')return;
+  if(error){el.innerHTML='<div class="empty">Não foi possível carregar.</div>';return}
+  const cs=data||[];
+  const sumidos=cs.filter(c=>c.last&&diasDesde(c.last)>30).sort((a,b)=>String(a.last).localeCompare(b.last));
+  const volta=c=>`https://wa.me/${waNum(c.phone)}?text=${encodeURIComponent(`Fala, ${first(c.name)}! Sentimos sua falta aqui na ${SHOP.name}. Para você voltar, essa semana seu corte sai com 15% de desconto. Quer que eu reserve um horário? ${BASE}?b=${SHOP.slug}`)}`;
+  const quando=c=>{const d=diasDesde(c.last);return d===0?'hoje':d===1?'ontem':'há '+d+' dias'};
+  el.innerHTML=`<div class="pane"><h2>Fidelidade</h2><p class="sub">10 carimbos = 1 corte grátis. Cliente que volta é o cliente mais barato que existe.</p>
+  <div class="card alert"><h3>Sumidos há +30 dias · ${sumidos.length}</h3>${sumidos.length?sumidos.map(c=>`<div class="cli"><div><div class="who">${esc(c.name)}</div><div class="what">Última visita ${quando(c)} · ${c.stamps}/10 carimbos</div></div><a class="btn wa" href="${esc(volta(c))}" target="_blank" rel="noopener">${ic('wa')}Chamar de volta</a></div>`).join(''):'<div class="empty">Ninguém sumido. Ótimo sinal.</div>'}</div>
+  <h3 style="margin-top:8px">Cartões dos clientes</h3>
+  ${cs.length?`<div class="cards">${cs.map(c=>`<div class="lc ${c.stamps>=10?'full':''}"><div class="in"><div class="hd"><b>${esc(c.name)}</b><span>${c.stamps}/10</span></div>
+    <div class="stamps" aria-label="${c.stamps} de 10 carimbos">${[...Array(10)].map((_,i)=>`<i class="${i<c.stamps?'on':''} ${i===9?'last':''}">${ic(i===9?'combo':'tesoura')}</i>`).join('')}</div>
+    <div class="ft">${c.stamps>=10?'Cartão completo':`Faltam ${10-c.stamps} para o corte grátis`}${c.last?' · última visita '+quando(c):''}</div>
+    ${c.stamps>=10?`<button class="btn pri" style="margin-top:10px" data-res="${esc(c.phone)}">Resgatar corte grátis</button>`:''}</div></div>`).join('')}</div>`:'<div class="empty">Os clientes aparecem aqui depois do primeiro agendamento.</div>'}</div>`;
+  el.querySelectorAll('[data-res]').forEach(b=>b.onclick=async()=>{b.disabled=true;const {error}=await sb.from('clients').update({stamps:0}).eq('shop_id',SHOP.id).eq('phone',b.dataset.res);toast(error?errMsg(error):'Corte grátis resgatado, cartão zerado');renderFid()});
+}
+function renderConfig(){
+  const el=$('config');
+  const icons=['tesoura','barba','combo','sobrancelha'];
+  const link=BASE+'?b='+SHOP.slug;
+  let svcs=SHOP.services.map(s=>({...s}));
+  const draw=()=>{
+  el.innerHTML=`<div class="pane"><div class="topbar"><h2>Ajustes</h2><button class="btn ghost" id="sair">Sair</button></div>
+  <div class="card"><h3>Seu link de agendamento</h3><p class="what">Coloque na bio do Instagram e mande no WhatsApp dos clientes.</p>
+    <div class="linkbox"><input id="lk" readonly value="${esc(link)}"><button class="btn sec" id="cp">${ic('link')}Copiar</button></div>
+    <div class="row" style="margin-top:10px"><a class="btn ghost" href="${esc(link)}" target="_blank" rel="noopener">Ver como cliente</a></div></div>
+  <form class="card" id="fCfg"><h3>Barbearia</h3>
+    <label for="gNome">Nome da barbearia</label><input id="gNome" value="${esc(SHOP.name)}">
+    <div class="row"><div style="flex:1"><label for="gA">Abre (hora)</label><input id="gA" type="number" min="0" max="23" value="${esc(SHOP.open)}"></div><div style="flex:1"><label for="gF">Fecha (hora)</label><input id="gF" type="number" min="1" max="24" value="${esc(SHOP.close)}"></div></div>
+    <label for="gD">Dias de funcionamento</label><input id="gD" value="${esc(SHOP.days)}">
+    <label for="gE">Endereço</label><input id="gE" value="${esc(SHOP.addr)}">
+    <div class="row"><div style="flex:1"><label for="gW">WhatsApp da barbearia</label><input id="gW" inputmode="tel" value="${esc(SHOP.wpp)}"></div><div style="flex:1"><label for="gI">Instagram (sem @)</label><input id="gI" value="${esc(SHOP.insta)}"></div></div>
+    <h3 style="margin-top:24px">Serviços</h3><div>${svcs.map(s=>`<div class="svc" data-id="${esc(s.id)}" data-ic="${esc(s.icon||'tesoura')}"><div class="nm"><label>Serviço</label><input class="sn" value="${esc(s.name)}"></div><div><label>Preço (R$)</label><input class="sp" type="number" min="0" step="1" value="${esc(s.price)}"></div><div><label>Minutos</label><input class="sm" type="number" min="15" step="15" value="${esc(s.min)}"></div><button type="button" class="x" aria-label="Remover serviço">×</button></div>`).join('')}</div>
+    <div class="err" id="gErr"></div>
+    <div class="row" style="margin-top:14px"><button type="button" class="btn ghost" id="addS">+ Serviço</button><button class="btn pri" id="gGo">Salvar</button></div>
+  </form></div>`;
+  const collect=()=>{svcs=[...el.querySelectorAll('.svc')].map(r=>({id:r.dataset.id,icon:r.dataset.ic,name:r.querySelector('.sn').value.trim()||'Serviço',price:+r.querySelector('.sp').value||0,min:+r.querySelector('.sm').value||30}))};
+  el.querySelector('#sair').onclick=()=>sb.auth.signOut();
+  el.querySelector('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(link);toast('Link copiado!')}catch(e){$('lk').select();toast('Selecione e copie o link')}};
+  el.querySelectorAll('.x').forEach(b=>b.onclick=()=>{collect();if(svcs.length<=1){toast('Deixe pelo menos 1 serviço');return}svcs=svcs.filter(s=>s.id!==b.closest('.svc').dataset.id);draw()});
+  el.querySelector('#addS').onclick=()=>{collect();svcs.push({id:uid(),name:'Novo serviço',price:0,min:30,icon:icons[svcs.length%4]});draw()};
+  el.querySelector('#fCfg').onsubmit=async e=>{e.preventDefault();collect();
+    const a=+$('gA').value,f=+$('gF').value;if(!(f>a)){$('gErr').textContent='O horário de fechar precisa ser depois do de abrir.';return}
+    const upd={name:$('gNome').value.trim()||SHOP.name,open:a,close:f,days:$('gD').value.trim(),addr:$('gE').value.trim(),wpp:digits($('gW').value),insta:$('gI').value.trim().replace(/^@/,''),services:svcs};
+    $('gGo').disabled=true;const {data,error}=await sb.from('shops').update(upd).eq('id',SHOP.id).select().single();$('gGo').disabled=false;
+    if(error){$('gErr').textContent=errMsg(error);return}SHOP=data;setHead();draw();toast('Ajustes salvos')};
+  };
+  draw();
+}
+async function painelStart(session){
+  if(!session)return renderLogin();
+  show('boot');
+  const {data,error}=await sb.from('shops').select('*').limit(1).maybeSingle();
+  if(error)return renderLogin('Não foi possível carregar sua barbearia. Tente de novo.');
+  if(!data)return renderCriar();
+  SHOP=data;setHead();go(tab&&MODES.painel.some(t=>t[0]===tab)?tab:'agenda');
+}
+
+/* ================= INÍCIO ================= */
+async function start(){
+  if(MODE==='cliente'){
+    const {data,error}=await sb.rpc('get_shop',{p_slug:SLUG});
+    if(error||!data){$('boot').innerHTML=`<div class="pane center"><h2>Barbearia não encontrada</h2><p class="sub">Confira o link que você recebeu.</p></div>`;return}
+    SHOP=data;setHead();go('cliente');
+  }else{
+    let cur;
+    sb.auth.onAuthStateChange((ev,session)=>{const id=session?session.user.id:null;if(id===cur&&ev!=='SIGNED_OUT')return;cur=id;setTimeout(()=>painelStart(session),0)});
+  }
+  setInterval(()=>{if(tab==='agenda'&&!document.hidden)renderAgenda()},60000);
+}
+start();
+}
+</script>
+</body>
+</html>
