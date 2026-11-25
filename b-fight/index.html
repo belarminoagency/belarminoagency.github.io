@@ -206,6 +206,26 @@ header.brand{flex-wrap:wrap}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ok);color:#0E0E10;font-family:var(--display);font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;border-radius:8px;z-index:20;max-width:calc(100% - 32px)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
+
+.pick.full{grid-column:1/-1;background:linear-gradient(135deg,rgba(224,49,59,.16),rgba(224,49,59,.03) 55%),#131316;border-color:rgba(224,49,59,.35)}
+.blocos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.bloco{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:14px 12px;border-radius:14px;border:1px solid var(--line);background:var(--surface);text-align:left;min-height:96px;transition:border-color .2s,background .2s,transform .15s,opacity .2s}
+.bloco:active{transform:scale(.97)}
+.bloco .bico{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--muted)}
+.bloco b{font-family:var(--display);font-weight:800;font-size:15.5px;letter-spacing:-.02em;line-height:1.15}
+.bloco small{font-size:12px;color:var(--muted);margin-top:auto}
+.bloco.on{border-color:rgba(224,49,59,.5);background:linear-gradient(160deg,rgba(224,49,59,.16),rgba(224,49,59,.03)),var(--surface)}
+.bloco.on .bico{color:var(--red)}
+.bloco:not(.on){opacity:.5}
+.bsec{margin-top:8px}
+.bsec h2{display:flex;align-items:center;gap:10px}
+.bnum{font-family:var(--body);font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--red);background:var(--red-soft);border-radius:6px;padding:3px 7px}
+#blocosListas{display:flex;flex-direction:column;gap:18px}
+.phase.ex{background:#F0A23B;color:#0A0A0C}
+.phase{white-space:nowrap}
+.time.ex,.ftime.ex{color:#F0A23B}
+.bar i.ex{background:#F0A23B}
+@media(max-width:420px){.blocos{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* ===== visual profissional ===== */
 :root{
   --bg:#0A0A0C; --surface:#131316; --raise:#1B1B20; --ink:#F4F3F1; --muted:#97949F; --line:#24232A;
@@ -334,6 +354,7 @@ footer p{font-family:var(--body);font-size:12px;letter-spacing:.12em}
     <div class="picks two">
       <button class="pick" id="pickSolo"><span class="ico">01</span><b>Sozinho</b><small id="soloDesc">Em casa, sem equipamento.</small><i class="arrow">→</i></button>
       <button class="pick" id="pickDupla"><span class="ico">02</span><b>Com alguém</b><small id="duplaDesc">Parceiro com manopla ou aparador.</small><i class="arrow">→</i></button>
+      <button class="pick full" id="pickFull"><span class="ico">03 · Treino de academia</span><b>Treino completo</b><small>Aquecimento, cardio de luta, força, rounds e abdominal. Como nas academias que formam lutador.</small><i class="arrow">→</i></button>
     </div>
   </section>
 
@@ -367,7 +388,9 @@ footer p{font-family:var(--body);font-size:12px;letter-spacing:.12em}
       <div class="cfgrow"><span>Nível</span><div class="settings" id="gLevel"></div></div>
       <div class="cfgrow"><span>Tempo do round</span><div class="settings" id="gRound"></div></div>
       <div class="cfgrow"><span>Descanso</span><div class="settings" id="gRest"></div></div>
-      <div class="cfgrow"><span>Quantos rounds</span><div class="settings" id="gCount"></div></div>
+      <div class="cfgrow cfull" hidden><span>Duração do treino</span><div class="settings" id="gDur"></div></div>
+      <div class="cfgrow cfull" hidden><span>Equipamento que você tem</span><div class="settings" id="gEquip"></div></div>
+      <div class="cfgrow cnorm"><span>Quantos rounds</span><div class="settings" id="gCount"></div></div>
       <div class="cfgrow"><span>Alongamento</span><div class="settings" id="gStretch"></div></div>
       <div class="cfgrow"><span>Voz</span><div class="settings">
         <button class="chip" id="vOn" aria-pressed="false">Voz desligada</button>
@@ -378,6 +401,13 @@ footer p{font-family:var(--body);font-size:12px;letter-spacing:.12em}
       <div class="cfgrow"><span>Ritmo dos golpes</span><div class="settings" id="gPace"></div></div>
     </div>
 
+    <div class="sec" id="blocosSec" hidden>
+      <div class="sechead"><h2>Blocos do treino</h2><span class="count" id="cBlocos"></span></div>
+      <p class="note">Toque num bloco pra ligar ou desligar. O timer passa por todos em ordem.</p>
+      <div class="blocos" id="blocosGrid"></div>
+      <div id="blocosListas"></div>
+    </div>
+
     <div class="sec" id="stretchSec">
       <div class="sechead"><h2>Alongamento</h2><span class="count" id="cStretch"></span></div>
       <p class="note">Faz antes de começar. O timer já passa por cada um, 30 segundos cada.</p>
@@ -385,7 +415,7 @@ footer p{font-family:var(--body);font-size:12px;letter-spacing:.12em}
     </div>
 
     <div class="sec">
-      <div class="sechead"><h2>Rounds</h2><span class="count" id="cRounds"></span></div>
+      <div class="sechead" id="roundsHead"><h2>Rounds</h2><span class="count" id="cRounds"></span></div>
       <ol class="list" id="roundList"></ol>
       <div class="rowbtns">
         <button class="btn main" id="save" disabled>Salvar treino</button>
@@ -570,23 +600,25 @@ const PHRASES=["Disciplina vence talento quando o talento não treina.","Mais um
 /* ---------- Estado ---------- */
 const $=id=>document.getElementById(id);
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-let art=null, mode=null, segs=[], done=new Set();
-let opt=Object.assign({voice:false,nums:false,round:120,rest:60,count:0,level:"int",pace:"normal",stretch:true},store.get("bf-opt",{}));
+let art=null, mode=null, segs=[], done=new Set(), completo=false;
+let opt=Object.assign({voice:false,nums:false,round:120,rest:60,count:0,level:"int",pace:"normal",stretch:true,dur:45,equip:{halter:true,elastico:true,peso3:true},blocos:{}},store.get("bf-opt",{}));
 let saved=false, idx=0, left=0, timer=null, endAt=0, running=false, ctx=null, lock=null, lastCall=0, phraseI=0, explo=null;
 const STR=30;
 const fmtD=x=>x<60?x+" s":x%60?Math.floor(x/60)+" min "+x%60+" s":x/60+" min";
+const DURS_OPT=[[30,"30 min"],[45,"45 min"],[60,"60 min"]];
 const GROUPS={gLevel:["level",[["ini","Iniciante"],["int","Intermediário"],["ava","Avançado"]]],
  gRound:["round",[[60,"1 min"],[120,"2 min"],[180,"3 min"],[300,"5 min"]]],
  gRest:["rest",[[30,"30 s"],[60,"1 min"],[90,"1 min 30"]]],
  gCount:["count",[[3,"3"],[5,"5"],[7,"7"],[0,"Todos"]]],
  gStretch:["stretch",[[true,"Fazer"],[false,"Pular"]]],
- gPace:["pace",[["lento","Lento"],["normal","Normal"],["rapido","Rápido"]]]};
+ gPace:["pace",[["lento","Lento"],["normal","Normal"],["rapido","Rápido"]]],
+ gDur:["dur",DURS_OPT]};
 const PACE={lento:8000,normal:5500,rapido:3500};
 /* Evolução: as sequências mudam conforme você treina naquele nível. */
 const EVO_KEY="bf-evo";
 let evo=store.get(EVO_KEY,{});
 const MAXF={ini:3,int:4,ava:5};
-const evoK=()=>art+"-"+mode+"-"+opt.level;
+const evoK=()=>art+"-"+(completo?"completo":mode)+"-"+opt.level;
 function evoAtual(){return evo[evoK()]||{fase:0,desde:new Date().toISOString(),treinos:0,rounds:0,total:0}}
 function faseAtual(){return art&&mode?evoAtual().fase:0}
 function salvaEvo(){store.set(EVO_KEY,evo);try{const u=window.firebase&&firebase.auth().currentUser;if(u)firebase.firestore().collection("bfight").doc(u.uid).set({evo:JSON.stringify(evo)},{merge:true}).catch(()=>{})}catch(e){}}
@@ -615,7 +647,7 @@ function renderEvo(){
   const pct=e.fase>=max?100:Math.min(100,Math.max(e.treinos/4,Math.min(dias/7,e.treinos/3))*100);
   $("evoBar").style.width=pct+"%";
   $("evoNote").textContent=e.fase>=max?"Você está na fase máxima deste nível. Quer mais desafio? Sobe o nível nos ajustes."
-    :"As sequências mudam sozinhas quando você pega o jeito: "+(faltaT?"mais "+faltaT+" treino"+(faltaT>1?"s":"")+" completo"+(faltaT>1?"s":""):"falta pouco")+(faltaD&&e.treinos?" ou "+faltaD+" dia"+(faltaD>1?"s":"")+" treinando":"")+".";
+    :(completo?"Cardio, força e sequências ficam mais puxados quando você pega o jeito: ":"As sequências mudam sozinhas quando você pega o jeito: ")+(faltaT?"mais "+faltaT+" treino"+(faltaT>1?"s":"")+" completo"+(faltaT>1?"s":""):"falta pouco")+(faltaD&&e.treinos?" ou "+faltaD+" dia"+(faltaD>1?"s":"")+" treinando":"")+".";
   $("evoUp").hidden=e.fase>=max;$("evoDown").hidden=e.fase<=0;
 }
 const POOL={boxe:{s:["1","2","3","4","5","6"],d:["P","E","B"]},muay:{s:["1","2","3","4","CB","CM","CA","T","J","CT"],d:["BC","P","E"]},mma:{s:["1","2","3","4","CB","CM","T","Q"],d:["SP","P","E"]}};
@@ -657,6 +689,91 @@ function buildRounds(a){
   return evoluir(rs,faseAtual());
 }
 
+/* ---------- Treino completo (estilo academia de luta) ---------- */
+const BLOCOS=[
+ {id:"aquec",nome:"Aquecimento",ico:"01",desc:"Coração subindo e articulações soltas."},
+ {id:"cardio",nome:"Cardio de luta",ico:"02",desc:"Fôlego pra aguentar os rounds."},
+ {id:"forca",nome:"Força",ico:"03",desc:"Calistenia, halteres e elástico."},
+ {id:"rounds",nome:"Rounds",ico:"04",desc:"Técnica e combinações."},
+ {id:"core",nome:"Abdominal",ico:"05",desc:"Tronco forte pra girar e aguentar golpe."},
+ {id:"along",nome:"Alongamento",ico:"06",desc:"Volta à calma."}];
+const EQUIP=[["halter","Halteres (5, 6 e 10 kg)"],["elastico","Elástico extensor"],["peso3","Peso de 3 kg"]];
+const EX={
+ aquec:[["Corrida no lugar","Leve, na ponta do pé, soltando os braços."],["Polichinelo","Ritmo constante, respira pelo nariz."],["Rotação de ombros e quadril","Círculos grandes pros dois lados."],["Agachamento lento","Desce em 3 segundos, sobe em 1."],["Sombra leve","Jab solto e movimentação de base, sem força."]],
+ cardio:[["Cai pra flexão e levanta dando soco","Desce, faz 1 flexão, levanta rápido e solta jab-direto. Sem parar.","burpee"],["Sprawl com 1-2","Joga o quadril no chão, volta pra base e solta jab-direto.","sprawl"],["Socos rápidos","Direto-direto o mais rápido que der, com a guarda subindo.","rapido"],["Joelho alto","Corre no lugar levantando o joelho até o quadril."],["Escalador","Prancha alta, puxa os joelhos alternando rápido."],["Corda imaginária","Pula leve na ponta do pé, girando os punhos."],["Polichinelo com soco","Abre as pernas e solta 1-2 no alto."],["Agachamento com salto","Desce e explode pra cima. Aterrissa macio."]],
+ forca:{
+  corpo:[["Flexão","Corpo reto, peito quase no chão."],["Agachamento","Joelho na linha do pé, desce até a coxa paralela."],["Afundo alternado","Passo grande, joelho de trás quase toca o chão."],["Flexão diamante","Mãos juntas embaixo do peito. Foca no tríceps."],["Pike (flexão de ombro)","Quadril alto, desce a cabeça entre as mãos."]],
+  halter:[["Agachamento goblet (10 kg)","Halter colado no peito, desce firme."],["Remada curvada (5–6 kg)","Tronco inclinado, puxa o halter até a costela."],["Desenvolvimento de ombro (5 kg)","Empurra os halteres pra cima sem arquear as costas."],["Levantamento terra romeno (10 kg)","Joelho levemente dobrado, desce o halter rente à perna."],["Rosca martelo (5–6 kg)","Palma virada pra dentro, cotovelo parado."]],
+  elastico:[["Remada com extensor","Pisa no pedal e puxa até a cintura."],["Soco com extensor","Passa o extensor nas costas e solta direto contra a resistência."],["Puxada com extensor","Puxa por cima da cabeça até a altura do queixo."]],
+  peso3:[["Sombra com peso de 3 kg","Socos curtos e rápidos. Não estica o cotovelo até o fim."]]},
+ core:[["Abdominal","Sobe soltando o ar, sem puxar o pescoço."],["Prancha","Corpo reto, contrai o abdômen e o glúteo."],["Bicicleta","Cotovelo no joelho oposto, devagar."],["Russian twist","Gira o tronco de um lado pro outro. Com halter fica mais difícil."],["Elevação de pernas","Deitado, sobe as pernas retas sem tirar a lombar do chão."],["Prancha lateral","Quadril alto. Troca de lado na metade."]]
+};
+const DURS=[[30,"30 min"],[45,"45 min"],[60,"60 min"]];
+function planoCompleto(){
+  const d=opt.dur||45,f=faseAtual();
+  const t=Math.min(50,35+f*3),pausa=Math.max(12,25-f*2);
+  const n={30:{cardio:4,forca:4,voltas:2,rounds:3,core:3,along:5},45:{cardio:6,forca:5,voltas:2,rounds:5,core:4,along:6},60:{cardio:8,forca:6,voltas:3,rounds:7,core:5,along:8}}[d]||{};
+  const eq=opt.equip||{};
+  let forcaPool=[...EX.forca.corpo];
+  if(eq.halter)forcaPool=[EX.forca.halter[0],EX.forca.corpo[0],EX.forca.halter[1],EX.forca.corpo[2],EX.forca.halter[2],EX.forca.halter[3],EX.forca.corpo[3],EX.forca.halter[4],EX.forca.corpo[4]];
+  if(eq.elastico)forcaPool.splice(3,0,EX.forca.elastico[1],EX.forca.elastico[0]);
+  const forca=forcaPool.slice(0,n.forca);
+  if(eq.peso3)forca.push(EX.forca.peso3[0]);
+  const cardio=EX.cardio.slice(0,n.cardio);
+  return {t,pausa,n,blocos:{aquec:EX.aquec.map(x=>[x[0],x[1],45]),cardio:cardio.map(x=>[x[0],x[1],t,x[2]]),forca,voltas:n.voltas,core:EX.core.slice(0,n.core).map(x=>[x[0],x[1],t]),along:[...STRETCH_BASE,...STRETCH_EXTRA[art]].slice(0,n.along)}};
+}
+function openCompleto(){
+  const a=ARTS[art],p=planoCompleto(),on=opt.blocos||{};
+  $("trainEyebrow").textContent=a.name+" · Treino completo";
+  $("trainTitle").textContent="Treino de academia";
+  $("evoPanel").after($("blocosSec"));
+  $("blocosSec").hidden=false;$("stretchSec").hidden=true;$("roundsHead").hidden=true;$("roundList").hidden=true;
+  document.querySelectorAll(".cfull").forEach(e=>e.hidden=false);document.querySelectorAll(".cnorm").forEach(e=>e.hidden=true);
+  const optC=opt.count;opt.count=p.n.rounds;let rounds=buildRounds(a);opt.count=optC;
+  rounds=rounds.filter(r=>!/aquec/i.test(r.t));
+  segs=[];const listas=[];
+  const add=(bid,id,label,note,dur,extra)=>{segs.push(Object.assign({type:"ex",bloco:bid,id,label,note,dur},extra||{}));};
+  const descanso=(dur,prox)=>segs.push({type:"rest",label:"Descanso",dur,curto:dur<40,prox});
+  BLOCOS.forEach(b=>{
+    if(on[b.id]===false)return;
+    const itens=[];
+    if(b.id==="aquec"){p.blocos.aquec.forEach((x,i)=>{add("aquec","a"+i,x[0],x[1],x[2]);itens.push(["a"+i,x[0],x[1],[],fmtD(x[2])])})}
+    if(b.id==="cardio"){p.blocos.cardio.forEach((x,i)=>{add("cardio","c"+i,x[0],x[1],x[2],{cue:x[3]});itens.push(["c"+i,x[0],x[1],[],fmtD(x[2])]);descanso(p.pausa,x[0])})}
+    if(b.id==="forca"){for(let v=0;v<p.blocos.voltas;v++)p.blocos.forca.forEach((x,i)=>{const id="f"+v+"-"+i;add("forca",id,x[0]+(p.blocos.voltas>1?" · volta "+(v+1):""),x[1],p.t);itens.push([id,x[0],(p.blocos.voltas>1?"Volta "+(v+1)+" de "+p.blocos.voltas+". ":"")+x[1],[],fmtD(p.t)]);descanso(p.pausa+5,x[0])})}
+    if(b.id==="rounds"){rounds.forEach((r,i)=>{segs.push({type:"work",id:"r"+i,n:i,label:r.t,r,dur:opt.round,bloco:"rounds"});itens.push(["r"+i,r.t,r.n,r.c,fmtD(opt.round),"R"+(i+1)]);if(i<rounds.length-1)descanso(opt.rest)})}
+    if(b.id==="core"){p.blocos.core.forEach((x,i)=>{add("core","k"+i,x[0],x[1],x[2]);itens.push(["k"+i,x[0],x[1],[],fmtD(x[2])]);descanso(p.pausa,x[0])})}
+    if(b.id==="along"){p.blocos.along.forEach((x,i)=>{segs.push({type:"stretch",id:"s"+i,label:x[0],note:x[1],dur:STR,bloco:"along"});itens.push(["s"+i,x[0],x[1],[],"30 s"])})}
+    // troca de bloco: descanso de 1 min (tira descansos curtos colados)
+    while(segs.length&&segs[segs.length-1].type==="rest")segs.pop();
+    segs.push({type:"rest",label:"Troca de bloco",dur:60,curto:false,troca:true});
+    listas.push([b,itens]);
+  });
+  while(segs.length&&segs[segs.length-1].type==="rest")segs.pop();
+  done=new Set(store.get(key(),[]));saved=false;
+  // blocos (quadrados)
+  const tot=id=>segs.filter(x=>x.bloco===id).reduce((a,x)=>a+x.dur,0)+(id==="cardio"||id==="core"?segs.filter((x,i)=>x.type==="rest"&&segs[i-1]&&segs[i-1].bloco===id).reduce((a,x)=>a+x.dur,0):0);
+  $("blocosGrid").innerHTML=BLOCOS.map(b=>{const ligado=on[b.id]!==false;const m=Math.round(tot(b.id)/60);return `<button class="bloco${ligado?" on":""}" data-b="${b.id}"><span class="bico">${b.ico}</span><b>${b.nome}</b><small>${ligado?(m?"~"+m+" min":"—"):"Desligado"}</small></button>`}).join("");
+  const totalMin=Math.round(segs.reduce((a,x)=>a+x.dur,0)/60);
+  $("cBlocos").textContent="~"+totalMin+" min no total";
+  const L=$("blocosListas");L.innerHTML="";
+  listas.forEach(([b,itens])=>{
+    const sec=document.createElement("div");sec.className="sec bsec";
+    sec.innerHTML=`<div class="sechead"><h2><span class="bnum">${b.ico}</span>${b.nome}</h2><span class="count" data-cnt="${b.id}"></span></div>${b.id==="cardio"?'<p class="note">Trabalho de '+p.t+' s, descanso de '+p.pausa+' s. Fica mais intenso conforme você evolui.</p>':b.id==="forca"?'<p class="note">'+p.blocos.voltas+' voltas no circuito. '+p.t+' s por exercício.</p>':""}`;
+    const ol=document.createElement("ol");ol.className="list";
+    itens.forEach(([id,t,nota,combos,dur,num])=>ol.appendChild(itemEl(id,num||"",t,nota,combos,dur)));
+    sec.appendChild(ol);L.appendChild(sec);
+  });
+  // legenda e dicas
+  const used=new Set();rounds.forEach(r=>r.c.forEach(c=>tok(c).forEach(t=>{if(LEG[t])used.add(t)})));
+  const order=Object.keys(LEG).filter(k=>used.has(k));
+  $("legend").innerHTML=order.map(k=>`<div><dt>${k}</dt><dd>${LEG[k]}</dd></div>`).join("");
+  $("legendPanel").hidden=!order.length;
+  $("tips").innerHTML=["Bebe água nas trocas de bloco.","Na força, qualidade antes de velocidade: movimento completo.","No cardio, se cansar, diminui o ritmo mas não para.","Com o peso de 3 kg, soco curto e rápido. Nunca trava o cotovelo.",...a.tips.slice(0,2)].map(t=>`<li>${t}</li>`).join("");
+  renderEvo();resetTimer();show("vTrain");
+}
+$("blocosGrid").onclick=e=>{const b=e.target.closest("[data-b]");if(!b||running)return;opt.blocos=Object.assign({},opt.blocos||{});const id=b.dataset.b;opt.blocos[id]=opt.blocos[id]===false;
+  if(BLOCOS.every(x=>opt.blocos[x.id]===false))opt.blocos[id]=true;saveOpt();openTrain()};
+
 /* Tela de artes */
 Object.entries(ARTS).forEach(([k,a])=>{
   const b=document.createElement("button");b.className="pick";b.id="art-"+k;
@@ -674,12 +791,16 @@ function show(v){
 }
 $("backArt").onclick=()=>show("vArt");
 $("backMode").onclick=()=>show("vMode");
-$("pickSolo").onclick=()=>{mode="solo";openTrain()};
-$("pickDupla").onclick=()=>{mode="dupla";openTrain()};
+$("pickSolo").onclick=()=>{mode="solo";completo=false;openTrain()};
+$("pickDupla").onclick=()=>{mode="dupla";completo=false;openTrain()};
+$("pickFull").onclick=()=>{mode="solo";completo=true;openTrain()};
 
 const tick='<svg viewBox="0 0 16 16" fill="none" stroke="#0E0E10" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
-const key=()=>"bf-done-"+art+"-"+mode;
+const key=()=>"bf-done-"+art+"-"+mode+(completo?"-completo":"");
 function openTrain(){
+  if(completo)return openCompleto();
+  $("blocosSec").hidden=true;$("roundsHead").hidden=false;$("roundList").hidden=false;
+  document.querySelectorAll(".cfull").forEach(e=>e.hidden=true);document.querySelectorAll(".cnorm").forEach(e=>e.hidden=false);
   const a=ARTS[art];
   $("trainEyebrow").textContent=a.name+" · "+(mode==="solo"?"Sozinho":"Com alguém");
   $("trainTitle").textContent=mode==="solo"?"Treino em casa":"Treino em dupla";
@@ -779,6 +900,11 @@ function startSeg(){
   else if(s.type==="work"){beep(1200,.4);const w=segs.filter(x=>x.type==="work");
     if(w.length>1&&s===w[w.length-1]){$("msg").textContent="Último round! Vai com tudo!";$("msg").hidden=false;say("Último round! "+s.label+". Vai com tudo!")}
     else say("Round "+(s.n+1)+". "+s.label);if(tipoRound(s.r)==="explo"){$("msg").textContent="Explosão: 30 s no máximo, 30 s se movimentando. A voz acelera junto.";$("msg").hidden=false}}
+  else if(s.type==="ex"){beep(1100,.3);const b=BLOCOS.find(x=>x.id===s.bloco),prim=segs.find(x=>x.bloco===s.bloco)===s;
+    $("call").textContent=$("fCall").textContent=s.label;if(s.note){$("msg").textContent=s.note;$("msg").hidden=false}
+    say((prim?b.nome+". ":"")+s.label.replace(/ · volta \d+/,"")+(s.cue?". Vai!":""))}
+  else if(s.curto){beep(500,.35);const nx=segs[idx+1];$("msg").textContent="Próximo: "+(nx?nx.label:"fim");$("msg").hidden=false;say("Descansa. Próximo: "+(nx?nx.label.replace(/ · volta \d+/,""):"fim"))}
+  else if(s.troca){beep(500,.5);const nx=segs[idx+1],b=nx&&BLOCOS.find(x=>x.id===nx.bloco);const p=PHRASES[phraseI++%PHRASES.length];$("msg").textContent=(b?"Próximo bloco: "+b.nome+". ":"")+p;$("msg").hidden=false;say("Troca de bloco. Bebe água. "+(b?"Agora vem "+b.nome+".":""))}
   else{beep(500,.5);const p=PHRASES[phraseI++%PHRASES.length];$("msg").textContent=p;$("msg").hidden=false;say("Descanso. "+p)}
   render();
 }
@@ -795,7 +921,10 @@ function play(){
 function pause(){stop();falando=false;render()}
 function step(){
   const s=segs[idx];const sec=Math.max(0,Math.ceil((endAt-Date.now())/1000));
-  if(sec!==left){left=sec;if(s.type==="work"&&left===10)beep(660,.12,3);render()}
+  if(sec!==left){left=sec;if(s.type==="work"&&left===10)beep(660,.12,3);
+    if(s.type==="ex"){if(left===Math.floor(s.dur/2)&&s.dur>=30)say(s.cue==="burpee"?"Metade! Desce e sobe forte!":"Metade! Mantém o ritmo.");if(left===3)beep(660,.1,3)}
+    if(s.type==="rest"&&s.curto&&left===3)beep(660,.1,3);
+    render()}
   if(s.type==="work"&&s.r.c.length&&left>2){
     const rt=ritmo(s.r),agora=Date.now();
     if(rt.k==="explo"){ // 30 s no máximo, 30 s de movimentação
@@ -828,9 +957,9 @@ function render(){
   const type=end?"":s.type;
   $("time").textContent=fmt(left);$("time").className="time "+type;
   const ph=$("phase");
-  ph.textContent=end?"Fim":!running&&idx===0&&left===s.dur?"Pronto":{stretch:"Alongar",work:"Luta",rest:"Descanso"}[type]+(running?"":" · pausado");
+  ph.textContent=end?"Fim":!running&&idx===0&&left===s.dur?"Pronto":{stretch:"Alongar",work:"Luta",rest:"Descanso",ex:(BLOCOS.find(x=>x.id===s.bloco)||{}).nome||"Exercício"}[type]+(running?"":" · pausado");
   ph.className="phase "+(running?type:"");
-  $("seglabel").textContent=end?"":s.type==="work"?"R"+(s.n+1)+" · "+s.label:s.type==="stretch"?s.label:"Próximo: "+(segs[idx+1]?segs[idx+1].label:"");
+  $("seglabel").textContent=end?"":s.type==="work"?"R"+(s.n+1)+" · "+s.label:s.type==="stretch"||s.type==="ex"?s.label:"Próximo: "+(segs[idx+1]?segs[idx+1].label:"");
   const b=$("bar");b.style.width=end?"100%":((s.dur-left)/s.dur*100)+"%";b.className=type;
   $("play").textContent=running?"Pausar":end?"De novo":(idx===0&&left===s.dur)?"Iniciar":"Continuar";
   document.querySelectorAll(".item").forEach(el=>{const id=el.id.slice(3);el.classList.toggle("done",done.has(id));el.classList.toggle("current",!end&&s.id===id&&(running||left<s.dur))});
@@ -844,6 +973,8 @@ function render(){
   $("vNum").setAttribute("aria-pressed",opt.nums);$("vName").setAttribute("aria-pressed",!opt.nums);
   $("vNum").disabled=$("vName").disabled=!opt.voice;
   Object.entries(GROUPS).forEach(([g,[k]])=>$(g).querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===String(opt[k]))));
+  $("gEquip").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",!!(opt.equip||{})[b.dataset.eq]));
+  document.querySelectorAll("[data-cnt]").forEach(el=>{const l=segs.filter(x=>x.bloco===el.dataset.cnt&&x.id);el.textContent=l.filter(x=>done.has(x.id)).length+"/"+l.length+" feitos"});
   $("fTime").textContent=$("time").textContent;$("fTime").className="ftime "+type;
   $("fPhase").textContent=ph.textContent;$("fPhase").className=ph.className;
   $("fLabel").textContent=$("seglabel").textContent;
@@ -867,6 +998,8 @@ Object.entries(GROUPS).forEach(([g,[k,list]])=>list.forEach(([v,l])=>{
   b.onclick=()=>{if(opt[k]===v)return;opt[k]=v;saveOpt();if(k==="pace"){render();return}if(art&&mode)openTrain()};
   $(g).appendChild(b);
 }));
+EQUIP.forEach(([k,l])=>{const b=document.createElement("button");b.className="chip";b.textContent=l;b.dataset.eq=k;
+  b.onclick=()=>{opt.equip=Object.assign({},opt.equip||{});opt.equip[k]=!opt.equip[k];saveOpt();if(art&&mode)openTrain();else render()};$("gEquip").appendChild(b)});
 function closeFs(){$("fs").hidden=true;try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}}
 $("full").onclick=()=>{$("fs").hidden=false;render();try{document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}};
 $("fExit").onclick=closeFs;
@@ -919,12 +1052,13 @@ async function addSession(s){
 }
 async function saveSession(){
   if(saved||!art||!mode)return;
-  const nr=segs.filter(x=>x.type==="work"),ns=segs.filter(x=>x.type==="stretch");
-  const r=nr.filter(x=>done.has(x.id)).length,st=ns.filter(x=>done.has(x.id)).length;
-  if(!r&&!st)return;
+  const nr=segs.filter(x=>x.type==="work"),ns=segs.filter(x=>x.type==="stretch"),ne=segs.filter(x=>x.type==="ex");
+  const r=nr.filter(x=>done.has(x.id)).length,st=ns.filter(x=>done.has(x.id)).length,ex=ne.filter(x=>done.has(x.id)).length;
+  if(!r&&!st&&!ex)return;
+  const mins=Math.round(segs.filter(x=>x.id&&done.has(x.id)).reduce((a,x)=>a+x.dur,0)/60);
   saved=true;store.set(key(),[]);render();
-  const ok=await addSession({date:new Date().toISOString(),art,mode,rounds:r,total:nr.length,stretches:st,stretchTotal:ns.length,minutes:Math.round(r*opt.round/60),fase:faseAtual()+1});
-  if(ok){const subiu=r?evoRegistra(r,nr.length):false;renderEvo();
+  const ok=await addSession({date:new Date().toISOString(),art,mode,completo,exercicios:ex,rounds:r,total:nr.length,stretches:st,stretchTotal:ns.length,minutes:completo?mins:Math.round(r*opt.round/60),fase:faseAtual()+1});
+  if(ok){const feito=completo?(r+ex):r,tot=completo?(nr.length+ne.length):nr.length;const subiu=feito?evoRegistra(feito,tot):false;renderEvo();
     if(subiu){toast("Evoluiu! Fase "+(faseAtual()+1)+": sequências novas no próximo treino");say("Você evoluiu. Sequências novas liberadas.")}else toast("Treino salvo no progresso")}else{saved=false;store.set(key(),[...done]);render()}
 }
 
@@ -958,7 +1092,7 @@ function renderProg(){
     const when=d.toLocaleDateString("pt-BR",{weekday:"short",day:"numeric",month:"short"})+" · "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
     const a=ARTS[h.art];
     li.innerHTML=`<div><div class="it"></div><p class="note"></p></div><span class="badge"></span>`;
-    li.querySelector(".it").textContent=(a?a.name:"Treino")+" · "+(h.mode==="dupla"?"Com alguém":"Sozinho");
+    li.querySelector(".it").textContent=(a?a.name:"Treino")+" · "+(h.completo?"Treino completo":h.mode==="dupla"?"Com alguém":"Sozinho");
     li.querySelector(".note").textContent=when+" · "+h.rounds+"/"+h.total+" rounds · "+h.minutes+" min"+(h.stretches?" · alongou":"");
     li.querySelector(".badge").textContent=h.rounds+" R";
     hl.appendChild(li);
