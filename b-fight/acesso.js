@@ -13,44 +13,46 @@ const WHATS="5511953837208";
 const COL="bfight";
 
 const css=`
-#bfGate{position:fixed;inset:0;z-index:9999;background:#0E0E10;color:#F3F1EE;overflow:auto;font:16px/1.5 "Barlow",system-ui,sans-serif}
+#bfGate{position:fixed;inset:0;z-index:9999;background:#0A0A0C;color:#F4F3F1;overflow:auto;font:16px/1.5 Inter,system-ui,sans-serif}
 #bfGate[hidden],#bfAdminBtn[hidden],#bfPanel[hidden]{display:none}
 #bfGate .in{max-width:420px;margin:0 auto;padding:max(40px,env(safe-area-inset-top)) 22px 40px;display:flex;flex-direction:column;gap:14px}
-#bfGate .logo{font:400 44px/1 "Anton",Impact,sans-serif;letter-spacing:.02em}
+#bfGate .logo{display:flex;align-items:center;gap:12px;font:800 26px/1 "Inter Tight",Inter,sans-serif;letter-spacing:.05em}
+#bfGate .logo svg{width:48px;height:48px;filter:drop-shadow(0 6px 16px rgba(224,49,59,.3))}
+#bfGate .logo span{color:#E0313B}
 #bfGate .logo b{color:#E3262F;font-weight:400}
-#bfGate h1{margin:6px 0 0;font:800 30px/1.05 "Barlow Condensed",sans-serif;text-transform:uppercase}
+#bfGate h1{margin:6px 0 0;font:800 30px/1.05 "Inter Tight",Inter,sans-serif;letter-spacing:-.02em}
 #bfGate .muted{color:#A09DA6;margin:0}
 #bfGate .seg{display:grid;grid-template-columns:1fr 1fr;background:#18181C;border-radius:12px;padding:4px}
-#bfGate .seg button{min-height:44px;border:0;border-radius:9px;background:none;color:#A09DA6;font:600 16px "Barlow",sans-serif}
-#bfGate .seg button[aria-selected=true]{background:#E3262F;color:#fff}
+#bfGate .seg button{min-height:44px;border:0;border-radius:9px;background:none;color:#A09DA6;font:600 16px Inter,sans-serif}
+#bfGate .seg button[aria-selected=true]{background:#E0313B;color:#fff}
 #bfGate label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px}
-#bfGate input{min-height:48px;border:1px solid #2E2D34;background:#18181C;color:#F3F1EE;border-radius:12px;padding:0 14px;font:16px "Barlow",sans-serif}
+#bfGate input{min-height:48px;border:1px solid #2E2D34;background:#18181C;color:#F3F1EE;border-radius:12px;padding:0 14px;font:16px Inter,sans-serif}
 #bfGate input:focus{outline:2px solid #E3262F;border-color:transparent}
-.bfBtn{display:flex;align-items:center;justify-content:center;min-height:52px;border:0;border-radius:14px;background:#E3262F;color:#fff;font:800 18px "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.03em;text-decoration:none;cursor:pointer}
+.bfBtn{display:flex;align-items:center;justify-content:center;min-height:52px;border:0;border-radius:14px;background:#E0313B;color:#fff;font:800 18px "Inter Tight",Inter,sans-serif;letter-spacing:-.02em;letter-spacing:.03em;text-decoration:none;cursor:pointer}
 .bfBtn.ghost{background:#222228;color:#F3F1EE}
 .bfBtn:disabled{opacity:.6}
-#bfGate .link{background:none;border:0;color:#A09DA6;text-decoration:underline;font:15px "Barlow",sans-serif;min-height:44px}
+#bfGate .link{background:none;border:0;color:#A09DA6;text-decoration:underline;font:15px Inter,sans-serif;min-height:44px}
 #bfGate .err{color:#ff6b72;margin:0;min-height:1em;font-size:14px}
 #bfGate .ok{color:#39C47A;font-size:14px;margin:0}
 #bfGate .card{background:#18181C;border-radius:14px;padding:14px 16px}
 #bfGate .credit{text-align:center;color:#A09DA6;font-size:13px;margin-top:10px}
-#bfAdminBtn{position:fixed;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:9000;min-height:44px;padding:0 16px;border:0;border-radius:99px;background:#E3262F;color:#fff;font:800 15px "Barlow Condensed",sans-serif;text-transform:uppercase;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+#bfAdminBtn{position:fixed;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:9000;min-height:44px;padding:0 16px;border:0;border-radius:99px;background:#E0313B;color:#fff;font:800 15px "Inter Tight",Inter,sans-serif;letter-spacing:-.02em;box-shadow:0 6px 20px rgba(0,0,0,.4)}
 #bfAdminBtn i{font-style:normal;background:#fff;color:#E3262F;border-radius:99px;padding:0 7px;margin-left:6px}
-#bfPanel{position:fixed;inset:0;z-index:9500;background:#0E0E10;color:#F3F1EE;overflow:auto;font:16px/1.5 "Barlow",system-ui,sans-serif}
+#bfPanel{position:fixed;inset:0;z-index:9500;background:#0A0A0C;color:#F4F3F1;overflow:auto;font:16px/1.5 Inter,system-ui,sans-serif}
 #bfPanel .in{max-width:520px;margin:0 auto;padding:max(24px,env(safe-area-inset-top)) 18px 40px}
 #bfPanel .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
-#bfPanel h2{margin:0;font:800 28px/1 "Barlow Condensed",sans-serif;text-transform:uppercase}
-#bfPanel h3{margin:22px 0 8px;font:600 14px "Barlow",sans-serif;color:#A09DA6}
+#bfPanel h2{margin:0;font:800 28px/1 "Inter Tight",Inter,sans-serif;letter-spacing:-.02em}
+#bfPanel h3{margin:22px 0 8px;font:600 14px Inter,sans-serif;color:#A09DA6}
 #bfPanel ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 #bfPanel li{background:#18181C;border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 #bfPanel li b{display:block}
 #bfPanel li small{color:#A09DA6;font-size:13px;word-break:break-all}
 #bfPanel li small a{color:#7FA4FF}
 #bfPanel .acts{display:flex;gap:6px}
-#bfPanel .mini{min-height:40px;padding:0 14px;border:0;border-radius:10px;background:#E3262F;color:#fff;font:600 14px "Barlow",sans-serif}
+#bfPanel .mini{min-height:40px;padding:0 14px;border:0;border-radius:10px;background:#E0313B;color:#fff;font:600 14px Inter,sans-serif}
 #bfPanel .mini.ghost{background:#222228;color:#F3F1EE}
 #bfPanel .empty{color:#A09DA6;font-size:14px}
-#bfPanel .x{min-height:44px;padding:0 14px;border:0;border-radius:12px;background:#222228;color:#F3F1EE;font:600 15px "Barlow",sans-serif}
+#bfPanel .x{min-height:44px;padding:0 14px;border:0;border-radius:12px;background:#222228;color:#F3F1EE;font:600 15px Inter,sans-serif}
 `;
 document.head.insertAdjacentHTML("beforeend",`<style>${css}</style>`);
 document.body.insertAdjacentHTML("beforeend",`<div id="bfGate"><div class="in"></div></div><button id="bfAdminBtn" hidden>Clientes</button><div id="bfPanel" hidden><div class="in"></div></div>`);
@@ -73,7 +75,7 @@ const ERR={
   "permission-denied":"Sem permissão. Saia e entre de novo."
 };
 const errMsg=e=>ERR[e?.code]||"Algo deu errado. Tente de novo.";
-const brand=`<div class="logo"><b>B</b>-FIGHT</div>`;
+const brand=`<div class="logo"><svg viewBox="0 0 64 64" aria-hidden="true">  <defs>    <linearGradient id="bfgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0444C"/><stop offset="1" stop-color="#A3121C"/></linearGradient>  </defs>  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bfgG)"/>  <path d="M2 46 L46 2 H54 L2 54 Z" fill="#fff" opacity=".07"/>  <g transform="translate(5 0) skewX(-9) translate(4 0)"><path class="bf-b" fill="#fff" fill-rule="evenodd" d="M19 14h15.5c6.2 0 10.5 3.6 10.5 9 0 3.3-1.7 5.8-4.4 7.1 3.6 1.2 5.9 4.1 5.9 8.1 0 6.1-4.7 10.3-11.6 10.3H19Z M27 21v8h6.4c2.6 0 4.2-1.5 4.2-4s-1.6-4-4.2-4Z M27 35.6v8.2h7.4c2.8 0 4.5-1.6 4.5-4.1s-1.7-4.1-4.5-4.1Z"/></g>  <g stroke="#fff" stroke-linecap="round" opacity=".9"><path d="M9 24h6" stroke-width="2.6"/><path d="M7 31.5h7" stroke-width="2.6"/><path d="M9 39h5" stroke-width="2.6"/></g></svg><div>B<span>-</span>FIGHT</div></div>`;
 const credit=`<p class="credit">Feito por <strong>Kaique Belarmino</strong></p>`;
 const show=html=>{G.innerHTML=html;gateEl.hidden=false;window.scrollTo(0,0)};
 
