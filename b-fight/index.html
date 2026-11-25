@@ -388,7 +388,7 @@ footer p{font-family:var(--body);font-size:12px;letter-spacing:.12em}
       <div class="cfgrow"><span>Nível</span><div class="settings" id="gLevel"></div></div>
       <div class="cfgrow"><span>Tempo do round</span><div class="settings" id="gRound"></div></div>
       <div class="cfgrow"><span>Descanso</span><div class="settings" id="gRest"></div></div>
-      <div class="cfgrow cfull" hidden><span>Duração do treino</span><div class="settings" id="gDur"></div></div>
+      <div class="cfgrow cfull" hidden><span>Tamanho do cardio, força e abdominal</span><div class="settings" id="gDur"></div></div>
       <div class="cfgrow cfull" hidden><span>Equipamento que você tem</span><div class="settings" id="gEquip"></div></div>
       <div class="cfgrow cnorm"><span>Quantos rounds</span><div class="settings" id="gCount"></div></div>
       <div class="cfgrow"><span>Alongamento</span><div class="settings" id="gStretch"></div></div>
@@ -605,7 +605,7 @@ let opt=Object.assign({voice:false,nums:false,round:120,rest:60,count:0,level:"i
 let saved=false, idx=0, left=0, timer=null, endAt=0, running=false, ctx=null, lock=null, lastCall=0, phraseI=0, explo=null;
 const STR=30;
 const fmtD=x=>x<60?x+" s":x%60?Math.floor(x/60)+" min "+x%60+" s":x/60+" min";
-const DURS_OPT=[[30,"30 min"],[45,"45 min"],[60,"60 min"]];
+const DURS_OPT=[[30,"Curto"],[45,"Médio"],[60,"Longo"]];
 const GROUPS={gLevel:["level",[["ini","Iniciante"],["int","Intermediário"],["ava","Avançado"]]],
  gRound:["round",[[60,"1 min"],[120,"2 min"],[180,"3 min"],[300,"5 min"]]],
  gRest:["rest",[[30,"30 s"],[60,"1 min"],[90,"1 min 30"]]],
@@ -728,9 +728,8 @@ function openCompleto(){
   $("trainTitle").textContent="Treino de academia";
   $("evoPanel").after($("blocosSec"));
   $("blocosSec").hidden=false;$("stretchSec").hidden=true;$("roundsHead").hidden=true;$("roundList").hidden=true;
-  document.querySelectorAll(".cfull").forEach(e=>e.hidden=false);document.querySelectorAll(".cnorm").forEach(e=>e.hidden=true);
-  const optC=opt.count;opt.count=p.n.rounds;let rounds=buildRounds(a);opt.count=optC;
-  rounds=rounds.filter(r=>!/aquec/i.test(r.t));
+  document.querySelectorAll(".cfull").forEach(e=>e.hidden=false);
+  const rounds=buildRounds(a); // rounds iguais ao treino normal: mesma quantidade, tempo e descanso dos ajustes
   segs=[];const listas=[];
   const add=(bid,id,label,note,dur,extra)=>{segs.push(Object.assign({type:"ex",bloco:bid,id,label,note,dur},extra||{}));};
   const descanso=(dur,prox)=>segs.push({type:"rest",label:"Descanso",dur,curto:dur<40,prox});
