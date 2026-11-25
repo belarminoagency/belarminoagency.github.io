@@ -1,4 +1,4 @@
-const C = "norte-v2";
+const C = "norte-v3";
 // Login e dados do Firebase sempre pela rede
 const LIVE = /(firestore|identitytoolkit|securetoken|firebaseinstallations)\.googleapis\.com$/;
 const F = ["./", "index.html", "manifest.json", "icone-192.png", "icone-512.png"];

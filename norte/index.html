@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="icone-192.png">
 <title>Norte</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* VOICE: sóbrio, maduro, acolhedor — um caderno que conversa com você
    IDEA: a estrela do norte; cada área tem a cor da emoção que ela trabalha
@@ -20,9 +20,9 @@
 --sun1:#ff8a6b;--sun2:#b28dff;--lav1:#7b5cff;--lav2:#b9a2ff;--tea1:#0fa89a;--tea2:#4fd8c4;--ind1:#232560;--ind2:#5b4fcf;--amb1:#ffab3d;--amb2:#ff7a59;--sky1:#3d8bff;--sky2:#8fd0ff}
 :root[data-theme=dark],:root[data-theme=light]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Manrope,system-ui,sans-serif;overflow-x:clip}
-h1,h2,h3{font-family:'DM Serif Display',Georgia,serif;line-height:1.08;margin:0;text-wrap:balance;font-weight:400;letter-spacing:-.01em}
-h1{font-size:clamp(32px,9vw,42px)}h2{font-size:26px}h3{font-size:20px}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Inter,system-ui,sans-serif;line-height:1.08;margin:0;text-wrap:balance;font-weight:800;letter-spacing:-.025em}
+h1{font-size:clamp(30px,8vw,38px)}h2{font-size:24px}h3{font-size:19px;font-weight:700}
 p{margin:0}
 button{font:inherit;font-weight:800;border:0;cursor:pointer;color:inherit;background:none}
 button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #ffc23d;outline-offset:2px}
@@ -58,7 +58,7 @@ textarea{resize:vertical;min-height:140px}
 .tiles{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-bottom:14px}
 .tile{border-radius:24px;padding:16px;color:var(--ink);border:1px solid var(--line);text-align:left;min-height:140px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;transition:transform .15s}
 .tile:active{transform:scale(.97)}
-.tile b{font-family:'DM Serif Display',serif;font-size:21px;font-weight:400;line-height:1.15}
+.tile b{font-family:Inter,system-ui,sans-serif;font-size:19px;font-weight:700;line-height:1.15}
 .tile small{font-size:14px;color:var(--mut);font-weight:700}
 .tile.wide{grid-column:1/-1;min-height:96px;flex-direction:row;align-items:center}
 .tile svg.deco{position:absolute;right:-14px;bottom:-14px;width:90px;height:90px;opacity:.4}
@@ -82,9 +82,9 @@ textarea{resize:vertical;min-height:140px}
 .week i{width:30px;height:30px;border-radius:50%;background:#ffffff0d;display:grid;place-items:center}
 .week i svg{width:30px;height:30px}
 .prog{height:10px;border-radius:99px;background:var(--sf);overflow:hidden}
-.prog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#2f8379,var(--ac));transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.prog i{display:block;height:100%;border-radius:99px;background:var(--ac);transition:width .8s cubic-bezier(.2,.8,.2,1)}
 .goal{width:100%;text-align:left;display:block}
-.pct{font-family:'DM Serif Display',serif;font-size:28px;color:var(--ac)}
+.pct{font-family:Inter,system-ui,sans-serif;font-size:28px;color:var(--ac)}
 .fromto{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:stretch;margin:14px 0}
 .fromto>div{border-radius:18px;padding:12px;font-size:15px}
 .fromto small{display:block;font-weight:900;font-size:12px;margin-bottom:4px}
@@ -102,8 +102,8 @@ textarea{resize:vertical;min-height:140px}
 .pop{animation:pop .5s cubic-bezier(.3,1.7,.5,1)}@keyframes pop{40%{transform:scale(1.06)}}
 .stat{display:flex;gap:10px;margin-top:16px}
 .stat div{background:#ffffff08;border:1px solid var(--line);border-radius:16px;padding:8px 14px;font-weight:800;font-size:14px}
-.stat b{font-family:'DM Serif Display',serif;font-size:24px;color:var(--gold);font-weight:400;display:block}
-.q{font-family:'DM Serif Display',serif;font-size:clamp(26px,7vw,32px);line-height:1.15;margin:8px 0 0;font-weight:400}
+.stat b{font-family:Inter,system-ui,sans-serif;font-size:24px;color:var(--gold);font-weight:400;display:block}
+.q{font-family:Inter,system-ui,sans-serif;font-size:clamp(26px,7vw,32px);line-height:1.15;margin:8px 0 0;font-weight:400}
 .dots{display:flex;gap:6px;margin-top:16px}.dots i{height:6px;flex:1;border-radius:9px;background:#ffffff14;transition:background .3s}.dots i.on{background:var(--ac)}
 nav.tabs{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);width:min(520px,calc(100% - 28px));background:#161d26;border:1px solid var(--line);border-radius:26px;box-shadow:0 14px 40px #0008;display:flex;padding:8px;z-index:10;margin-bottom:env(safe-area-inset-bottom)}
 nav.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--mut);padding:8px 0;border-radius:18px;transition:all .25s}
@@ -143,12 +143,21 @@ label{display:block;font-size:14px;color:var(--mut);margin:14px 0 6px;font-weigh
 .pad button:active{background:#4fb3a544}
 .breath{width:230px;height:230px;margin:26px auto;position:relative;display:grid;place-items:center}
 .breath .b{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#4fb3a5 0%,#4fb3a566 40%,#4fb3a500 70%);transform:scale(.55);transition:transform 4s ease-in-out}
-.breath span{position:relative;font-family:'DM Serif Display',serif;font-size:28px;color:var(--ink);font-weight:400}
+.breath span{position:relative;font-family:Inter,system-ui,sans-serif;font-size:28px;color:var(--ink);font-weight:400}
 .toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-140px);background:var(--ac);color:#0b1210;font-weight:800;padding:12px 20px;border-radius:18px;z-index:60;transition:transform .35s cubic-bezier(.3,1.5,.5,1);box-shadow:0 10px 30px #0003;white-space:nowrap}
 .toast.on{transform:translate(-50%,0)}
 .burst{position:fixed;pointer-events:none;z-index:61;width:10px;height:10px;border-radius:3px;animation:burst .9s ease-out forwards}
 @keyframes burst{to{transform:translate(var(--x),var(--y)) rotate(320deg);opacity:0}}
 #gate{position:fixed;inset:0;z-index:48;background:linear-gradient(165deg,#1c2530,#0e1217);display:none;overflow:auto}#gate.on{display:block}.gin{max-width:420px;margin:0 auto;padding:max(48px,env(safe-area-inset-top)) 22px 40px;display:flex;flex-direction:column;gap:12px}.gin .err{color:#ff9b8f;font-size:14px;min-height:1em}.gin .okm{color:#8fdccf;font-size:14px}.lnk{color:var(--mut);text-decoration:underline;min-height:44px;font-weight:600}.sync{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);font-weight:700}.sync i{width:8px;height:8px;border-radius:50%;background:var(--mut)}.sync.on i{background:var(--ac)}
+body[data-scr=inicio]{--ac:#d4a24c}body[data-scr=diario]{--ac:#6aa6ff}body[data-scr=perguntas]{--ac:#4fb3a5}body[data-scr=metas]{--ac:#8ccf6a}body[data-scr=missoes]{--ac:#e8a25c}
+.cover::before{background:radial-gradient(circle,color-mix(in srgb,var(--ac) 22%,transparent),transparent 65%)!important}.cover{border-bottom:3px solid var(--ac)!important}
+.qc{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none}.qc::-webkit-scrollbar{display:none}
+.qc button{flex:none;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:15px;color:var(--ink);font-weight:700}
+.qc button i{width:10px;height:10px;border-radius:50%}.qc button.on{border-color:var(--qc);background:color-mix(in srgb,var(--qc) 18%,var(--card))}
+.qcard{border-left:4px solid var(--qc)}.qq{font-size:19px;font-weight:700;line-height:1.35;margin:4px 0 12px}
+.saved{font-size:13px;color:var(--mut);font-weight:600;margin-top:6px;min-height:18px}
+.bigw{width:100%;display:flex;align-items:center;gap:14px;text-align:left;padding:18px;border-radius:22px;background:var(--ac);color:#0b1210;font-size:18px;margin-bottom:16px}
+.bigw svg{width:26px;height:26px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -191,16 +200,28 @@ const face=(i)=>`<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill=
 const GCATS=['Emoções','Autocuidado','Relacionamentos','Propósito','Fé','Hábitos saudáveis'];
 const QUOTES=['Um passo pequeno ainda é um passo pra frente.','Você não precisa ter tudo resolvido hoje.','Seja gentil com quem você está se tornando.','Descansar também faz parte do caminho.','Sentir não é fraqueza. É ser humano.','O que você planta hoje, colhe amanhã.','Não compare seu começo com o meio de alguém.','Respira. Você já venceu dias difíceis antes.','Progresso, não perfeição.','Sua paz vale mais do que qualquer pressa.','Você é mais forte do que o dia de hoje.','Tudo bem ir devagar. Só não pare.'];
 const QS=['Como você se sentiu hoje, de verdade?','O que pesou no seu coração hoje?','Pelo que você é grato hoje?','Você foi gentil consigo mesmo hoje?','Qual foi o melhor momento do seu dia?','O que te deixou ansioso hoje?','O que você aprendeu sobre você hoje?','Teve algo que você precisava falar e não falou?','O que você faria diferente se pudesse repetir o dia?','Quem fez seu dia melhor hoje?','Você cuidou do seu corpo hoje? Como?','O que te deixou orgulhoso hoje?','Que pensamento ficou se repetindo na sua cabeça?','Você deu um passo em direção a uma meta hoje?','O que você precisa soltar antes de dormir?','Em que momento você se sentiu em paz hoje?','O que você quer agradecer a Deus hoje?','Você se cobrou demais em algo hoje?','O que te deu energia hoje? E o que tirou?','Você riu hoje? Do quê?','Qual emoção mais apareceu no seu dia?','Você descansou o suficiente hoje?','Que pequena vitória merece ser lembrada?','O que está tirando sua paz ultimamente?','Você foi presente com quem ama hoje?','O que você precisa ouvir agora?','Qual medo apareceu hoje e o que ele queria te dizer?','O que você espera de amanhã?'];
+const QCAT=[
+['onde','Onde estou','#d4a24c',['Onde você está hoje na sua vida, de verdade?','Onde você quer estar daqui a 1 ano?','O que separa você de onde quer chegar?','Qual pequeno passo você deu hoje em direção ao seu sonho?','O que você precisa parar de fazer pra avançar?','Daqui a 5 anos, que vida você quer estar vivendo?','Em que área da vida você sente que está parado?','O que já mudou em você desde o ano passado?']],
+['rel','Relacionamento','#e8857a',['Como está seu relacionamento hoje, de 0 a 10? Por quê?','O que você admira na pessoa que está ao seu lado?','Tem alguma conversa que você está evitando?','Você demonstrou carinho hoje? Como?','Que atitude sua pode deixar o relacionamento melhor?','Como está sua relação com sua família?','Quem você precisa perdoar ou pedir perdão?','Qual amizade você quer cuidar mais?']],
+['esp','Vida espiritual','#a594ff',['Como está sua conexão com Deus hoje?','Pelo que você quer agradecer a Deus hoje?','Você separou um tempo pra orar ou ler a Bíblia hoje?','Qual promessa ou versículo está te sustentando agora?','O que você precisa entregar nas mãos de Deus?','Em que momento você sentiu a presença de Deus esta semana?','O que está te afastando da sua fé?','Que pedido você quer fazer em oração hoje?']],
+['pes','Pessoal','#6aa6ff',['Do que você se orgulha em você hoje?','O que você fez só por você hoje?','Que hábito bom você quer criar?','Você cuidou do seu corpo e do seu descanso hoje?','O que você aprendeu sobre você hoje?','Qual foi sua maior vitória da semana?','O que te deu energia hoje? E o que tirou?','Você foi gentil consigo mesmo hoje?']],
+['emo','Emoções','#4fb3a5',['Como você se sentiu hoje, de verdade?','O que pesou no seu coração hoje?','Que pensamento ficou se repetindo na sua cabeça?','O que te deixou ansioso ou irritado hoje?','Qual emoção mais apareceu no seu dia?','O que você precisa soltar antes de dormir?','Em que momento você se sentiu em paz hoje?','O que você precisa ouvir agora?']],
+['prop','Trabalho e propósito','#8ccf6a',['Você está mais perto de ser seu próprio patrão do que ontem?','O que você fez hoje pelo seu negócio?','Qual é o próximo passo mais importante no seu trabalho?','O que está te travando profissionalmente?','Que habilidade você quer desenvolver?','Por que você faz o que faz?','Qual foi uma pequena conquista no trabalho hoje?','Como você quer ser lembrado pelo seu trabalho?']]];
 const MS=['Beber pelo menos 2 litros de água','Ficar 10 minutos sem celular','Caminhar 15 minutos ao ar livre','Mandar mensagem pra alguém que você ama','Anotar 3 coisas pelas quais você é grato','Dormir mais cedo hoje','Fazer 3 minutos de respiração','Elogiar alguém de verdade','Ler 10 páginas de um livro','Orar ou meditar por 5 minutos','Ouvir uma música que te faz bem','Comer uma fruta','Arrumar um cantinho da casa','Tomar sol por 10 minutos','Dizer "não" pra algo que te sobrecarrega','Fazer alongamento por 5 minutos','Agradecer alguém pessoalmente','Ficar 1 hora sem redes sociais','Escrever um desabafo no app','Fazer algo só por diversão','Abraçar alguém','Tomar um banho com calma','Desligar notificações por 1 hora','Perdoar um erro seu de hoje','Ajudar alguém sem esperar nada','Olhar o céu por 2 minutos','Comer sem celular na mão','Falar algo bom de você no espelho'];
 
 const I={menu:'<path d="M4 7h16M4 12h11M4 17h16"/>',home:'<path d="M4 11l8-7 8 7v9h-5v-5h-6v5H4z"/>',book:'<path d="M12 6c-2-1.5-5-2-8-1.5V19c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V4.5C17 4 14 4.5 12 6zM12 6v14.5"/>',target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',moon:'<path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/>',spark:'<path d="M12 3l2 6.5L20.5 12 14 14l-2 7-2-7-6.5-2L10 9.5z"/>',wind:'<path d="M3 9h11a3 3 0 10-3-3M3 15h15a3 3 0 11-3 3M3 12h7"/>',tag:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/>',lock:'<rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 018 0v3"/>',plus:'<path d="M12 5v14M5 12h14"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',back:'<path d="M15 5l-7 7 7 7"/>',pen:'<path d="M4 20l4-1 11-11-3-3L5 16zM14 6l3 3"/>',swap:'<path d="M4 8h13l-3-3M20 16H7l3 3"/>'};
 const ic=(n,sw=2.2)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${I[n]}</svg>`;
-const SCR={inicio:['Início','home','g-sun'],desabafos:['Desabafos','book','g-lav'],metas:['Metas','target','g-tea'],noite:['Perguntas da noite','moon','g-ind'],missoes:['Missões do bem','spark','g-amb']};
-let scr=(location.hash||'').slice(1);if(!SCR[scr])scr='inicio';
+const SCR={inicio:1,diario:1,perguntas:1,metas:1,missoes:1};const OLD={desabafos:'diario',noite:'perguntas'};
+let scr=(location.hash||'').slice(1);scr=OLD[scr]||scr;if(!SCR[scr])scr='inicio';
+let qCat='onde';
 let fCat='Todas',qi=0,qdraft=null;
 
 const todayM=()=>{const k=dk();if(!S.missions[k]){S.missions[k]={list:pick(MS.concat(S.custom),3,k+'m'),done:[]};save()}return S.missions[k]};
 const todayQ=()=>pick(QS,3,dk()+'q');
+const qsFor=c=>pick(QCAT.find(x=>x[0]===c)[3],2,dk()+c);
+const dayA=(k=dk())=>{const a=S.answers[k];return a&&a.cats?a.cats:{}};
+const isDone=c=>{const a=dayA()[c];return !!(a&&a.some(x=>x&&x.r&&x.r.trim()))};
+const nDone=()=>{let n=0;const a=dayA();for(const c in a)n+=a[c].filter(x=>x&&x.r&&x.r.trim()).length;return n};
 const gp=g=>g.steps.length?Math.round(g.steps.filter(s=>s.d).length/g.steps.length*100):(g.pct||0);
 const streak=()=>{let n=0;const d=new Date();const ok=k=>(S.missions[k]&&S.missions[k].done.length)||S.entries.some(e=>e.date===k)||S.answers[k];if(!ok(dk(d)))d.setDate(d.getDate()-1);while(ok(dk(d))){n++;d.setDate(d.getDate()-1)}return n};
 const cover=(g,kicker,title,sub,extra='')=>`<header class="cover ${g}"><i class="shape s1"></i><i class="shape s2"></i><i class="shape s3"></i><div class="bar"><button class="ib" id="menuBtn" aria-label="Abrir menu">${ic('menu',2.4)}</button><span class="kicker">${kicker}</span><span style="width:46px"></span></div><h1 class="in">${title}</h1>${sub?`<p class="sub in" style="animation-delay:.08s">${sub}</p>`:''}${extra}</header>`;
@@ -211,19 +232,19 @@ function vInicio(){
   const ring=`<svg class="deco" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="#4fb3a5" stroke-width="5" stroke-dasharray="${m.done.length/3*100.5} 100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>`;
   const top=S.goals[0];
   return cover('g-sun',fmtL(dk()),`${greet}, Kaique`,'“'+esc(q)+'”',`<div class="stat in" style="animation-delay:.15s"><div><b>${streak()}</b>dias seguidos</div><div><b>${S.points}</b>pontos</div></div>`)+
-  `<div class="body"><div class="card in" ${d(1)}><h3>Como você está agora?</h3><div class="moods">${MOODN.map((n,i)=>`<button class="mood" data-qm="${i}" aria-label="${n}">${face(i)}<span>${n}</span></button>`).join('')}</div></div>
+  `<div class="body"><div class="card in" ${d(1)}><h3>Como você está agora?</h3><p class="mut" style="margin-top:2px">Toque e escreva no seu diário</p><div class="moods">${MOODN.map((n,i)=>`<button class="mood" data-qm="${i}" aria-label="${n}">${face(i)}<span>${n}</span></button>`).join('')}</div></div>
   <div class="tiles"><button class="tile g-amb in" ${d(2)} data-go="missoes">${ring}<small>${m.done.length} de 3 feitas</small><b>Missões do bem</b></button>
-  <button class="tile g-ind in" ${d(3)} data-go="noite"><svg class="deco" viewBox="0 0 24 24" fill="#4fb3a5">${I.moon}</svg><small>${ans?'Respondidas ✓':'3 perguntas'}</small><b>Perguntas da noite</b></button>
+  <button class="tile g-ind in" ${d(3)} data-go="perguntas"><svg class="deco" viewBox="0 0 24 24" fill="none" stroke="#4fb3a5" stroke-width="2">${I.moon}</svg><small>${nDone()} de 12 respondidas</small><b>Perguntas do dia</b></button>
   <button class="tile g-sky wide in" ${d(4)} id="tBreath"><svg class="deco" viewBox="0 0 24 24" fill="none" stroke="#4fb3a5" stroke-width="2">${I.wind}</svg><div class="grow"><b>Respira</b><br><small>1 minuto pra acalmar a mente</small></div>${ic('arrow')}</button>
   ${top?`<button class="tile wide in" ${d(5)} data-go="metas" style="background:var(--card)"><div class="grow"><small style="color:var(--mut)">Sua meta principal</small><br><b>${esc(top.title)}</b><div class="prog" style="margin-top:10px"><i style="width:${gp(top)}%"></i></div></div><span class="pct">${gp(top)}%</span></button>`:''}</div></div>`;
 }
 
-function vDesabafos(){
+function vDiario(){
   const list=S.entries.filter(e=>fCat==='Todas'||e.cat===fCat);
-  const week=Array.from({length:7},(_,i)=>{const x=new Date();x.setDate(x.getDate()-6+i);const k=dk(x),es=S.entries.filter(e=>e.date===k);return`<div><i>${es.length?face(Math.round(es.reduce((a,e)=>a+e.mood,0)/es.length)):''}</i>${'DSTQQSS'[x.getDay()]}</div>`}).join('');
-  return cover('g-lav','Desabafos','Coloca pra fora','Aqui ninguém julga. É só você e o papel.',`<div class="card in" style="background:#ffffff08;margin:18px 0 0;padding:12px;animation-delay:.12s"><p style="font-size:13px;font-weight:800;margin-bottom:8px;opacity:.95">Seu humor na semana</p><div class="week">${week}</div></div>`)+
-  `<div class="body" style="margin-top:-30px"><div class="chips in" ${d(1)}>${['Todas',...S.cats].map(c=>`<button class="chip ${fCat===c?'on':''}" data-fc="${esc(c)}">${esc(c)}</button>`).join('')}<button class="chip" id="mCats">${'+ Categoria'}</button></div>
-  ${list.length?list.map((e,i)=>`<div class="card in" ${d(Math.min(i+2,8))}><button class="entry" data-open="${e.id}">${face(e.mood)}<div class="grow"><div class="row" style="gap:8px"><span class="tag">${esc(e.cat)}</span><span class="meta-l">${fmt(e.date)} · ${esc(e.time)}</span></div><p class="tx">${esc(e.text)}</p></div></button></div>`).join(''):`<div class="card empty in" ${d(2)}>${face(2)}<p><b>Nenhum desabafo ${fCat!=='Todas'?'nessa categoria':'ainda'}.</b><br>Toque em “Escrever” quando sentir vontade.</p></div>`}</div>`;
+  return cover('g-lav','Diário','Meu diário','Seu espaço pra escrever e desabafar. Só você lê.')+
+  `<div class="body"><button class="bigw in" ${d(1)} id="bigWrite">${ic('pen',2.4)}<span class="grow"><b>Escrever agora</b><br><span style="font-size:14px;font-weight:600;opacity:.8">O que está no seu coração?</span></span>${ic('arrow')}</button>
+  <div class="chips in" ${d(2)}>${['Todas',...S.cats].map(c=>`<button class="chip ${fCat===c?'on':''}" data-fc="${esc(c)}">${esc(c)}</button>`).join('')}<button class="chip" id="mCats">+ Categoria</button></div>
+  ${list.length?list.map((e,i)=>`<div class="card in" ${d(Math.min(i+3,8))}><button class="entry" data-open="${e.id}">${face(e.mood)}<div class="grow"><div class="row" style="gap:8px"><span class="tag">${esc(e.cat)}</span><span class="meta-l">${fmt(e.date)} · ${esc(e.time)}</span></div><p class="tx">${esc(e.text)}</p></div></button></div>`).join(''):`<div class="card empty in" ${d(3)}>${face(2)}<p><b>Nada escrito ${fCat!=='Todas'?'nessa categoria':'ainda'}.</b><br>Toque em “Escrever agora”.</p></div>`}</div>`;
 }
 
 function vMetas(){
@@ -231,12 +252,12 @@ function vMetas(){
   `<div class="body">${S.goals.length?S.goals.map((g,i)=>`<div class="card in" ${d(i+1)}><button class="goal" data-goal="${g.id}"><div class="row"><span class="tag" style="background:var(--sf);color:var(--ac)">${esc(g.cat)}</span><span class="grow"></span><span class="pct">${gp(g)}%</span></div><h3 style="margin:8px 0 12px">${esc(g.title)}</h3><div class="prog"><i style="width:${gp(g)}%"></i></div>${g.due?`<p class="meta-l" style="margin-top:10px">Prazo: ${fmt(g.due)}</p>`:''}</button></div>`).join(''):`<div class="card empty in" ${d(1)}><svg viewBox="0 0 24 24" fill="none" stroke="#4fb3a5" stroke-width="1.6">${I.target}</svg><p><b>Nenhuma meta ainda.</b><br>Exemplo: “Hoje me cobro demais” → “Quero ser mais gentil comigo”.</p></div>`}</div>`;
 }
 
-function vNoite(){
-  const qs=todayQ(),a=S.answers[dk()];
-  if(a&&!qdraft)return cover('g-ind','Perguntas da noite','Dia respondido 🌙','Obrigado por olhar pra dentro hoje.')+`<div class="body">${qs.map((q,i)=>`<div class="card in" ${d(i+1)}><p class="meta-l">${esc(q)}</p><p style="white-space:pre-wrap;margin-top:6px;font-weight:600">${esc(a.r[i]||'—')}</p></div>`).join('')}<div class="row in" ${d(4)}><button class="btn soft grow" id="qEdit">${ic('pen')}Editar</button><button class="btn grow" id="qHist">Dias anteriores</button></div></div>`;
-  if(!qdraft)qdraft=a?a.r.slice():['','',''];
-  return cover('g-ind',`Pergunta ${qi+1} de 3`,'',null,`<p class="q in">${esc(qs[qi])}</p><div class="dots">${[0,1,2].map(i=>`<i class="${i<=qi?'on':''}"></i>`).join('')}</div>`)+
-  `<div class="body"><div class="card in" ${d(1)}><textarea id="qa" placeholder="Escreva com calma...">${esc(qdraft[qi])}</textarea><div class="row" style="margin-top:12px">${qi>0?`<button class="btn soft" id="qPrev" aria-label="Anterior">${ic('back')}</button>`:''}<button class="btn grow g-ind" id="qNext">${qi<2?'Próxima':'Salvar respostas'} ${ic(qi<2?'arrow':'check')}</button></div></div><button class="btn soft full in" ${d(2)} id="qHist">Ver dias anteriores</button></div>`;
+function vPerguntas(){
+  const c=QCAT.find(x=>x[0]===qCat),qs=qsFor(qCat),a=dayA()[qCat]||[];
+  return cover('g-ind','Perguntas do dia','Olhe pra dentro',`Perguntas novas todo dia. Hoje: ${nDone()} de 12 respondidas.`)+
+  `<div class="body"><div class="qc in" ${d(1)}>${QCAT.map(x=>`<button class="${x[0]===qCat?'on':''}" style="--qc:${x[2]}" data-qc="${x[0]}"><i style="background:${x[2]}"></i>${x[1]}${isDone(x[0])?' ✓':''}</button>`).join('')}</div>
+  ${qs.map((q,i)=>`<div class="card qcard in" ${d(i+2)} style="--qc:${c[2]}"><p class="meta-l" style="color:${c[2]}">${c[1]}</p><p class="qq">${esc(q)}</p><textarea data-qa="${i}" style="min-height:110px" placeholder="Escreva aqui...">${esc(a[i]&&a[i].q===q?a[i].r:'')}</textarea><p class="saved" id="sv${i}"></p></div>`).join('')}
+  <button class="btn soft full in" ${d(4)} id="qHist">Ver respostas anteriores de ${c[1]}</button></div>`;
 }
 
 function vMissoes(){
@@ -247,20 +268,20 @@ function vMissoes(){
 }
 
 function render(){
-  $('view').innerHTML={inicio:vInicio,desabafos:vDesabafos,metas:vMetas,noite:vNoite,missoes:vMissoes}[scr]();
-  $('tabs').innerHTML=[['inicio','Início','home'],['desabafos','Desabafos','book'],['metas','Metas','target']].map(t=>`<button class="${scr===t[0]?'on':''}" data-go="${t[0]}">${ic(t[2])}${t[1]}</button>`).join('');
-  const fab={desabafos:['Escrever','pen','g-lav','write'],metas:['Nova meta','plus','g-tea','goal']}[scr];
+  document.body.dataset.scr=scr;$('view').innerHTML={inicio:vInicio,diario:vDiario,metas:vMetas,perguntas:vPerguntas,missoes:vMissoes}[scr]();
+  $('tabs').innerHTML=[['inicio','Início','home'],['diario','Diário','book'],['perguntas','Perguntas','moon'],['metas','Metas','target']].map(t=>`<button class="${scr===t[0]?'on':''}" data-go="${t[0]}">${ic(t[2])}${t[1]}</button>`).join('');
+  const fab={metas:['Nova meta','plus','g-tea','goal']}[scr];
   $('fabWrap').innerHTML=fab?`<button class="fab ${fab[2]}" id="fab" data-fab="${fab[3]}">${ic(fab[1],2.6)}${fab[0]}</button>`:'';
   document.querySelector('meta[name=theme-color]').content='#0e1217';
   bind();
 }
-function go(t){if(t!=='noite'){qdraft=null;qi=0}scr=t;try{history.replaceState(null,'','#'+t)}catch(e){}closeDrawer();closeSheet();render();scrollTo({top:0})}
+function go(t){t=OLD[t]||t;scr=t;try{history.replaceState(null,'','#'+t)}catch(e){}closeDrawer();closeSheet();render();scrollTo({top:0})}
 
 function openDrawer(){$('drawer').innerHTML=`<div class="row" style="padding:4px 8px 18px"><svg width="34" height="34" viewBox="0 0 100 100"><path d="M50 4l9 37 37 9-37 9-9 37-9-37-37-9 37-9z" fill="#d4a24c"/></svg><h2 class="grow">Norte</h2><button class="ib" style="background:var(--sf)" id="dClose" aria-label="Fechar">${ic('x')}</button></div>
-  ${[['inicio','Início','home','g-sun'],['desabafos','Desabafos','book','g-lav'],['metas','Metas e objetivos','target','g-tea'],['noite','Perguntas da noite','moon','g-ind'],['missoes','Missões do bem','spark','g-amb']].map(x=>`<button class="dl" data-go="${x[0]}"><i class="${x[3]}">${ic(x[2])}</i>${x[1]}</button>`).join('')}
+  ${[['inicio','Início','home','g-sun'],['diario','Diário','book','g-lav'],['perguntas','Perguntas do dia','moon','g-ind'],['metas','Metas e objetivos','target','g-tea'],['missoes','Missões do bem','spark','g-amb']].map(x=>`<button class="dl" data-go="${x[0]}"><i class="${x[3]}">${ic(x[2])}</i>${x[1]}</button>`).join('')}
   <div style="height:1px;background:var(--line);margin:10px 8px"></div>
   <button class="dl" id="dBreath"><i class="g-sky">${ic('wind')}</i>Respira</button>
-  <button class="dl" id="dCats"><i style="">${ic('tag')}</i>Categorias de desabafo</button>
+  <button class="dl" id="dCats"><i style="">${ic('tag')}</i>Categorias do diário</button>
   <button class="dl" id="dCfg"><i style="">${ic('lock')}</i>PIN, backup e conta</button><p style="padding:14px 12px 0">${syncTag()}</p>`;
   $('drawer').classList.add('on');$('dbg').classList.add('on');
   $('dClose').onclick=closeDrawer;$('drawer').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
@@ -276,23 +297,23 @@ function ask(msg,yes){openSheet(`<h2>${esc(msg)}</h2><p class="mut" style="margi
 function writeSheet(mood=null,edit=null){
   let st={mood:edit?edit.mood:(mood??2),cat:edit?edit.cat:(fCat!=='Todas'?fCat:'Geral')};
   const draw=()=>{const txt=$('wt')?$('wt').value:(edit?edit.text:'');
-  openSheet(`<div class="row"><h2 class="grow">${edit?'Editar desabafo':'Como você está?'}</h2><button class="ib" style="background:var(--sf)" id="wx" aria-label="Fechar">${ic('x')}</button></div>
+  openSheet(`<div class="row"><h2 class="grow">${edit?'Editar texto':'Como você está?'}</h2><button class="ib" style="background:var(--sf)" id="wx" aria-label="Fechar">${ic('x')}</button></div>
   <div class="moods">${MOODN.map((n,i)=>`<button class="mood ${st.mood===i?'on':''}" data-wm="${i}">${face(i)}<span>${n}</span></button>`).join('')}</div>
   <label>Sobre o quê?</label><div class="chips">${S.cats.map(c=>`<button class="chip ${st.cat===c?'on':''}" data-wc="${esc(c)}">${esc(c)}</button>`).join('')}<button class="chip" id="wnc">+ Nova</button></div>
   <label for="wt">Escreva sem filtro</label><textarea id="wt" style="min-height:200px" placeholder="O que está no seu coração?">${esc(txt)}</textarea>
-  <button class="btn full g-lav" id="ws" style="margin-top:14px">${ic('check')}Guardar desabafo</button>`);
+  <button class="btn full g-lav" id="ws" style="margin-top:14px">${ic('check')}Guardar no diário</button>`);
   $('wx').onclick=closeSheet;
   $('sheet').querySelectorAll('[data-wm]').forEach(b=>b.onclick=()=>{st.mood=+b.dataset.wm;draw()});
   $('sheet').querySelectorAll('[data-wc]').forEach(b=>b.onclick=()=>{st.cat=b.dataset.wc;draw()});
   $('wnc').onclick=()=>{const t=$('wt').value;catSheet(()=>{writeSheet(st.mood,edit?Object.assign({},edit,{text:t,mood:st.mood}):{id:null,text:t,mood:st.mood,cat:st.cat,_new:true})})};
   $('ws').onclick=()=>{const t=$('wt').value.trim();if(!t){toast('Escreva algo primeiro');return}
     if(edit&&!edit._new){Object.assign(S.entries.find(e=>e.id===edit.id),{text:t,mood:st.mood,cat:st.cat})}else{const n=new Date();S.entries.unshift({id:uid(),date:dk(n),time:n.toTimeString().slice(0,5),mood:st.mood,cat:st.cat,text:t})}
-    save();closeSheet();if(scr!=='desabafos')go('desabafos');else render();toast('Desabafo guardado 💜')};};
+    save();closeSheet();if(scr!=='diario')go('diario');else render();toast('Guardado no diário')};};
   draw();
 }
 function readSheet(id){const e=S.entries.find(x=>x.id===id);if(!e)return;
   openSheet(`<div class="row"><span style="width:54px">${face(e.mood)}</span><div class="grow"><span class="tag">${esc(e.cat)}</span><p class="meta-l" style="margin-top:4px">${fmtL(e.date)} · ${esc(e.time)}</p></div></div><p style="white-space:pre-wrap;font-size:17px;margin:18px 0 22px">${esc(e.text)}</p><div class="row"><button class="btn danger" id="rd">Excluir</button><button class="btn soft grow" id="re">${ic('pen')}Editar</button></div>`);
-  $('rd').onclick=()=>ask('Excluir este desabafo?',()=>{S.entries=S.entries.filter(x=>x.id!==id);save();render()});
+  $('rd').onclick=()=>ask('Excluir este texto do diário?',()=>{S.entries=S.entries.filter(x=>x.id!==id);save();render()});
   $('re').onclick=()=>writeSheet(null,e);}
 
 function catSheet(after){
@@ -338,8 +359,12 @@ function goalForm(g){
     const i=S.goals.findIndex(x=>x.id===n.id);i>=0?S.goals[i]=n:S.goals.unshift(n);save();closeSheet();render();toast('Meta salva ✨')};
 }
 
-function histSheet(){const ks=Object.keys(S.answers).sort().reverse();
-  openSheet(`<div class="row"><h2 class="grow">Noites anteriores</h2><button class="ib" style="background:var(--sf)" id="hx" aria-label="Fechar">${ic('x')}</button></div>${ks.length?ks.map(k=>`<details class="card" style="margin-top:12px"><summary style="cursor:pointer;font-weight:800;text-transform:capitalize">${fmtL(k)}</summary>${S.answers[k].q.map((q,i)=>`<p class="meta-l" style="margin-top:12px;color:var(--ac)">${esc(q)}</p><p style="white-space:pre-wrap">${esc(S.answers[k].r[i]||'—')}</p>`).join('')}</details>`).join(''):'<p class="empty">Suas respostas vão aparecer aqui.</p>'}`);$('hx').onclick=closeSheet}
+function histSheet(cat){const c=QCAT.find(x=>x[0]===cat);
+  const ks=Object.keys(S.answers).filter(k=>k!==dk()||1).sort().reverse();
+  const blocks=ks.map(k=>{const a=S.answers[k];let qa=[];
+    if(a.cats){qa=(a.cats[cat]||[]).filter(x=>x&&x.r&&x.r.trim())}else if(cat==='emo'&&a.q){qa=a.q.map((q,i)=>({q,r:a.r[i]})).filter(x=>x.r)}
+    return qa.length?`<div class="card" style="margin-top:12px;background:var(--sf)"><p class="meta-l" style="text-transform:capitalize">${fmtL(k)}</p>${qa.map(x=>`<p style="margin-top:10px;font-weight:700;color:${c[2]}">${esc(x.q)}</p><p style="white-space:pre-wrap">${esc(x.r)}</p>`).join('')}</div>`:''}).join('');
+  openSheet(`<div class="row"><h2 class="grow">${c[1]}</h2><button class="ib" style="background:var(--sf)" id="hx" aria-label="Fechar">${ic('x')}</button></div><p class="mut" style="margin-top:4px">Suas respostas anteriores</p>${blocks||'<p class="empty">Nenhuma resposta ainda.</p>'}`);$('hx').onclick=closeSheet}
 
 function myMisSheet(){openSheet(`<div class="row"><h2 class="grow">Minhas missões</h2><button class="ib" style="background:var(--sf)" id="mx" aria-label="Fechar">${ic('x')}</button></div><p class="mut" style="margin-top:6px">Elas entram no sorteio dos próximos dias.</p>
   <div class="row" style="margin-top:14px"><input id="nm" class="grow" placeholder="Ex.: Ligar pra minha mãe" style="flex:1 1 180px"><button class="btn g-amb" id="ma">${ic('plus')}Criar</button></div>
@@ -393,14 +418,15 @@ function bind(){
   document.querySelectorAll('#view [data-go],#tabs [data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
   const fab=$('fab');if(fab)fab.onclick=()=>fab.dataset.fab==='write'?writeSheet():goalForm();
   if(scr==='inicio'){v.querySelectorAll('[data-qm]').forEach(b=>b.onclick=()=>writeSheet(+b.dataset.qm));$('tBreath').onclick=breathSheet}
-  if(scr==='desabafos'){v.querySelectorAll('[data-fc]').forEach(b=>b.onclick=()=>{fCat=b.dataset.fc;render()});$('mCats').onclick=()=>catSheet();v.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>readSheet(b.dataset.open))}
+  if(scr==='diario'){$('bigWrite').onclick=()=>writeSheet();v.querySelectorAll('[data-fc]').forEach(b=>b.onclick=()=>{fCat=b.dataset.fc;render()});$('mCats').onclick=()=>catSheet();v.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>readSheet(b.dataset.open))}
   if(scr==='metas')v.querySelectorAll('[data-goal]').forEach(b=>b.onclick=()=>goalSheet(b.dataset.goal));
-  if(scr==='noite'){
-    if($('qHist'))$('qHist').onclick=histSheet;
-    if($('qEdit'))$('qEdit').onclick=()=>{qdraft=S.answers[dk()].r.slice();qi=0;render()};
-    if($('qa')){$('qa').oninput=e=>qdraft[qi]=e.target.value;
-      if($('qPrev'))$('qPrev').onclick=()=>{qi--;render()};
-      $('qNext').onclick=()=>{if(qi<2){qi++;render();return}if(!qdraft.some(x=>x.trim())){toast('Responda pelo menos uma');return}const first=!S.answers[dk()];S.answers[dk()]={q:todayQ(),r:qdraft.map(x=>x.trim())};if(first)S.points+=15;save();qdraft=null;qi=0;render();burst($('view'));toast(first?'Respostas salvas · +15 🌙':'Respostas atualizadas')}}
+  if(scr==='perguntas'){
+    v.querySelectorAll('[data-qc]').forEach(b=>b.onclick=()=>{qCat=b.dataset.qc;render()});
+    $('qHist').onclick=()=>histSheet(qCat);
+    const qs=qsFor(qCat);let qt={};
+    v.querySelectorAll('[data-qa]').forEach(t=>t.oninput=()=>{const i=+t.dataset.qa;clearTimeout(qt[i]);$('sv'+i).textContent='Salvando…';qt[i]=setTimeout(()=>{
+      const k=dk();if(!S.answers[k]||!S.answers[k].cats)S.answers[k]={cats:{}};const arr=S.answers[k].cats[qCat]=S.answers[k].cats[qCat]||[];
+      arr[i]={q:qs[i],r:t.value};save();const el=$('sv'+i);if(el)el.textContent='✓ Salvo';},700)});
   }
   if(scr==='missoes'){
     v.querySelectorAll('[data-mis]').forEach(b=>b.onclick=()=>{const m=todayM(),i=+b.dataset.mis,j=m.done.indexOf(i);if(j>=0){m.done.splice(j,1);S.points=Math.max(0,S.points-10);b.classList.remove('done')}else{m.done.push(i);S.points+=10;b.classList.add('done','pop');burst(b);toast(m.done.length===3?'Todas feitas! Orgulho de você 🌟':'+10 pontos')}save();setTimeout(render,550)});
