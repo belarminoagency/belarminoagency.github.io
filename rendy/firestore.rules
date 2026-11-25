@@ -42,7 +42,7 @@ service cloud.firestore {
       allow read, write: if dono(uid) && (admin()
         || get(/databases/$(database)/documents/organizacao/$(uid)).data.aprovado == true);
     }
-    // RENDY: liberação de acesso (os dados ficam em rendy_dados)
+    // RENDY: liberação separada. Finanças ficam só no aparelho da pessoa.
     match /rendy/{uid} {
       allow read: if admin() || dono(uid);
       allow create: if admin() || (dono(uid)
@@ -112,9 +112,10 @@ service cloud.firestore {
         allow read, write: if membroC() && area in ['casal', 'revisoes', 'perfis', 'pedidos'];
       }
     }
-      // NORTE: diário e metas pessoal, só o Kaique lê e escreve
+
+    // NORTE: diário e metas pessoal, só o Kaique lê e escreve
     match /norte/{uid}/{rest=**} {
       allow read, write: if dono(uid) && admin();
     }
-}
+  }
 }
