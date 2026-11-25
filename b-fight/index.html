@@ -354,7 +354,6 @@ footer p{font-family:var(--body);font-size:12px;letter-spacing:.12em}
     <div class="picks two">
       <button class="pick" id="pickSolo"><span class="ico">01</span><b>Sozinho</b><small id="soloDesc">Em casa, sem equipamento.</small><i class="arrow">→</i></button>
       <button class="pick" id="pickDupla"><span class="ico">02</span><b>Com alguém</b><small id="duplaDesc">Parceiro com manopla ou aparador.</small><i class="arrow">→</i></button>
-      <button class="pick full" id="pickFull"><span class="ico">03 · Treino de academia</span><b>Treino completo</b><small>Aquecimento, cardio de luta, força, rounds e abdominal. Como nas academias que formam lutador.</small><i class="arrow">→</i></button>
     </div>
   </section>
 
@@ -391,7 +390,7 @@ footer p{font-family:var(--body);font-size:12px;letter-spacing:.12em}
       <div class="cfgrow cfull" hidden><span>Tamanho do cardio, força e abdominal</span><div class="settings" id="gDur"></div></div>
       <div class="cfgrow cfull" hidden><span>Equipamento que você tem</span><div class="settings" id="gEquip"></div></div>
       <div class="cfgrow cnorm"><span>Quantos rounds</span><div class="settings" id="gCount"></div></div>
-      <div class="cfgrow"><span>Alongamento</span><div class="settings" id="gStretch"></div></div>
+      <div class="cfgrow" hidden><span>Alongamento</span><div class="settings" id="gStretch"></div></div>
       <div class="cfgrow"><span>Voz</span><div class="settings">
         <button class="chip" id="vOn" aria-pressed="false">Voz desligada</button>
         <button class="chip" id="vNum" aria-pressed="false">Fala números</button>
@@ -403,7 +402,8 @@ footer p{font-family:var(--body);font-size:12px;letter-spacing:.12em}
 
     <div class="sec" id="blocosSec" hidden>
       <div class="sechead"><h2>Blocos do treino</h2><span class="count" id="cBlocos"></span></div>
-      <p class="note">Toque num bloco pra ligar ou desligar. O timer passa por todos em ordem.</p>
+      <div class="rowbtns atalhos"><button class="chip" id="soRounds">Só os rounds</button><button class="chip" id="tudo">Treino completo</button></div>
+      <p class="note">Toque num bloco pra ligar ou desligar. Quer só lutar? Toque em "Só os rounds".</p>
       <div class="blocos" id="blocosGrid"></div>
       <div id="blocosListas"></div>
     </div>
@@ -618,7 +618,7 @@ const PACE={lento:8000,normal:5500,rapido:3500};
 const EVO_KEY="bf-evo";
 let evo=store.get(EVO_KEY,{});
 const MAXF={ini:3,int:4,ava:5};
-const evoK=()=>art+"-"+(completo?"completo":mode)+"-"+opt.level;
+const evoK=()=>art+"-"+mode+"-"+opt.level;
 function evoAtual(){return evo[evoK()]||{fase:0,desde:new Date().toISOString(),treinos:0,rounds:0,total:0}}
 function faseAtual(){return art&&mode?evoAtual().fase:0}
 function salvaEvo(){store.set(EVO_KEY,evo);try{const u=window.firebase&&firebase.auth().currentUser;if(u)firebase.firestore().collection("bfight").doc(u.uid).set({evo:JSON.stringify(evo)},{merge:true}).catch(()=>{})}catch(e){}}
@@ -724,8 +724,8 @@ function planoCompleto(){
 }
 function openCompleto(){
   const a=ARTS[art],p=planoCompleto(),on=opt.blocos||{};
-  $("trainEyebrow").textContent=a.name+" · Treino completo";
-  $("trainTitle").textContent="Treino de academia";
+  $("trainEyebrow").textContent=a.name+" · "+(mode==="solo"?"Sozinho":"Com alguém");
+  $("trainTitle").textContent=mode==="solo"?"Treino em casa":"Treino em dupla";
   $("evoPanel").after($("blocosSec"));
   $("blocosSec").hidden=false;$("stretchSec").hidden=true;$("roundsHead").hidden=true;$("roundList").hidden=true;
   document.querySelectorAll(".cfull").forEach(e=>e.hidden=false);
@@ -754,6 +754,8 @@ function openCompleto(){
   $("blocosGrid").innerHTML=BLOCOS.map(b=>{const ligado=on[b.id]!==false;const m=Math.round(tot(b.id)/60);return `<button class="bloco${ligado?" on":""}" data-b="${b.id}"><span class="bico">${b.ico}</span><b>${b.nome}</b><small>${ligado?(m?"~"+m+" min":"—"):"Desligado"}</small></button>`}).join("");
   const totalMin=Math.round(segs.reduce((a,x)=>a+x.dur,0)/60);
   $("cBlocos").textContent="~"+totalMin+" min no total";
+  const so=BLOCOS.every(b=>(on[b.id]!==false)===(b.id==="rounds")),td=BLOCOS.every(b=>on[b.id]!==false);
+  $("soRounds").setAttribute("aria-pressed",so);$("tudo").setAttribute("aria-pressed",td);
   const L=$("blocosListas");L.innerHTML="";
   listas.forEach(([b,itens])=>{
     const sec=document.createElement("div");sec.className="sec bsec";
@@ -770,6 +772,8 @@ function openCompleto(){
   $("tips").innerHTML=["Bebe água nas trocas de bloco.","Na força, qualidade antes de velocidade: movimento completo.","No cardio, se cansar, diminui o ritmo mas não para.","Com o peso de 3 kg, soco curto e rápido. Nunca trava o cotovelo.",...a.tips.slice(0,2)].map(t=>`<li>${t}</li>`).join("");
   renderEvo();resetTimer();show("vTrain");
 }
+$("soRounds").onclick=()=>{if(running)return;opt.blocos={};BLOCOS.forEach(b=>opt.blocos[b.id]=b.id==="rounds");saveOpt();openTrain()};
+$("tudo").onclick=()=>{if(running)return;opt.blocos={};saveOpt();openTrain()};
 $("blocosGrid").onclick=e=>{const b=e.target.closest("[data-b]");if(!b||running)return;opt.blocos=Object.assign({},opt.blocos||{});const id=b.dataset.b;opt.blocos[id]=opt.blocos[id]===false;
   if(BLOCOS.every(x=>opt.blocos[x.id]===false))opt.blocos[id]=true;saveOpt();openTrain()};
 
@@ -790,12 +794,11 @@ function show(v){
 }
 $("backArt").onclick=()=>show("vArt");
 $("backMode").onclick=()=>show("vMode");
-$("pickSolo").onclick=()=>{mode="solo";completo=false;openTrain()};
-$("pickDupla").onclick=()=>{mode="dupla";completo=false;openTrain()};
-$("pickFull").onclick=()=>{mode="solo";completo=true;openTrain()};
+$("pickSolo").onclick=()=>{mode="solo";completo=true;openTrain()};
+$("pickDupla").onclick=()=>{mode="dupla";completo=true;openTrain()};
 
 const tick='<svg viewBox="0 0 16 16" fill="none" stroke="#0E0E10" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
-const key=()=>"bf-done-"+art+"-"+mode+(completo?"-completo":"");
+const key=()=>"bf-done-"+art+"-"+mode;
 function openTrain(){
   if(completo)return openCompleto();
   $("blocosSec").hidden=true;$("roundsHead").hidden=false;$("roundList").hidden=false;
