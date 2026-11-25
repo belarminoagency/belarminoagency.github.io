@@ -391,7 +391,7 @@ function renderLogin(msg){
   el.querySelectorAll('[data-am]').forEach(b=>b.onclick=()=>{authMode=b.dataset.am;renderLogin()});
   el.querySelector('#fAuth').onsubmit=async e=>{e.preventDefault();
     const email=$('aEmail').value.trim(),password=$('aPass').value,btn=$('aGo');btn.disabled=true;
-    if(authMode==='criar'){const {data,error}=await sb.auth.signUp({email,password});btn.disabled=false;
+    if(authMode==='criar'){const {data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:BASE}});btn.disabled=false;
       if(error){$('aErr').textContent=errMsg(error);return}
       if(!data.session){el.innerHTML=`<div class="ok pane"><div class="check">${ic('ok')}</div><h2>Confirme seu e-mail</h2><p>Mandamos um link para <b>${esc(email)}</b>. Clique nele para ativar sua conta e voltar para cá.</p></div>`}
     }else{const {error}=await sb.auth.signInWithPassword({email,password});btn.disabled=false;if(error)$('aErr').textContent=errMsg(error)}
