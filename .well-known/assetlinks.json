@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.belarminoagency.norte",
+        "sha256_cert_fingerprints": ["06:37:0D:86:65:EA:DE:8D:1D:A4:9D:42:C5:C3:3F:29:B8:71:18:C8:3A:F7:80:3A:28:CB:5B:8E:29:70:E6:D5"]
+      }
+    }]
