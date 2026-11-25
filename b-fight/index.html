@@ -10,18 +10,18 @@
 .bf-marca{transform:translateX(-70vw) skewX(-18deg);filter:blur(6px);animation:bfEntra .4s .2s cubic-bezier(.2,.9,.3,1) forwards,bfTreme .35s .6s linear}
 .bf-b{opacity:0;transform-box:fill-box;transform-origin:center;animation:bfSoco .35s .55s cubic-bezier(.34,1.56,.64,1) forwards}
 .bf-vel{opacity:0;animation:bfAparece .2s .55s forwards}
-.bf-nome{font:400 46px/1 Anton,Impact,sans-serif;letter-spacing:.03em;color:#F3F1EE;font-style:italic;opacity:0;transform:translateX(40px) skewX(-10deg);animation:bfNome .45s .85s cubic-bezier(.2,.9,.3,1) forwards}
+.bf-nome{font:800 40px/1 "Inter Tight",Inter,sans-serif;letter-spacing:.05em;color:#F4F3F1;opacity:0;transform:translateX(40px);animation:bfNome .45s .85s cubic-bezier(.2,.9,.3,1) forwards}
 .bf-nome span{color:#E3262F}
-.bf-tag{font:600 14px "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.3em;color:#A09DA6;opacity:0;animation:bfAparece .4s 1.25s forwards}
+.bf-tag{font:600 12px Inter,sans-serif;text-transform:uppercase;letter-spacing:.24em;color:#A09DA6;opacity:0;animation:bfAparece .4s 1.25s forwards}
 @keyframes bfLinha{to{transform:translateX(130vw)}}
 @keyframes bfFlash{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
 @keyframes bfEntra{to{transform:none;filter:none}}
 @keyframes bfTreme{0%,100%{transform:translate(0,0)}20%{transform:translate(-5px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,-1px)}}
 @keyframes bfSoco{from{opacity:0;transform:scale(1.8)}to{opacity:1;transform:scale(1)}}
 @keyframes bfAparece{to{opacity:1}}
-@keyframes bfNome{to{opacity:1;transform:skewX(-10deg)}}
+@keyframes bfNome{to{opacity:1;transform:none}}
 </style><link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0E0E10">
+<meta name="theme-color" content="#0A0A0C">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -32,12 +32,15 @@
   <div class="bf-linhas"><i style="--y:22%;--d:.05s"></i><i style="--y:38%;--d:.12s"></i><i style="--y:55%;--d:.02s"></i><i style="--y:68%;--d:.16s"></i><i style="--y:80%;--d:.08s"></i></div>
   <div class="bf-flash"></div>
   <div class="sp-in">
-    <svg class="bf-marca" viewBox="0 0 64 64" width="120" height="120">
-      <defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF3A42"/><stop offset="1" stop-color="#9E1219"/></linearGradient></defs>
-      <path d="M14 4h46l-10 56H4z" fill="url(#spg)"/>
-      <path class="bf-vel" d="M2 22h9M0 32h8M2 42h7" stroke="#F3F1EE" stroke-width="3" stroke-linecap="round"/>
-      <text class="bf-b" x="33" y="50" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="46" font-style="italic" fill="#F3F1EE" transform="skewX(-10) translate(9 0)">B</text>
-    </svg>
+    <svg viewBox="0 0 64 64" aria-hidden="true" class="bf-marca" width="120" height="120">
+  <defs>
+    <linearGradient id="bfgS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0444C"/><stop offset="1" stop-color="#A3121C"/></linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bfgS)"/>
+  <path d="M2 46 L46 2 H54 L2 54 Z" fill="#fff" opacity=".07"/>
+  <g transform="translate(5 0) skewX(-9) translate(4 0)"><path class="bf-b" fill="#fff" fill-rule="evenodd" d="M19 14h15.5c6.2 0 10.5 3.6 10.5 9 0 3.3-1.7 5.8-4.4 7.1 3.6 1.2 5.9 4.1 5.9 8.1 0 6.1-4.7 10.3-11.6 10.3H19Z M27 21v8h6.4c2.6 0 4.2-1.5 4.2-4s-1.6-4-4.2-4Z M27 35.6v8.2h7.4c2.8 0 4.5-1.6 4.5-4.1s-1.7-4.1-4.5-4.1Z"/></g>
+  <g stroke="#fff" stroke-linecap="round" opacity=".9"><path d="M9 24h6" stroke-width="2.6"/><path d="M7 31.5h7" stroke-width="2.6"/><path d="M9 39h5" stroke-width="2.6"/></g>
+</svg>
     <div class="bf-nome">B<span>-</span>FIGHT</div>
     <div class="bf-tag">Treino de luta</div>
   </div>
@@ -46,6 +49,8 @@
 setTimeout(function(){sp.classList.add("sai");setTimeout(function(){sp.remove()},600)},calmo?300:2100);})();</script>
 <div id="bfCover" style="position:fixed;inset:0;background:#0E0E10;z-index:9998"></div>
 <title>B-Fight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 @font-face{font-family:"Anton";src:url(fonts/anton.woff2) format("woff2");font-display:swap}
@@ -200,16 +205,104 @@ header.brand{flex-wrap:wrap}
 .fctrls .btn{flex:1;padding:16px 8px;font-size:20px}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ok);color:#0E0E10;font-family:var(--display);font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;border-radius:8px;z-index:20;max-width:calc(100% - 32px)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===== visual profissional ===== */
+:root{
+  --bg:#0A0A0C; --surface:#131316; --raise:#1B1B20; --ink:#F4F3F1; --muted:#97949F; --line:#24232A;
+  --red:#E0313B; --red-deep:#8E1018; --red-soft:rgba(224,49,59,.13); --steel:#8FB0FF; --steel-soft:rgba(143,176,255,.12); --ok:#3CCB86;
+  --logo:"Inter Tight",Inter,system-ui,sans-serif; --display:"Inter Tight",Inter,system-ui,sans-serif; --body:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+body{font-size:15.5px;letter-spacing:-.006em;background:radial-gradient(1200px 500px at 50% -200px,rgba(224,49,59,.09),transparent 70%),var(--bg);background-attachment:fixed;-webkit-font-smoothing:antialiased}
+.wrap{gap:26px;padding-block:22px 40px;max-width:700px}
+h1,h2,h3{font-family:var(--display);text-transform:none;letter-spacing:-.025em;font-weight:800}
+h1{font-size:29px;line-height:1.1} h2{font-size:21px} h3{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.eyebrow,.tag,.cfgrow>span,.stat span,.flabel,.back,.evolab{font-family:var(--body);font-weight:600;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase}
+.eyebrow{color:var(--red);margin-bottom:6px}
+.tag{color:var(--muted)}
+/* topo */
+header.brand{position:sticky;top:0;z-index:8;margin:-22px -16px 0;padding:14px 16px;background:rgba(10,10,12,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand svg{width:44px;height:44px;filter:drop-shadow(0 6px 16px rgba(224,49,59,.28))}
+.word{font-family:var(--logo);font-style:normal;transform:none;font-weight:800;font-size:22px;letter-spacing:.05em}
+.tabs{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
+.tabs .chip{border:0;background:none;padding:8px 14px;border-radius:9px;font-weight:600}
+.tabs .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+/* escolhas */
+.picks{gap:12px}
+.pick{position:relative;border-radius:16px;padding:20px 18px 18px;min-height:132px;gap:8px;background:linear-gradient(160deg,#17171b,#111114);border-color:var(--line);transition:border-color .2s,transform .2s,box-shadow .2s}
+.pick:hover{transform:translateY(-3px);border-color:rgba(224,49,59,.55);box-shadow:0 14px 30px rgba(0,0,0,.35)}
+.pick .ico{font-family:var(--body);font-weight:700;font-size:12px;letter-spacing:.12em;color:var(--red)}
+.pick b{font-family:var(--display);text-transform:none;font-size:22px;letter-spacing:-.025em;font-weight:800}
+.pick small{font-size:13.5px;line-height:1.4}
+.pick .arrow{position:absolute;right:16px;top:16px;font-style:normal;color:var(--muted);transition:transform .2s,color .2s}
+.pick:hover .arrow{transform:translateX(3px);color:var(--red)}
+.back{font-size:12px;color:var(--muted);letter-spacing:.12em}
+/* botões e chips */
+.btn{font-family:var(--body);font-weight:700;font-size:15px;letter-spacing:-.005em;text-transform:none;border-radius:12px;padding:13px 10px;transition:transform .15s,filter .2s,background .2s}
+.btn:active{transform:scale(.97)}
+.btn.main{background:linear-gradient(180deg,#EA3C46,#C9232D);border-color:transparent;box-shadow:0 8px 20px rgba(224,49,59,.28)}
+.chip{font-family:var(--body);font-weight:500;font-size:13.5px;letter-spacing:0;text-transform:none;padding:8px 13px;transition:background .2s,color .2s,border-color .2s}
+.chip:hover{border-color:#3a3942;color:var(--ink)}
+/* timer */
+.corner{border-radius:20px;padding:18px;gap:12px;background:linear-gradient(180deg,#17171b,#111114);box-shadow:0 18px 40px rgba(0,0,0,.4)}
+.phase{font-family:var(--body);font-weight:700;font-size:11px;letter-spacing:.14em;border-radius:6px;padding:5px 10px}
+.seglabel{font-family:var(--body);font-weight:600;font-size:13px;letter-spacing:0;text-transform:none}
+.time{font-family:var(--logo);font-weight:800;letter-spacing:-.04em;font-size:clamp(64px,18vw,88px)}
+.call{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:-.01em;text-transform:none}
+.msg{border-radius:10px;font-size:14px}
+.bar{height:5px;border-radius:5px}
+.ctrls{gap:8px}
+/* listas */
+.panel{border-radius:18px;padding:18px;gap:12px;background:var(--surface)}
+.item{border-radius:14px;padding:14px 16px;transition:opacity .2s,border-color .2s,transform .2s}
+.item.current{box-shadow:0 0 0 1px var(--red),0 10px 26px rgba(224,49,59,.14)}
+.chk{width:26px;height:26px;border-width:1.5px}
+.in{font-family:var(--body);font-weight:700;font-size:11.5px;letter-spacing:.1em;background:var(--red-soft);padding:2px 7px;border-radius:6px}
+.it{font-family:var(--display);text-transform:none;font-weight:700;font-size:17px;letter-spacing:-.015em}
+.dur{font-family:var(--body);font-size:12.5px;letter-spacing:0}
+.combo{font-family:var(--display);font-weight:700;font-size:14.5px;letter-spacing:.01em;padding:4px 10px;border-radius:8px;border:1px solid rgba(224,49,59,.22)}
+.combo.def{border-color:rgba(143,176,255,.22)}
+.note{font-size:14px;line-height:1.5}
+.count{font-family:var(--body);font-size:13px;font-weight:600}
+.legend dt{font-family:var(--display);font-size:14px}
+.legend dd{font-size:14px}
+/* progresso */
+.stat{border-radius:16px;padding:16px}
+.stat b{font-family:var(--logo);font-weight:800;font-size:32px;letter-spacing:-.03em}
+.day small,.day em{font-family:var(--body)}
+.day i{border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,#EA3C46,#B81E28)}
+.artrow span{font-family:var(--body);text-transform:none;font-weight:600;font-size:14px}
+.hrow{border-radius:14px}
+.badge{font-family:var(--logo);font-weight:800;font-size:16px}
+/* evolução */
+.evo{background:linear-gradient(135deg,rgba(224,49,59,.14),rgba(224,49,59,.02) 60%),var(--surface);border-color:rgba(224,49,59,.28)}
+.evohead{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.evolab{color:var(--red);display:block;margin-bottom:4px}
+.evohead h3{font-size:22px;font-weight:800;letter-spacing:-.03em}
+.evostage{font-size:12px;font-weight:600;color:var(--muted);background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:4px 10px}
+.evobar{height:6px;border-radius:6px;background:var(--raise);overflow:hidden}
+.evobar i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,#B81E28,#F0444C);transition:width .8s cubic-bezier(.22,.8,.24,1)}
+.linkbtn{font-size:13px}
+/* tela cheia */
+.ftime{font-family:var(--logo);font-weight:800;letter-spacing:-.05em}
+.fcall{font-family:var(--display);text-transform:none;letter-spacing:-.02em}
+.flabel{font-size:13px}
+.fctrls .btn{font-size:17px}
+.toast{font-family:var(--body);font-weight:700;letter-spacing:0;text-transform:none;border-radius:12px;padding:12px 16px}
+footer p{font-family:var(--body);font-size:12px;letter-spacing:.12em}
+@media(max-width:520px){h1{font-size:25px}.word{font-size:19px}.brand svg{width:38px;height:38px}.tabs .chip{padding:7px 11px;font-size:13px}}
 </style>
 
 <div class="wrap">
   <header class="brand">
     <svg viewBox="0 0 64 64" aria-hidden="true">
-      <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF3A42"/><stop offset="1" stop-color="#9E1219"/></linearGradient></defs>
-      <path d="M14 4h46l-10 56H4z" fill="url(#g)"/>
-      <path d="M2 22h9M0 32h8M2 42h7" stroke="#F3F1EE" stroke-width="3" stroke-linecap="round"/>
-      <text x="33" y="50" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="46" font-style="italic" fill="#F3F1EE" transform="skewX(-10) translate(9 0)">B</text>
-    </svg>
+  <defs>
+    <linearGradient id="bfgH" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0444C"/><stop offset="1" stop-color="#A3121C"/></linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bfgH)"/>
+  <path d="M2 46 L46 2 H54 L2 54 Z" fill="#fff" opacity=".07"/>
+  <g transform="translate(5 0) skewX(-9) translate(4 0)"><path class="bf-b" fill="#fff" fill-rule="evenodd" d="M19 14h15.5c6.2 0 10.5 3.6 10.5 9 0 3.3-1.7 5.8-4.4 7.1 3.6 1.2 5.9 4.1 5.9 8.1 0 6.1-4.7 10.3-11.6 10.3H19Z M27 21v8h6.4c2.6 0 4.2-1.5 4.2-4s-1.6-4-4.2-4Z M27 35.6v8.2h7.4c2.8 0 4.5-1.6 4.5-4.1s-1.7-4.1-4.5-4.1Z"/></g>
+  <g stroke="#fff" stroke-linecap="round" opacity=".9"><path d="M9 24h6" stroke-width="2.6"/><path d="M7 31.5h7" stroke-width="2.6"/><path d="M9 39h5" stroke-width="2.6"/></g>
+</svg>
     <div>
       <div class="word">B<span>-</span>FIGHT</div>
       <div class="tag" id="hello">Treino de luta</div>
@@ -239,8 +332,8 @@ header.brand{flex-wrap:wrap}
     <button class="back" id="backArt">← Trocar arte</button>
     <div><div class="eyebrow" id="modeEyebrow">Passo 2</div><h1>Como você vai treinar?</h1></div>
     <div class="picks two">
-      <button class="pick" id="pickSolo"><span class="ico">SOZINHO</span><b>Sozinho</b><small id="soloDesc">Em casa, sem equipamento.</small></button>
-      <button class="pick" id="pickDupla"><span class="ico">COM ALGUÉM</span><b>Com alguém</b><small id="duplaDesc">Parceiro com manopla ou aparador.</small></button>
+      <button class="pick" id="pickSolo"><span class="ico">01</span><b>Sozinho</b><small id="soloDesc">Em casa, sem equipamento.</small><i class="arrow">→</i></button>
+      <button class="pick" id="pickDupla"><span class="ico">02</span><b>Com alguém</b><small id="duplaDesc">Parceiro com manopla ou aparador.</small><i class="arrow">→</i></button>
     </div>
   </section>
 
@@ -260,6 +353,13 @@ header.brand{flex-wrap:wrap}
         <button class="btn" id="reset">Zerar</button>
         <button class="btn" id="full" aria-label="Tela cheia" title="Tela cheia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
       </div>
+    </div>
+
+    <div class="panel evo" id="evoPanel">
+      <div class="evohead"><div><span class="evolab">Sua evolução</span><h3 id="evoTitle">Fase 1</h3></div><span class="evostage" id="evoStage"></span></div>
+      <div class="evobar"><i id="evoBar"></i></div>
+      <p class="note" id="evoNote"></p>
+      <div class="rowbtns"><button class="linkbtn" id="evoUp">Já domino essas sequências</button><button class="linkbtn" id="evoDown">Voltar uma fase</button></div>
     </div>
 
     <div class="panel cfg" aria-label="Ajustes">
@@ -472,7 +572,7 @@ const $=id=>document.getElementById(id);
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let art=null, mode=null, segs=[], done=new Set();
 let opt=Object.assign({voice:false,nums:false,round:120,rest:60,count:0,level:"int",pace:"normal",stretch:true},store.get("bf-opt",{}));
-let saved=false, idx=0, left=0, timer=null, endAt=0, running=false, ctx=null, lock=null, lastCall=0, phraseI=0;
+let saved=false, idx=0, left=0, timer=null, endAt=0, running=false, ctx=null, lock=null, lastCall=0, phraseI=0, explo=null;
 const STR=30;
 const fmtD=x=>x<60?x+" s":x%60?Math.floor(x/60)+" min "+x%60+" s":x/60+" min";
 const GROUPS={gLevel:["level",[["ini","Iniciante"],["int","Intermediário"],["ava","Avançado"]]],
@@ -482,18 +582,85 @@ const GROUPS={gLevel:["level",[["ini","Iniciante"],["int","Intermediário"],["av
  gStretch:["stretch",[[true,"Fazer"],[false,"Pular"]]],
  gPace:["pace",[["lento","Lento"],["normal","Normal"],["rapido","Rápido"]]]};
 const PACE={lento:8000,normal:5500,rapido:3500};
+/* Evolução: as sequências mudam conforme você treina naquele nível. */
+const EVO_KEY="bf-evo";
+let evo=store.get(EVO_KEY,{});
+const MAXF={ini:3,int:4,ava:5};
+const evoK=()=>art+"-"+mode+"-"+opt.level;
+function evoAtual(){return evo[evoK()]||{fase:0,desde:new Date().toISOString(),treinos:0,rounds:0,total:0}}
+function faseAtual(){return art&&mode?evoAtual().fase:0}
+function salvaEvo(){store.set(EVO_KEY,evo);try{const u=window.firebase&&firebase.auth().currentUser;if(u)firebase.firestore().collection("bfight").doc(u.uid).set({evo:JSON.stringify(evo)},{merge:true}).catch(()=>{})}catch(e){}}
+function carregaEvoNuvem(n){try{const u=window.firebase&&firebase.apps&&firebase.apps.length&&firebase.auth().currentUser;
+  if(!u){if((n||0)<40)setTimeout(()=>carregaEvoNuvem((n||0)+1),1500);return}
+  firebase.firestore().collection("bfight").doc(u.uid).get().then(d=>{const v=d.exists&&d.data().evo;if(!v)return;let nv={};try{nv=JSON.parse(v)}catch(e){return}
+    let mudou=false;Object.entries(nv).forEach(([k,x])=>{const l=evo[k];if(!l||x.fase>l.fase||(x.fase===l.fase&&x.treinos>l.treinos)){evo[k]=x;mudou=true}});
+    if(mudou){store.set(EVO_KEY,evo);if(art&&mode&&!running)openTrain()}}).catch(()=>{})}catch(e){}}
+setTimeout(carregaEvoNuvem,2500);
+const diasDesde=d=>Math.floor((Date.now()-new Date(d).getTime())/864e5);
+function evoRegistra(r,total){
+  const k=evoK(),e=Object.assign({},evoAtual());e.treinos++;e.rounds+=r;e.total+=total;
+  const max=MAXF[opt.level]||4,dias=diasDesde(e.desde),apro=e.total?e.rounds/e.total:0;
+  let subiu=false;
+  if(e.fase<max&&((e.treinos>=4&&apro>=.75)||(dias>=7&&e.treinos>=3)||(dias>=10&&e.treinos>=2))){e.fase++;e.desde=new Date().toISOString();e.treinos=0;e.rounds=0;e.total=0;subiu=true}
+  evo[k]=e;salvaEvo();return subiu;
+}
+function evoMuda(d){const k=evoK(),e=Object.assign({},evoAtual()),max=MAXF[opt.level]||4;
+  e.fase=Math.max(0,Math.min(max,e.fase+d));e.desde=new Date().toISOString();e.treinos=0;e.rounds=0;e.total=0;evo[k]=e;salvaEvo();openTrain();
+  toast(d>0?"Fase "+(e.fase+1)+": sequências novas":"Voltou pra fase "+(e.fase+1))}
+function renderEvo(){
+  const e=evoAtual(),max=MAXF[opt.level]||4,dias=diasDesde(e.desde);
+  $("evoTitle").textContent="Fase "+(e.fase+1)+" de "+(max+1);
+  $("evoStage").textContent={ini:"Iniciante",int:"Intermediário",ava:"Avançado"}[opt.level];
+  const faltaT=Math.max(0,4-e.treinos),faltaD=Math.max(0,7-dias);
+  const pct=e.fase>=max?100:Math.min(100,Math.max(e.treinos/4,Math.min(dias/7,e.treinos/3))*100);
+  $("evoBar").style.width=pct+"%";
+  $("evoNote").textContent=e.fase>=max?"Você está na fase máxima deste nível. Quer mais desafio? Sobe o nível nos ajustes."
+    :"As sequências mudam sozinhas quando você pega o jeito: "+(faltaT?"mais "+faltaT+" treino"+(faltaT>1?"s":"")+" completo"+(faltaT>1?"s":""):"falta pouco")+(faltaD&&e.treinos?" ou "+faltaD+" dia"+(faltaD>1?"s":"")+" treinando":"")+".";
+  $("evoUp").hidden=e.fase>=max;$("evoDown").hidden=e.fase<=0;
+}
+const POOL={boxe:{s:["1","2","3","4","5","6"],d:["P","E","B"]},muay:{s:["1","2","3","4","CB","CM","CA","T","J","CT"],d:["BC","P","E"]},mma:{s:["1","2","3","4","CB","CM","T","Q"],d:["SP","P","E"]}};
+const LIMITE={ini:4,int:5,ava:6};
+const SEGUE={"1":["1","2","6","CB"],"2":["3","1","5","CB","CM"],"3":["2","6","4","CA","CB"],"4":["3","5","2"],"5":["2","4","3"],"6":["3","5","2"],CB:["2","1"],CM:["2","1","CB"],CA:["2"],T:["1","2"],J:["CT","J"],CT:["J","2"],Q:[],
+  P:["2","3","E"],E:["3","2","P"],B:["1","2"],BC:["CM","2"],SP:["LV","1"]};
+function rng(seed){let h=2166136261;for(const c of seed)h=Math.imul(h^c.charCodeAt(0),16777619);return()=>{h=Math.imul(h^(h>>>15),2246822507);h=Math.imul(h^(h>>>13),3266489909);return((h^=h>>>16)>>>0)/4294967296}}
+function evoluir(rs,fase){
+  if(!fase)return rs;
+  rs.forEach((r,i)=>{
+    if(!r.c.length)return;const R=rng(art+mode+opt.level+i+"-"+fase),pick=a=>a[Math.floor(R()*a.length)];
+    if(art==="jj"){const ok=r.c.filter(x=>!/-/.test(x));if(ok.length<2)return;const out=[...r.c];
+      for(let k=0;k<Math.min(fase+1,4);k++){const a=pick(ok);let b=pick(ok);if(b===a)b=ok[(ok.indexOf(a)+1)%ok.length];out.push(fase>=3?a+" → "+b+" → "+pick(ok):a+" → "+b)}
+      r.c=[...new Set(out)].slice(-5);return}
+    const P=POOL[art];if(!P)return;const valido=new Set([...P.s,...P.d,"LV"]);
+    const kind=tipoRound(r),soDef=c=>tok(c).every(t=>DEF.has(t));
+    const ext=(c,n)=>{if(!tok(c).every(t=>valido.has(t)))return c;const partes=c.split(" → ");let t=tok(partes[partes.length-1]);
+      const lim=LIMITE[opt.level]||6;
+      for(let k=0;k<n&&t.length<lim;k++){const ant=t[t.length-1],ant2=t[t.length-2];let op=soDef(c)?P.d.filter(x=>x!==ant):(SEGUE[ant]||P.s).filter(x=>valido.has(x));
+        const lim2=op.filter(x=>!(x===ant&&x===ant2)&&x!==ant2);if(lim2.length)op=lim2;if(!op.length)break;t.push(pick(op))}
+      partes[partes.length-1]=t.join("-");return partes.join(" → ")};
+    let out=[];
+    if(kind==="explo"){out=fase>=2?r.c.map(c=>ext(c,1)):[...r.c]}
+    else{
+      r.c.forEach(c=>out.push(ext(c,fase>=3?2:1)));
+      if(fase>=2){const base=pick(r.c);if(tok(base).every(t=>valido.has(t)))out.push(pick(P.d)+" → "+ext(base,1))}
+      if(fase>=3&&r.c.length>=2&&r.c.every(c=>tok(c).every(t=>valido.has(t))))out.push(r.c[0]+" → "+pick(P.d)+" → "+ext(r.c[r.c.length-1],1));
+      if(fase>=4)out=out.map(c=>tok(c).length<5?ext(c,1):c);
+    }
+    r.c=[...new Set(out)].slice(0,5);
+  });
+  return rs;
+}
 function buildRounds(a){
   let rs=a[mode].map(r=>Object.assign({},r,{c:[...r.c]}));
   if(opt.level==="ini")rs.forEach(r=>{const sh=r.c.filter(c=>tok(c).length<=2);r.c=sh.length?sh:r.c.slice(0,1)});
   if(opt.level==="ava")rs.forEach(r=>{if(r.c.length>=2)r.c.push(r.c[0]+" → "+r.c[r.c.length-1])});
   if(opt.count&&opt.count<rs.length)rs=[...rs.slice(0,opt.count-1),rs[rs.length-1]];
-  return rs;
+  return evoluir(rs,faseAtual());
 }
 
 /* Tela de artes */
 Object.entries(ARTS).forEach(([k,a])=>{
   const b=document.createElement("button");b.className="pick";b.id="art-"+k;
-  b.innerHTML=`<span class="ico">${a.name.toUpperCase()}</span><b>${a.name}</b><small>${a.sub}</small>`;
+  b.innerHTML=`<span class="ico">${String(Object.keys(ARTS).indexOf(k)+1).padStart(2,"0")}</span><b>${a.name}</b><small>${a.sub}</small><i class="arrow">→</i>`;
   b.onclick=()=>{art=k;show("vMode")};$("artPicks").appendChild(b);
 });
 function show(v){
@@ -534,7 +701,7 @@ function openTrain(){
   $("legend").innerHTML=order.map(k=>`<div><dt>${k}</dt><dd>${LEG[k]}</dd></div>`).join("");
   $("legendPanel").hidden=!order.length;
   $("tips").innerHTML=[...a.tips,`Round de ${fmtD(opt.round)} com ${fmtD(opt.rest)} de descanso.`,"Solta a combinação, se movimenta 2 a 3 segundos e repete.","Bebe água no descanso."].map(t=>`<li>${t}</li>`).join("");
-  resetTimer();show("vTrain");
+  renderEvo();resetTimer();show("vTrain");
 }
 function itemEl(id,num,title,note,combos,dur){
   const li=document.createElement("li");li.className="item";li.id="it-"+id;
@@ -549,23 +716,51 @@ function itemEl(id,num,title,note,combos,dur){
 let ptVoice=null;
 function pickVoice(){try{const v=speechSynthesis.getVoices();ptVoice=v.find(x=>/pt-BR/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))||null}catch(e){}}
 try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
-let utts=[];
+let utts=[], falando=false, proxima=0, ultimaCombo="";
+function estima(text,rate){return Math.max(500,text.length*68/(rate||1))+350}
+/* Anúncios (round, descanso): podem interromper. */
 function say(text,force){
   if(!opt.voice&&!force)return;
   if(window.AndroidTTS){let ok=false;try{ok=AndroidTTS.speak(text)}catch(e){}
     if(force&&!ok)toast("A voz ainda está carregando. Tenta de novo em 2 segundos.");return}
   const ss=window.speechSynthesis;
   if(!ss||!window.SpeechSynthesisUtterance){if(force)toast("Esse navegador não tem voz. Abre no Chrome.");return}
-  const go=()=>{try{
+  try{
     if(!ptVoice)pickVoice();
-    const u=new SpeechSynthesisUtterance(text);u.lang="pt-BR";if(ptVoice)u.voice=ptVoice;u.rate=1.1;u.volume=1;
-    utts.push(u);if(utts.length>6)utts.shift();
+    ss.cancel();falando=false;
+    const u=new SpeechSynthesisUtterance(text);u.lang="pt-BR";if(ptVoice)u.voice=ptVoice;u.rate=1.08;u.volume=1;
+    utts.push(u);if(utts.length>8)utts.shift();
     if(force){let ok=false;u.onstart=()=>ok=true;setTimeout(()=>{if(!ok&&!ss.speaking)toast("A voz não saiu. Aumenta o volume de mídia do celular.")},2500)}
     ss.resume();ss.speak(u);
-  }catch(e){}};
-  try{if(ss.speaking||ss.pending){ss.cancel();setTimeout(go,120)}else go()}catch(e){}
+  }catch(e){}
 }
-function spoken(c){return tok(c).map(t=>opt.nums&&NUMW[t]?NUMW[t]:(NAMES[t]||t)).join(", ")}
+/* Sequências: nunca cortam. A pausa só começa quando a voz termina. */
+function falaCombo(text,rate,fim){
+  let ok=false;const acaba=()=>{if(ok)return;ok=true;falando=false;fim&&fim()};
+  falando=true;
+  const reserva=setTimeout(acaba,estima(text,rate)*1.8+800);
+  if(window.AndroidTTS){try{AndroidTTS.speak(text)}catch(e){}clearTimeout(reserva);setTimeout(acaba,estima(text,rate));return}
+  const ss=window.speechSynthesis;
+  if(!ss||!window.SpeechSynthesisUtterance){clearTimeout(reserva);setTimeout(acaba,estima(text,rate));return}
+  try{
+    if(!ptVoice)pickVoice();
+    const u=new SpeechSynthesisUtterance(text);u.lang="pt-BR";if(ptVoice)u.voice=ptVoice;u.rate=rate;u.volume=1;
+    u.onend=u.onerror=()=>{clearTimeout(reserva);acaba()};
+    utts.push(u);if(utts.length>8)utts.shift();
+    ss.resume();ss.speak(u);
+  }catch(e){clearTimeout(reserva);setTimeout(acaba,estima(text,rate))}
+}
+/* Tipo do round define a velocidade da voz e a pausa depois de cada sequência. */
+function tipoRound(r){const t=(r.t||"").toLowerCase();
+  if(/explos/.test(t))return"explo";if(/aquec/.test(t))return"aquec";
+  if(/esquiva|defesa|bloqueio|sprawl/.test(t))return"def";if(/livre|rola|sparring|circuito|clinche livre/.test(t))return"livre";return"tec"}
+const RITMO={aquec:{rate:1.0,pausa:3.2},tec:{rate:1.18,pausa:2.4},def:{rate:1.2,pausa:2.0},livre:{rate:1.15,pausa:2.6},explo:{rate:1.6,pausa:.5}};
+const PACEF={lento:1.6,normal:1,rapido:.55};
+function ritmo(r){const k=tipoRound(r),b=RITMO[k],st=faseAtual();
+  let rate=b.rate+(k==="explo"?st*.04:st*.02);
+  let pausa=k==="explo"?Math.max(.3,b.pausa-st*.03):Math.max(.9,b.pausa*(PACEF[opt.pace]||1)-st*.1);
+  return{k,rate:Math.min(rate,1.85),pausa}}
+function spoken(c,rapido){return tok(c).map(t=>opt.nums&&NUMW[t]?NUMW[t]:(NAMES[t]||t)).join(rapido?" ":", ")}
 function beep(f=880,d=.18,n=1){
   if(!ctx)return;
   for(let k=0;k<n;k++){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=f;o.type="square";
@@ -578,12 +773,12 @@ const fmt=s=>Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
 function resetTimer(){stop();if(saved){done.clear();saved=false}idx=0;left=segs.length?segs[0].dur:0;$("call").textContent=$("fCall").textContent="";$("msg").hidden=true;render(true)}
 function stop(){try{window.AndroidTTS&&AndroidTTS.stop()}catch(e){};clearInterval(timer);timer=null;running=false;try{speechSynthesis.cancel()}catch(e){};try{lock&&lock.release()}catch(e){}}
 function startSeg(){
-  const s=segs[idx];left=s.dur;endAt=Date.now()+left*1000;lastCall=Date.now();
+  const s=segs[idx];left=s.dur;endAt=Date.now()+left*1000;lastCall=Date.now();falando=false;proxima=Date.now()+(opt.voice?2600:1500);explo=null;
   $("call").textContent=$("fCall").textContent="";$("msg").hidden=true;
   if(s.type==="stretch"){beep(990,.15);say("Alongamento. "+s.label)}
   else if(s.type==="work"){beep(1200,.4);const w=segs.filter(x=>x.type==="work");
     if(w.length>1&&s===w[w.length-1]){$("msg").textContent="Último round! Vai com tudo!";$("msg").hidden=false;say("Último round! "+s.label+". Vai com tudo!")}
-    else say("Round "+(s.n+1)+". "+s.label)}
+    else say("Round "+(s.n+1)+". "+s.label);if(tipoRound(s.r)==="explo"){$("msg").textContent="Explosão: 30 s no máximo, 30 s se movimentando. A voz acelera junto.";$("msg").hidden=false}}
   else{beep(500,.5);const p=PHRASES[phraseI++%PHRASES.length];$("msg").textContent=p;$("msg").hidden=false;say("Descanso. "+p)}
   render();
 }
@@ -592,16 +787,32 @@ function play(){
   if(idx>=segs.length){idx=0}
   running=true;
   if(left===segs[idx].dur){startSeg()}else{endAt=Date.now()+left*1000}
-  timer=setInterval(step,250);
+  falando=false;if(proxima<Date.now())proxima=Date.now()+800;
+  timer=setInterval(step,200);
   try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>lock=l).catch(()=>{})}catch(e){}
   render();
 }
-function pause(){stop();render()}
+function pause(){stop();falando=false;render()}
 function step(){
   const s=segs[idx];const sec=Math.max(0,Math.ceil((endAt-Date.now())/1000));
   if(sec!==left){left=sec;if(s.type==="work"&&left===10)beep(660,.12,3);render()}
-  if(s.type==="work"&&s.r.c.length&&left>3&&left<s.dur-3&&Date.now()-lastCall>(PACE[opt.pace]||5500)){
-    const c=s.r.c[Math.floor(Math.random()*s.r.c.length)];$("call").textContent=$("fCall").textContent=c;say(spoken(c));lastCall=Date.now();
+  if(s.type==="work"&&s.r.c.length&&left>2){
+    const rt=ritmo(s.r),agora=Date.now();
+    if(rt.k==="explo"){ // 30 s no máximo, 30 s de movimentação
+      const dec=s.dur-left,fase=dec%60<30?"vai":"mov";
+      if(fase!==explo){const antes=explo;explo=fase;if(antes!==null||fase==="mov"){
+        if(fase==="mov"){$("call").textContent=$("fCall").textContent="Movimenta";say("Movimenta!");proxima=agora+1e9}
+        else{say("Vai! Explode!");proxima=agora+1300}}}
+      if(fase==="mov"){if(left<=2)proxima=agora+1e9}
+    }
+    if(!falando&&agora>=proxima&&!(rt.k==="explo"&&explo==="mov")){
+      let c=s.r.c[Math.floor(Math.random()*s.r.c.length)];
+      if(s.r.c.length>1&&c===ultimaCombo)c=s.r.c[(s.r.c.indexOf(c)+1)%s.r.c.length];
+      ultimaCombo=c;$("call").textContent=$("fCall").textContent=c;lastCall=agora;
+      const txt=spoken(c,rt.k==="explo");
+      if(opt.voice)falaCombo(txt,rt.rate,()=>{proxima=Date.now()+rt.pausa*1000});
+      else proxima=agora+estima(txt,rt.rate)+rt.pausa*1000;
+    }
   }
   if(left<=0)advance(true);
 }
@@ -643,6 +854,8 @@ $("play").onclick=()=>{if(idx>=segs.length){if(saved){done.clear();saved=false}i
 $("save").onclick=()=>saveSession();
 $("skip").onclick=()=>{if(idx<segs.length)advance(false)};
 $("reset").onclick=resetTimer;
+$("evoUp").onclick=()=>evoMuda(1);
+$("evoDown").onclick=()=>evoMuda(-1);
 $("clear").onclick=()=>{done.clear();store.set(key(),[]);render()};
 const saveOpt=()=>store.set("bf-opt",opt);
 $("vOn").onclick=()=>{opt.voice=!opt.voice;saveOpt();if(opt.voice)say("Voz ligada",true);else try{speechSynthesis.cancel()}catch(e){};render()};
@@ -710,8 +923,9 @@ async function saveSession(){
   const r=nr.filter(x=>done.has(x.id)).length,st=ns.filter(x=>done.has(x.id)).length;
   if(!r&&!st)return;
   saved=true;store.set(key(),[]);render();
-  const ok=await addSession({date:new Date().toISOString(),art,mode,rounds:r,total:nr.length,stretches:st,stretchTotal:ns.length,minutes:Math.round(r*opt.round/60)});
-  if(ok)toast("Treino salvo no progresso");else{saved=false;store.set(key(),[...done]);render()}
+  const ok=await addSession({date:new Date().toISOString(),art,mode,rounds:r,total:nr.length,stretches:st,stretchTotal:ns.length,minutes:Math.round(r*opt.round/60),fase:faseAtual()+1});
+  if(ok){const subiu=r?evoRegistra(r,nr.length):false;renderEvo();
+    if(subiu){toast("Evoluiu! Fase "+(faseAtual()+1)+": sequências novas no próximo treino");say("Você evoluiu. Sequências novas liberadas.")}else toast("Treino salvo no progresso")}else{saved=false;store.set(key(),[...done]);render()}
 }
 
 const dk=d=>{const x=new Date(d);return x.getFullYear()+"-"+(x.getMonth()+1)+"-"+x.getDate()};

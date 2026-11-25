@@ -1,4 +1,4 @@
-const C = "bfight-v1";
+const C = "bfight-v2";
 const F = ["./", "index.html", "acesso.js", "manifest.json", "icon-192.png", "icon-512.png"];
 // Login e lista de acesso do Firebase sempre pela rede
 const LIVE = /(firestore|identitytoolkit|securetoken|firebaseinstallations)\.googleapis\.com$/;
