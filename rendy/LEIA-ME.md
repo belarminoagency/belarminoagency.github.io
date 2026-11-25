@@ -5,7 +5,7 @@ Você entra com `belarminokaique581@gmail.com`, toca no ícone de **pessoas** no
 Parou de pagar? **Tirar acesso**: o app fecha na hora para essa pessoa.
 
 ## Onde ficam os dados
-- **Finanças, metas e fotos:** só no aparelho da pessoa (não vão para a internet). Cada conta tem seus dados separados no aparelho.
+- **Finanças, metas e fotos:** salvas na conta da pessoa (`rendy_dados/{uid}/partes`), então valem em qualquer aparelho. O aparelho guarda uma cópia para abrir rápido e funcionar sem internet.
 - **No Firebase:** só nome, WhatsApp, e-mail e se o acesso está liberado.
 - A pessoa pode fazer backup em Ajustes → Baixar backup.
 

@@ -42,7 +42,7 @@ service cloud.firestore {
       allow read, write: if dono(uid) && (admin()
         || get(/databases/$(database)/documents/organizacao/$(uid)).data.aprovado == true);
     }
-    // RENDY: liberação separada. Finanças ficam só no aparelho da pessoa.
+    // RENDY: liberação de acesso (os dados ficam em rendy_dados)
     match /rendy/{uid} {
       allow read: if admin() || dono(uid);
       allow create: if admin() || (dono(uid)
@@ -51,6 +51,12 @@ service cloud.firestore {
       allow update: if admin() || (dono(uid)
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['aprovado', 'recusado', 'email']));
       allow delete: if admin();
+    }
+
+    // RENDY na nuvem: lançamentos, metas e fotos de cada pessoa. Só o dono, e só com acesso liberado.
+    match /rendy_dados/{uid}/{rest=**} {
+      allow read, write: if dono(uid) && (admin()
+        || get(/databases/$(database)/documents/rendy/$(uid)).data.aprovado == true);
     }
 
     // ALTAR A DOIS: cada pessoa pede acesso e o Kaique libera (igual Rendy)

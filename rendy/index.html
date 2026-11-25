@@ -316,7 +316,87 @@ const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","ag
 function blank(){ return {pessoal:{renda:0,lanc:[],metas:[]},mei:{lanc:[],metas:[],limite:0},hide:false,onb:false}; }
 let KEYU = KEY, db = blank();
 function loadDb(){ try{ db = JSON.parse(localStorage.getItem(KEYU)) || blank(); }catch(e){ db = blank(); } }
-function save(){ try{ localStorage.setItem(KEYU, JSON.stringify(db)); }catch(e){ toast("Sem espaço: use fotos menores"); } }
+function saveLocal(){ try{ localStorage.setItem(KEYU, JSON.stringify(db)); }catch(e){ toast("Sem espaço: use fotos menores"); } }
+function save(){ saveLocal(); cloud.push(); }
+
+/* ---------- Nuvem: lançamentos, metas e fotos salvos na conta (rendy_dados/{uid}/partes) ----------
+   base: renda, limite, metas (sem foto), preferências · l_{area}_{ano}: lançamentos do ano · f_{metaId}: foto da meta */
+const cloud = {
+  uid:null, col:null, last:{}, timer:null, ready:false, unsub:null,
+  parts(d){
+    const out = {}, strip = ms => (ms||[]).map(m => { const c = Object.assign({}, m); delete c.foto; return c; });
+    out.base = {hide:!!d.hide, onb:!!d.onb,
+      pessoal:{renda:d.pessoal.renda||0, metas:strip(d.pessoal.metas)},
+      mei:{limite:d.mei.limite||0, metas:strip(d.mei.metas)}};
+    ["pessoal","mei"].forEach(a => (d[a].lanc||[]).forEach(l => {
+      const k = "l_" + a + "_" + (String(l.data||"").slice(0,4) || "sem");
+      (out[k] = out[k] || {itens:[]}).itens.push(l);
+    }));
+    ["pessoal","mei"].forEach(a => (d[a].metas||[]).forEach(m => { if (m.foto) out["f_" + m.id] = {foto:m.foto}; }));
+    return out;
+  },
+  build(docs){
+    const d = blank(), b = docs.base || {}, fotos = {};
+    Object.keys(docs).forEach(k => { if (k.startsWith("f_")) fotos[k.slice(2)] = docs[k].foto; });
+    d.hide = !!b.hide; d.onb = !!b.onb;
+    d.pessoal.renda = (b.pessoal||{}).renda || 0; d.mei.limite = (b.mei||{}).limite || 0;
+    ["pessoal","mei"].forEach(a => {
+      d[a].metas = ((b[a]||{}).metas || []).map(m => fotos[m.id] ? Object.assign({}, m, {foto:fotos[m.id]}) : m);
+      Object.keys(docs).filter(k => k.startsWith("l_" + a + "_")).sort().forEach(k => d[a].lanc.push(...(docs[k].itens||[])));
+    });
+    return d;
+  },
+  push(){
+    if (!this.ready) return;
+    clearTimeout(this.timer); this.timer = setTimeout(() => this.flush(), 1200);
+  },
+  async flush(){
+    if (!this.ready) return;
+    const parts = this.parts(db), batch = fb.fs.batch(); let n = 0;
+    Object.keys(parts).forEach(k => { const j = JSON.stringify(parts[k]); if (this.last[k] !== j){ batch.set(this.col.doc(k), parts[k]); this.last[k] = j; n++; } });
+    Object.keys(this.last).forEach(k => { if (!(k in parts)){ batch.delete(this.col.doc(k)); delete this.last[k]; n++; } });
+    if (!n) return;
+    try { await batch.commit(); } catch(e){ this.last = {}; console.warn("Rendy: não sincronizou", e); }
+  },
+  apply(docs){
+    this.last = {}; Object.keys(docs).forEach(k => this.last[k] = JSON.stringify(docs[k]));
+    db = this.build(docs); saveLocal(); render();
+  },
+  async start(uid){
+    if (NOAUTH || !fb) return;
+    this.uid = uid; this.col = fb.fs.collection("rendy_dados").doc(uid).collection("partes");
+    const flag = "rendy-nuvem:" + uid;
+    let snap;
+    try { snap = await this.col.get({source:"server"}); }
+    catch(e){ setTimeout(() => this.start(uid), 15000); return; } // sem internet: tenta de novo depois
+    const docs = {}; snap.forEach(x => docs[x.id] = x.data());
+    const hasCloud = Object.keys(docs).length > 0;
+    if (!localStorage.getItem(flag)){
+      // Primeira vez nesta conta neste aparelho: junta o que está no aparelho com o que está na nuvem
+      if (hasCloud){
+        const c = this.build(docs), byId = (a, b) => { const m = new Map(); a.concat(b).forEach(x => m.set(x.id, x)); return [...m.values()]; };
+        ["pessoal","mei"].forEach(a => { c[a].lanc = byId(c[a].lanc, db[a].lanc||[]); c[a].metas = byId(c[a].metas, db[a].metas||[]); });
+        if (!c.pessoal.renda) c.pessoal.renda = db.pessoal.renda || 0;
+        if (!c.mei.limite) c.mei.limite = db.mei.limite || 0;
+        c.onb = c.onb || db.onb; db = c; saveLocal(); render();
+        Object.keys(docs).forEach(k => this.last[k] = JSON.stringify(docs[k]));
+      }
+      this.ready = true; await this.flush();
+      localStorage.setItem(flag, "1");
+    } else {
+      if (hasCloud) this.apply(docs);
+      this.ready = true; await this.flush();
+    }
+    // Atualiza na hora se mexer em outro aparelho
+    this.unsub = this.col.onSnapshot(s => {
+      if (s.metadata.hasPendingWrites || s.metadata.fromCache) return;
+      const d2 = {}; s.forEach(x => d2[x.id] = x.data());
+      const changed = Object.keys(d2).length !== Object.keys(this.last).length || Object.keys(d2).some(k => this.last[k] !== JSON.stringify(d2[k]));
+      if (changed && Object.keys(d2).length) this.apply(d2);
+    }, () => {});
+    if (typeof watch !== "undefined") watch.push(this.unsub);
+  }
+};
 
 let area = "pessoal", tab = "inicio", filtro = "todos";
 const now = new Date(); let cur = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -623,7 +703,7 @@ function onboarding(i=0){
   document.getElementById("oN").onclick=()=>{ if(i<ONB.length-1) onboarding(i+1); else { db.onb=true; save(); closeSheet(); } };
 }
 function ajustes(){
-  openSheet(`<h2>Ajustes</h2><div class="sub">Seus dados ficam salvos só neste aparelho. Faça um backup de vez em quando para não perder nada.</div><div class="form">
+  openSheet(`<h2>Ajustes</h2><div class="sub">${NOAUTH?"Seus dados ficam salvos só neste aparelho. Faça um backup de vez em quando para não perder nada.":"Seus lançamentos, metas e fotos ficam salvos na sua conta. Trocou de celular ou limpou o navegador? É só entrar de novo que está tudo lá."}</div><div class="form">
     <button class="btn full" id="aE">Baixar backup</button>
     <label class="btn ghost full">Restaurar backup<input type="file" accept=".json" class="hidden" id="aI"></label>
     <button class="btn ghost full" id="aH">Ver o tutorial de novo</button>
@@ -633,7 +713,7 @@ function ajustes(){
   document.getElementById("aI").onchange=e=>{ const f=e.target.files[0]; if(!f) return; f.text().then(t=>{ try{ const d=JSON.parse(t); if(!d.pessoal||!d.mei) throw 0; db=d; save(); closeSheet(); render(); toast("Backup restaurado"); }catch(err){ toast("Arquivo inválido"); } }); };
   document.getElementById("aH").onclick=()=>onboarding(0);
   document.getElementById("aO")?.addEventListener("click",logout);
-  document.getElementById("aX").onclick=()=>ask("Apagar tudo?","Todos os lançamentos, metas e fotos serão apagados deste aparelho.","Apagar tudo",()=>{ db=blank(); db.onb=true; save(); render(); });
+  document.getElementById("aX").onclick=()=>ask("Apagar tudo?","Todos os lançamentos, metas e fotos serão apagados deste aparelho e da sua conta.","Apagar tudo",()=>{ db=blank(); db.onb=true; save(); render(); });
 }
 
 /* ---------- eventos ---------- */
@@ -738,6 +818,7 @@ async function logout(){ stopWatch(); try{ await fb?.auth.signOut(); }catch(e){}
 
 function startApp(uid){
   KEYU = uid ? KEY+":"+uid : KEY; loadDb(); ungate(); render();
+  if (uid) cloud.start(uid);
   if(!db.onb) setTimeout(()=>onboarding(0),400);
 }
 function renderAdmin(){
