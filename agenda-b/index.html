@@ -139,6 +139,10 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
 .inf svg.i{color:var(--red);margin-top:2px}
 .pl{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px dashed var(--line)}.pl:first-of-type{border-top:0}.pl b{white-space:nowrap}
 /* config */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:10px 16px;font:600 15px Poppins;cursor:pointer;min-height:44px;transition:background .2s}
+.chip[aria-pressed=true]{background:var(--ind);border-color:var(--ind);color:#fff}
+.brw{display:grid;grid-template-columns:minmax(0,1fr) 46px;gap:8px;margin-bottom:8px}
 .svc{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) 46px;gap:8px;align-items:end;margin-bottom:8px}
 .x{background:none;border:1.5px solid var(--line);color:var(--red);border-radius:12px;min-height:46px;cursor:pointer;font-size:20px}
 .note{font-size:13px;color:var(--mute);margin-top:24px}
@@ -232,7 +236,9 @@ const slugify=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCa
 const $=id=>document.getElementById(id);
 const toastEl=$('toast');let tt;
 const toast=m=>{toastEl.textContent=m;toastEl.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>toastEl.classList.remove('on'),2600)};
-const ERR={horario_ocupado:'Esse horário acabou de ser ocupado. Escolha outro.',dados_invalidos:'Confira seu nome e WhatsApp com DDD.',data_invalida:'Escolha uma data a partir de hoje.',servico_invalido:'Serviço indisponível. Escolha outro.',barbearia_nao_encontrada:'Barbearia não encontrada.'};
+const ERR={horario_ocupado:'Esse horário acabou de ser ocupado. Escolha outro.',dados_invalidos:'Confira seu nome e WhatsApp com DDD.',data_invalida:'Escolha uma data a partir de hoje.',servico_invalido:'Serviço indisponível. Escolha outro.',barbearia_nao_encontrada:'Barbearia não encontrada.',barbeiro_invalido:'Esse barbeiro não está disponível. Escolha outro.'};
+const barbers=()=>(SHOP&&SHOP.barbers)||[];
+const barberName=id=>(barbers().find(b=>b.id===id)||{}).name||'';
 const errMsg=e=>{const m=String(e&&e.message||e||'');for(const k in ERR)if(m.includes(k))return ERR[k];
   if(m.includes('Invalid login'))return 'E-mail ou senha incorretos.';if(m.includes('Email not confirmed'))return 'Confirme seu e-mail antes de entrar (veja sua caixa de entrada).';
   if(m.includes('already registered'))return 'Esse e-mail já tem conta. Use "Entrar".';if(m.includes('duplicate key')&&m.includes('slug'))return 'Esse link já está em uso. Escolha outro.';
@@ -257,16 +263,18 @@ const setHead=()=>{$('shopName').textContent=SHOP?SHOP.name:'Agenda B';$('subt')
 const ME_KEY='agendaB_me_'+SLUG;
 let me='';try{me=localStorage.getItem(ME_KEY)||''}catch(e){}
 const setMe=v=>{me=v;try{v?localStorage.setItem(ME_KEY,v):localStorage.removeItem(ME_KEY)}catch(e){}};
-let B={step:1,service:null,date:today,time:null,done:null};
+let B={step:1,service:null,date:today,time:null,done:null,barber:''};
 let draft={n:'',t:''};
 const busyCache={};
-async function loadBusy(date,force){if(!busyCache[date]||force){const {data,error}=await sb.rpc('get_busy',{p_slug:SLUG,p_date:date});if(error)throw error;busyCache[date]=new Set(data||[])}return busyCache[date]}
+async function loadBusy(date,force){if(!busyCache[date]||force){const {data,error}=await sb.rpc('get_busy',{p_slug:SLUG,p_date:date});if(error)throw error;busyCache[date]=data||[]}return busyCache[date]}
 function slotsFor(date,busy){
   const out=[];const now=new Date();
   for(let h=SHOP.open;h<SHOP.close;h++)for(const m of [0,30]){
     const t=pad(h)+':'+pad(m);
     const past=date===today&&(h<now.getHours()||(h===now.getHours()&&m<=now.getMinutes()));
-    out.push({t,h,off:busy.has(t)||past});
+    const bs=barbers(),tk=id=>busy.some(x=>x.t===t&&x.barber===id);
+    const full=!bs.length?busy.some(x=>x.t===t):B.barber?tk(B.barber):bs.every(b=>tk(b.id));
+    out.push({t,h,off:full||past});
   }
   return out;
 }
@@ -274,9 +282,9 @@ const steps=n=>`<div class="steps">${['Serviço','Dia e horário','Confirmar'].m
 async function renderCliente(){
   const el=$('cliente');
   if(B.done){const b=B.done,s=svcById(b.service);
-    el.innerHTML=`<div class="ok pane"><div class="check">${ic('ok')}</div><h2>Tá marcado, ${esc(first(b.client))}!</h2><p>${esc(s.name)} · ${esc(fmtDia(b.date))} às <b>${esc(b.time)}</b> · ${brl(s.price)}</p><p>Você recebe um lembrete no WhatsApp antes do horário.</p><div class="row" style="justify-content:center"><button class="btn pri" id="vm">Ver meus horários</button><button class="btn ghost" style="color:#fff;border-color:#4744c4" id="novo">Agendar outro</button></div></div>`;
-    el.querySelector('#vm').onclick=()=>{B={step:1,service:null,date:today,time:null,done:null};go('meus')};
-    el.querySelector('#novo').onclick=()=>{B={step:1,service:null,date:today,time:null,done:null};renderCliente()};return}
+    el.innerHTML=`<div class="ok pane"><div class="check">${ic('ok')}</div><h2>Tá marcado, ${esc(first(b.client))}!</h2><p>${esc(s.name)} · ${esc(fmtDia(b.date))} às <b>${esc(b.time)}</b>${b.barber?' com <b>'+esc(barberName(b.barber))+'</b>':''} · ${brl(s.price)}</p><p>Você recebe um lembrete no WhatsApp antes do horário.</p><div class="row" style="justify-content:center"><button class="btn pri" id="vm">Ver meus horários</button><button class="btn ghost" style="color:#fff;border-color:#4744c4" id="novo">Agendar outro</button></div></div>`;
+    el.querySelector('#vm').onclick=()=>{B={step:1,service:null,date:today,time:null,done:null,barber:''};go('meus')};
+    el.querySelector('#novo').onclick=()=>{B={step:1,service:null,date:today,time:null,done:null,barber:''};renderCliente()};return}
   if(B.step===1){
     el.innerHTML=`<div class="pane"><h2>Qual vai ser hoje?</h2><p class="sub">${esc(SHOP.name)} · escolha o serviço</p>${steps(1)}
     <div class="svcs">${SHOP.services.map(s=>`<button class="svc-b" data-s="${esc(s.id)}" aria-pressed="${B.service===s.id}"><div class="ic">${ic(s.icon)}</div><div><b>${esc(s.name)}</b><br><span>${esc(s.min)} min</span></div><div class="pr">${brl0(s.price)}</div></button>`).join('')}</div></div>`;
@@ -285,9 +293,10 @@ async function renderCliente(){
   if(B.step===2){
     const days=[...Array(14)].map((_,i)=>addDays(new Date(),i));
     const dayBar=`<div class="days">${days.map((d,i)=>{const k=ymd(d);return `<button class="day" data-d="${k}" aria-pressed="${B.date===k}"><small>${i===0?'Hoje':i===1?'Amanhã':DIAS[d.getDay()]}</small><b>${pad(d.getDate())}</b></button>`}).join('')}</div>`;
-    el.innerHTML=`<div class="pane"><h2>Quando fica bom?</h2><p class="sub">${esc(svcById(B.service).name)}</p>${steps(2)}<div class="card">${dayBar}<div id="slots"><div class="load">Buscando horários livres…</div></div></div>
+    el.innerHTML=`<div class="pane"><h2>Quando fica bom?</h2><p class="sub">${esc(svcById(B.service).name)}</p>${steps(2)}<div class="card">${barbers().length?`<div class="per" style="margin-top:0">Com quem?</div><div class="chips" style="margin-bottom:16px">${[{id:'',name:'Sem preferência'},...barbers()].map(b=>`<button class="chip" data-br="${esc(b.id)}" aria-pressed="${B.barber===b.id}">${esc(b.name)}</button>`).join('')}</div>`:''}${dayBar}<div id="slots"><div class="load">Buscando horários livres…</div></div></div>
     <div class="nav2"><button class="btn ghost" id="bk">${ic('back')}Voltar</button></div></div>`;
     el.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{B.date=b.dataset.d;B.time=null;renderCliente()});
+    el.querySelectorAll('[data-br]').forEach(b=>b.onclick=()=>{B.barber=b.dataset.br;B.time=null;renderCliente()});
     el.querySelector('#bk').onclick=()=>{B.step=1;renderCliente()};
     const date=B.date;
     try{const busy=await loadBusy(date,true);if(B.step!==2||B.date!==date)return;
@@ -302,6 +311,7 @@ async function renderCliente(){
   const s=svcById(B.service);
   el.innerHTML=`<div class="pane"><h2>Só falta você</h2><p class="sub">Confira e confirme</p>${steps(3)}
   <div class="resumo"><div><small>Serviço</small><b>${esc(s.name)}</b></div><div><small>Quando</small><b>${esc(fmtDia(B.date))} · ${esc(B.time)}</b></div><div><small>Valor</small><b>${brl(s.price)}</b></div></div>
+  ${barbers().length?`<p class="sub">Com: <b>${esc(B.barber?barberName(B.barber):'Sem preferência (o primeiro livre)')}</b></p>`:''}
   <form class="card" id="fCli">
     <label for="cNome">Seu nome</label><input id="cNome" autocomplete="name" required value="${esc(draft.n)}">
     <label for="cTel">WhatsApp com DDD</label><input id="cTel" inputmode="tel" autocomplete="tel" placeholder="(24) 99999-0000" required value="${esc(draft.t)}">
@@ -315,7 +325,7 @@ async function renderCliente(){
     const name=n.value.trim(),phone=digits(t.value),btn=el.querySelector('#cOk');
     if(!name||phone.length<10){$('cErr').textContent='Preencha nome e WhatsApp com DDD.';return}
     btn.disabled=true;btn.textContent='Confirmando…';
-    const {data,error}=await sb.rpc('create_booking',{p_slug:SLUG,p_date:B.date,p_time:B.time,p_service:B.service,p_name:name,p_phone:phone});
+    const {data,error}=await sb.rpc('create_booking',{p_slug:SLUG,p_date:B.date,p_time:B.time,p_service:B.service,p_name:name,p_phone:phone,p_barber:B.barber});
     if(error){const m=errMsg(error);toast(m);if(m===ERR.horario_ocupado){B.step=2;B.time=null;renderCliente()}else{btn.disabled=false;btn.innerHTML=ic('ok')+'Confirmar horário';$('cErr').textContent=m}return}
     setMe(phone);draft={n:'',t:''};B.done=data;renderCliente()};
 }
@@ -335,8 +345,8 @@ async function renderMeus(){
   const nome=d.client?d.client.name:'';
   const dd=k=>{const x=new Date(k+'T12:00');return `<small>${k===today?'Hoje':DIAS[x.getDay()]}</small><b>${pad(x.getDate())}/${pad(x.getMonth()+1)}</b>`};
   el.innerHTML=`<div class="pane"><h2>${nome?'Oi, '+esc(first(nome))+'!':'Meus horários'}</h2><p class="sub">Seus próximos horários na ${esc(SHOP.name)}.</p>
-  <div class="card"><h3>Próximos</h3>${prox.length?prox.map(b=>`<div class="bk"><div class="d">${dd(b.date)}</div><div><div class="who">${esc(b.time)} · ${esc(svcById(b.service).name)}</div><div class="what">${brl(svcById(b.service).price)}</div>
-    <div class="acts">${cancelId===b.id?`<button class="btn red" data-cc="${esc(b.id)}">Sim, cancelar</button><button class="btn ghost" data-nc>Manter</button>`:`<button class="btn ghost" data-rm="${esc(b.id)}" data-sv="${esc(b.service)}" data-dt="${esc(b.date)}">Remarcar</button><button class="btn ghost" data-c="${esc(b.id)}">Cancelar</button>`}</div></div></div>`).join(''):`<div class="empty">Nenhum horário marcado.</div>`}
+  <div class="card"><h3>Próximos</h3>${prox.length?prox.map(b=>`<div class="bk"><div class="d">${dd(b.date)}</div><div><div class="who">${esc(b.time)} · ${esc(svcById(b.service).name)}${b.barber?' · com '+esc(barberName(b.barber)):''}</div><div class="what">${brl(svcById(b.service).price)}</div>
+    <div class="acts">${cancelId===b.id?`<button class="btn red" data-cc="${esc(b.id)}">Sim, cancelar</button><button class="btn ghost" data-nc>Manter</button>`:`<button class="btn ghost" data-rm="${esc(b.id)}" data-sv="${esc(b.service)}" data-dt="${esc(b.date)}" data-br="${esc(b.barber||'')}">Remarcar</button><button class="btn ghost" data-c="${esc(b.id)}">Cancelar</button>`}</div></div></div>`).join(''):`<div class="empty">Nenhum horário marcado.</div>`}
     <button class="btn pri" id="ag" style="margin-top:8px">${ic('cal')}Agendar horário</button></div>
   ${hist.length?`<div class="card"><h3>Já fui</h3>${hist.slice(0,5).map(b=>`<div class="pl"><span>${esc(fmtDia(b.date))} · ${esc(svcById(b.service).name)}</span><b>${brl(svcById(b.service).price)}</b></div>`).join('')}</div>`:''}
   <button class="btn ghost" id="troca">Não é você? Trocar número</button></div>`;
@@ -346,7 +356,7 @@ async function renderMeus(){
   el.querySelectorAll('[data-nc]').forEach(b=>b.onclick=()=>{cancelId=null;renderMeus()});
   el.querySelectorAll('[data-cc]').forEach(b=>b.onclick=async()=>{b.disabled=true;const {error}=await sb.rpc('cancel_booking',{p_slug:SLUG,p_id:b.dataset.cc,p_phone:me});cancelId=null;toast(error?errMsg(error):'Horário cancelado.');renderMeus()});
   el.querySelectorAll('[data-rm]').forEach(b=>b.onclick=async()=>{b.disabled=true;const {error}=await sb.rpc('cancel_booking',{p_slug:SLUG,p_id:b.dataset.rm,p_phone:me});if(error){toast(errMsg(error));return}
-    draft={n:nome,t:me};B={step:2,service:b.dataset.sv,date:b.dataset.dt<today?today:b.dataset.dt,time:null,done:null};go('cliente');toast('Escolha o novo dia e horário')});
+    draft={n:nome,t:me};B={step:2,service:b.dataset.sv,date:b.dataset.dt<today?today:b.dataset.dt,time:null,done:null,barber:b.dataset.br||''};go('cliente');toast('Escolha o novo dia e horário')});
 }
 async function renderCartao(){
   const el=$('cartao');
@@ -420,8 +430,8 @@ function renderCriar(){
     $('nGo').disabled=false;if(error){$('nErr').textContent=errMsg(error);return}
     SHOP=data;setHead();go('config');toast('Barbearia criada! Copie seu link abaixo.')};
 }
-let agDate=today,agTimer=null;
-const lembrete=b=>`https://wa.me/${waNum(b.phone)}?text=${encodeURIComponent(`Olá, ${first(b.client)}! Passando para lembrar do seu horário na ${SHOP.name} ${b.date===today?'hoje':'dia '+fmtDia(b.date)} às ${b.time} (${svcById(b.service).name}). Posso confirmar?`)}`;
+let agDate=today,agTimer=null,agBarber='';
+const lembrete=b=>`https://wa.me/${waNum(b.phone)}?text=${encodeURIComponent(`Olá, ${first(b.client)}! Passando para lembrar do seu horário na ${SHOP.name} ${b.date===today?'hoje':'dia '+fmtDia(b.date)} às ${b.time} (${svcById(b.service).name}${b.barber?' com '+barberName(b.barber):''}). Posso confirmar?`)}`;
 async function renderAgenda(){
   const el=$('agenda');
   const days=[...Array(7)].map((_,i)=>addDays(new Date(),i));
@@ -431,7 +441,8 @@ async function renderAgenda(){
   const {data,error}=await sb.from('bookings').select('*').eq('shop_id',SHOP.id).eq('date',date).neq('status','cancelado').order('time');
   if(tab!=='agenda'||agDate!==date)return;
   if(error){el.innerHTML='<div class="empty">Não foi possível carregar a agenda.</div>';return}
-  const list=data||[];
+  const list=(data||[]).filter(b=>!agBarber||b.barber===agBarber);
+  const brBar=barbers().length?`<div class="chips" style="margin-bottom:16px">${[{id:'',name:'Todos'},...barbers()].map(b=>`<button class="chip" data-ab="${esc(b.id)}" aria-pressed="${agBarber===b.id}">${esc(b.name)}</button>`).join('')}</div>`:'';
   const done=list.filter(b=>b.status==='concluido'),faltas=list.filter(b=>b.status==='faltou').length;
   const fat=done.reduce((s,b)=>s+Number(svcById(b.service).price),0);
   const prev=list.filter(b=>b.status!=='faltou').reduce((s,b)=>s+Number(svcById(b.service).price),0);
@@ -440,16 +451,17 @@ async function renderAgenda(){
   const nx=list.find(b=>b.status==='marcado'&&(date!==today||b.time>=nowT))||list.find(b=>b.status==='marcado');
   let quando='';
   if(nx&&date===today){const [h,m]=nx.time.split(':').map(Number);const d=h*60+m-(now.getHours()*60+now.getMinutes());quando=d>=60?`em ${Math.floor(d/60)}h${d%60?pad(d%60):''}`:d>0?`em ${d} min`:'agora / atrasado'}
-  el.innerHTML=`<div class="pane"><div class="topbar"><h2>Agenda</h2><button class="btn ghost" id="atu">Atualizar</button></div><p class="sub">Mande o lembrete, marque quem veio e cada atendimento vira carimbo no cartão.</p>${dayBar}
-  ${nx?`<div class="next"><div class="bt">${esc(nx.time)}</div><div><small>Próximo cliente${quando?' · '+esc(quando):''}</small><div class="nm">${esc(nx.client)}</div><div>${esc(svcById(nx.service).name)} · ${brl(svcById(nx.service).price)}</div><a class="btn pri" href="${esc(lembrete(nx))}" target="_blank" rel="noopener">${ic('wa')}Mandar lembrete</a></div></div>`:''}
+  el.innerHTML=`<div class="pane"><div class="topbar"><h2>Agenda</h2><button class="btn ghost" id="atu">Atualizar</button></div><p class="sub">Mande o lembrete, marque quem veio e cada atendimento vira carimbo no cartão.</p>${dayBar}${brBar}
+  ${nx?`<div class="next"><div class="bt">${esc(nx.time)}</div><div><small>Próximo cliente${quando?' · '+esc(quando):''}</small><div class="nm">${esc(nx.client)}</div><div>${esc(svcById(nx.service).name)} · ${brl(svcById(nx.service).price)}${nx.barber?' · '+esc(barberName(nx.barber)):''}</div><a class="btn pri" href="${esc(lembrete(nx))}" target="_blank" rel="noopener">${ic('wa')}Mandar lembrete</a></div></div>`:''}
   <div class="stats"><div class="stat"><b>${list.length}</b><span>agendados</span></div><div class="stat"><b>${done.length}</b><span>atendidos</span></div><div class="stat"><b>${brl0(fat)}</b><span>no caixa</span></div><div class="stat"><b>${brl0(prev)}</b><span>previsto</span></div></div>
   <div class="prog" title="${pct}% do dia resolvido"><i style="width:${pct}%"></i></div>
   <div class="card"><h3>Linha do dia</h3>${list.length?`<div class="tl">${list.map(b=>`<div class="slot s-${esc(b.status)}"><div class="time">${esc(b.time)}</div><div class="dot"><i></i></div><div><div class="info"><div class="who">${esc(b.client)}<span class="tag t-${esc(b.status)}">${b.status==='marcado'?'Marcado':b.status==='concluido'?'Atendido':'Faltou'}</span></div>
-    <div class="what">${esc(svcById(b.service).name)} · ${brl(svcById(b.service).price)}</div></div>
+    <div class="what">${esc(svcById(b.service).name)} · ${brl(svcById(b.service).price)}${b.barber?' · '+esc(barberName(b.barber)):''}</div></div>
     <div class="acts">${b.status==='marcado'?`<a class="btn wa" href="${esc(lembrete(b))}" target="_blank" rel="noopener">${ic('wa')}Lembrete</a><button class="btn sec" data-ok="${esc(b.id)}">${ic('ok')}Atendido</button><button class="btn ghost" data-no="${esc(b.id)}">Faltou</button>`:`<button class="btn ghost" data-undo="${esc(b.id)}">Desfazer</button>`}</div>
   </div></div>`).join('')}</div>`:`<div class="empty">Nenhum horário neste dia ainda. Divulgue seu link na bio do Instagram!</div>`}</div></div>`;
   el.querySelector('#atu').onclick=()=>renderAgenda();
   el.querySelectorAll('[data-ad]').forEach(b=>b.onclick=()=>{agDate=b.dataset.ad;el.innerHTML='';renderAgenda()});
+  el.querySelectorAll('[data-ab]').forEach(b=>b.onclick=()=>{agBarber=b.dataset.ab;renderAgenda()});
   const byId=id=>list.find(x=>x.id===id);
   el.querySelectorAll('[data-ok]').forEach(b=>b.onclick=()=>setStatus(byId(b.dataset.ok),'concluido',b));
   el.querySelectorAll('[data-no]').forEach(b=>b.onclick=()=>setStatus(byId(b.dataset.no),'faltou',b));
@@ -491,6 +503,7 @@ function renderConfig(){
   const icons=['tesoura','barba','combo','sobrancelha'];
   const link=BASE+'?b='+SHOP.slug;
   let svcs=SHOP.services.map(s=>({...s}));
+  let brs=barbers().map(b=>({...b}));
   const draw=()=>{
   el.innerHTML=`<div class="pane"><div class="topbar"><h2>Ajustes</h2><button class="btn ghost" id="sair">Sair</button></div>
   <div class="card"><h3>Seu link de agendamento</h3><p class="what">Coloque na bio do Instagram e mande no WhatsApp dos clientes.</p>
@@ -502,18 +515,22 @@ function renderConfig(){
     <label for="gD">Dias de funcionamento</label><input id="gD" value="${esc(SHOP.days)}">
     <label for="gE">Endereço</label><input id="gE" value="${esc(SHOP.addr)}">
     <div class="row"><div style="flex:1"><label for="gW">WhatsApp da barbearia</label><input id="gW" inputmode="tel" value="${esc(SHOP.wpp)}"></div><div style="flex:1"><label for="gI">Instagram (sem @)</label><input id="gI" value="${esc(SHOP.insta)}"></div></div>
+    <h3 style="margin-top:24px">Barbeiros</h3><p class="what">Se tiver mais de um, o cliente escolhe com quem quer cortar. Deixe vazio se for só você.</p><div>${brs.map(b=>`<div class="brw" data-bid="${esc(b.id)}"><input class="bn" aria-label="Nome do barbeiro" value="${esc(b.name)}"><button type="button" class="x xb" aria-label="Remover barbeiro">×</button></div>`).join('')}</div>
+    <button type="button" class="btn ghost" id="addB">+ Barbeiro</button>
     <h3 style="margin-top:24px">Serviços</h3><div>${svcs.map(s=>`<div class="svc" data-id="${esc(s.id)}" data-ic="${esc(s.icon||'tesoura')}"><div class="nm"><label>Serviço</label><input class="sn" value="${esc(s.name)}"></div><div><label>Preço (R$)</label><input class="sp" type="number" min="0" step="1" value="${esc(s.price)}"></div><div><label>Minutos</label><input class="sm" type="number" min="15" step="15" value="${esc(s.min)}"></div><button type="button" class="x" aria-label="Remover serviço">×</button></div>`).join('')}</div>
     <div class="err" id="gErr"></div>
     <div class="row" style="margin-top:14px"><button type="button" class="btn ghost" id="addS">+ Serviço</button><button class="btn pri" id="gGo">Salvar</button></div>
   </form></div>`;
-  const collect=()=>{svcs=[...el.querySelectorAll('.svc')].map(r=>({id:r.dataset.id,icon:r.dataset.ic,name:r.querySelector('.sn').value.trim()||'Serviço',price:+r.querySelector('.sp').value||0,min:+r.querySelector('.sm').value||30}))};
+  const collect=()=>{brs=[...el.querySelectorAll('.brw')].map(r=>({id:r.dataset.bid,name:r.querySelector('.bn').value.trim()})).filter(b=>b.name);svcs=[...el.querySelectorAll('.svc')].map(r=>({id:r.dataset.id,icon:r.dataset.ic,name:r.querySelector('.sn').value.trim()||'Serviço',price:+r.querySelector('.sp').value||0,min:+r.querySelector('.sm').value||30}))};
   el.querySelector('#sair').onclick=()=>sb.auth.signOut();
   el.querySelector('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(link);toast('Link copiado!')}catch(e){$('lk').select();toast('Selecione e copie o link')}};
-  el.querySelectorAll('.x').forEach(b=>b.onclick=()=>{collect();if(svcs.length<=1){toast('Deixe pelo menos 1 serviço');return}svcs=svcs.filter(s=>s.id!==b.closest('.svc').dataset.id);draw()});
+  el.querySelectorAll('.xb').forEach(b=>b.onclick=()=>{collect();brs=brs.filter(x=>x.id!==b.closest('.brw').dataset.bid);draw()});
+  el.querySelector('#addB').onclick=()=>{collect();brs.push({id:uid(),name:'Barbeiro '+(brs.length+1)});draw()};
+  el.querySelectorAll('.svc .x').forEach(b=>b.onclick=()=>{collect();if(svcs.length<=1){toast('Deixe pelo menos 1 serviço');return}svcs=svcs.filter(s=>s.id!==b.closest('.svc').dataset.id);draw()});
   el.querySelector('#addS').onclick=()=>{collect();svcs.push({id:uid(),name:'Novo serviço',price:0,min:30,icon:icons[svcs.length%4]});draw()};
   el.querySelector('#fCfg').onsubmit=async e=>{e.preventDefault();collect();
     const a=+$('gA').value,f=+$('gF').value;if(!(f>a)){$('gErr').textContent='O horário de fechar precisa ser depois do de abrir.';return}
-    const upd={name:$('gNome').value.trim()||SHOP.name,open:a,close:f,days:$('gD').value.trim(),addr:$('gE').value.trim(),wpp:digits($('gW').value),insta:$('gI').value.trim().replace(/^@/,''),services:svcs};
+    const upd={name:$('gNome').value.trim()||SHOP.name,open:a,close:f,days:$('gD').value.trim(),addr:$('gE').value.trim(),wpp:digits($('gW').value),insta:$('gI').value.trim().replace(/^@/,''),services:svcs,barbers:brs};
     $('gGo').disabled=true;const {data,error}=await sb.from('shops').update(upd).eq('id',SHOP.id).select().single();$('gGo').disabled=false;
     if(error){$('gErr').textContent=errMsg(error);return}SHOP=data;setHead();draw();toast('Ajustes salvos')};
   };
