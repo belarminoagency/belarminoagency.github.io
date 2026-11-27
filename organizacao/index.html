@@ -169,6 +169,18 @@ select.mover{font:500 11px Inter;color:var(--sub);background:var(--creme);border
 .cadd input:focus{border-style:solid;border-color:var(--c);background:#fff}
 .clista{list-style:none}
 .clista .item{padding:11px 16px}
+.grupo .gtit{display:flex;align-items:center;gap:8px;padding:12px 16px 6px;font:700 11px Inter,sans-serif;text-transform:uppercase;letter-spacing:.8px;color:var(--sub);background:var(--creme);border-top:1px solid var(--linha)}
+.grupo .gtit b{font-weight:600;background:#fff;border-radius:99px;padding:1px 8px}
+.grupo[data-g="atr"] .gtit{color:var(--alta)}
+.grupo[data-g="hoje"] .gtit{color:var(--verde)}
+.gvazio{display:none}
+body.arrastando .gvazio{display:block}
+.gvazio .clista{min-height:46px;border:2px dashed var(--claro);margin:6px 14px 10px;border-radius:10px}
+.alca{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;color:#b3ad9c;font-size:16px;line-height:1;letter-spacing:-3px;padding:8px 4px 8px 0;flex:none}
+.alca:hover{color:var(--verde)}
+.item.segurando{opacity:.3}
+.item.fantasma{position:fixed!important;margin:0;z-index:9999;pointer-events:none;list-style:none;box-shadow:0 14px 34px rgba(30,58,47,.22);border-radius:10px;transform:rotate(1.2deg);background:#fff}
+body.arrastando,body.arrastando *{cursor:grabbing!important;user-select:none;-webkit-user-select:none}
 .cvazio{padding:22px;font-size:13px;color:#b0a995;text-align:center}
 .cvaziog{background:#fff;border-radius:16px;padding:50px 20px;text-align:center;color:var(--sub)}
 .cvaziog div{font-size:34px;margin-bottom:8px}
@@ -950,7 +962,7 @@ setTimeout(function(){sp.classList.add("sai");setTimeout(function(){sp.remove()}
       const cc=corCat(t.cat);
       return `<li class="item ${t.feito?"feito":""} ${novo?"entra":""}" data-id="${t.id}" style="--p:${getP(t.prio).cor};--i:${ord}">
         <span class="prio" title="Prioridade ${esc(getP(t.prio).nome)}"></span>
-        <button class="check" data-a="toggle" aria-label="Concluir"></button>
+        ${semCat&&!t.feito?`<span class="alca" title="Arraste para organizar">⋮⋮</span>`:""}<button class="check" data-a="toggle" aria-label="Concluir"></button>
         <div class="corpo"><div class="titulo" data-a="abrir" title="Abrir tarefa">${esc(t.titulo)}</div>
         <div class="meta">${prioTag(t)}${etqHtml(t)}${(t.subs||[]).length?`<span class="tag subt ${t.subs.every(x=>x.ok)?"ok":""}" data-a="abrir">☑ ${t.subs.filter(x=>x.ok).length}/${t.subs.length}</span>`:""}<select class="mover" title="Mover para outro quadro">${opts(t.quadro)}</select>${t.cat&&!semCat?`<span class="tag cat" style="background:${cc}1f;color:${cc}">● ${esc(t.cat)}</span>`:""}${dt}</div></div>
         <button class="ed" data-a="editar" title="Editar">✎</button><button class="del" data-a="del" title="Apagar">×</button></li>`;
@@ -984,10 +996,12 @@ setTimeout(function(){sp.classList.add("sai");setTimeout(function(){sp.remove()}
         const aberto=abertas.has(nome);
         painel = `<section class="coluna" data-cat="${esc(nome)}" style="--c:${cor}">
           <div class="chead"><div><small class="crot">Categoria</small><h2>${nome?esc(nome):"Sem categoria"}</h2><small>${pendN} pendente${pendN===1?"":"s"} · ${pct}% concluído</small></div>
-            ${nome?`<span class="cmenu"><button type="button" data-ca="ren" title="Editar categoria">✎</button><button type="button" data-ca="del" title="Apagar categoria">🗑</button></span>`:""}
+            ${nome?`<span class="cmenu"><button type="button" data-ca="auto" title="Voltar para a ordem automática">↺</button><button type="button" data-ca="ren" title="Editar categoria">✎</button><button type="button" data-ca="del" title="Apagar categoria">🗑</button></span>`:""}
             <div class="cbar"><i style="width:${pct}%"></i></div></div>
           <form class="cadd"><input placeholder="+ Adicionar tarefa em ${nome?esc(nome):"Sem categoria"}" maxlength="200"></form>
-          <ul class="clista">${vis.map(t=>itemHtml(t,true)).join("")||`<li class="cvazio">Nada por aqui</li>`}</ul>${(vis.forEach(t=>vistos.add(t.id)),"")}
+          ${vis.length?GRUPOS.map(([g,rot])=>{ const ts=vis.filter(t=>grupoDe(t)===g).sort(ordGrupo);
+              if(!ts.length && !["hoje","amanha","sem"].includes(g)) return "";
+              return `<div class="grupo ${ts.length?"":"gvazio"}" data-g="${g}"><div class="gtit">${rot}${ts.length?` <b>${ts.length}</b>`:""}</div><ul class="clista" data-g="${g}">${ts.map(t=>itemHtml(t,true)).join("")}</ul></div>`; }).join(""):`<ul class="clista"><li class="cvazio">Nada por aqui</li></ul>`}${(vis.forEach(t=>vistos.add(t.id)),"")}
           ${feitas.length?`<button type="button" class="cfeitas" data-ca="feitas">${aberto?"▾":"▸"} Concluídas (${feitas.length})</button>${aberto?`<ul class="clista">${feitas.map(t=>itemHtml(t,true)).join("")}</ul>`:""}`:""}
         </section>`;
       }
@@ -1014,6 +1028,66 @@ setTimeout(function(){sp.classList.add("sai");setTimeout(function(){sp.remove()}
     $("#contagem").textContent=`${v.length} de ${tarefas.length} tarefa${tarefas.length===1?"":"s"}`;
   }
 
+
+  // ---------- grupos por prazo + arrastar ----------
+  const GRUPOS=[["atr","⚠ Atrasadas"],["hoje","📅 Hoje"],["amanha","Amanhã"],["semana","Próximos 7 dias"],["depois","Mais pra frente"],["sem","Sem prazo"]];
+  const addDias=(iso,n)=>{ const [y,m,d]=iso.split("-").map(Number); const x=new Date(y,m-1,d+n); return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); };
+  function grupoDe(t){
+    if(!t.data) return "sem";
+    const h=hojeISO();
+    if(t.data<h || (!t.feito && atr(t))) return "atr";
+    if(t.data===h) return "hoje";
+    if(t.data===addDias(h,1)) return "amanha";
+    if(t.data<=addDias(h,7)) return "semana";
+    return "depois";
+  }
+  const ordGrupo=(a,b)=>(a.feito-b.feito)||((a.ordem??-1)-(b.ordem??-1))||(ordemPrio[a.prio]-ordemPrio[b.prio])||((prazoMs(a)||9e15)-(prazoMs(b)||9e15))||(a.criado-b.criado);
+  let arr=null;
+  $("#colunas").addEventListener("pointerdown", e=>{
+    const h=e.target.closest(".alca"); if(!h || arr) return;
+    const li=h.closest(".item"), ul=li.closest(".clista[data-g]"); if(!ul) return;
+    e.preventDefault();
+    const r=li.getBoundingClientRect();
+    const f=li.cloneNode(true); f.classList.add("fantasma"); f.classList.remove("entra");
+    Object.assign(f.style,{left:r.left+"px",top:r.top+"px",width:r.width+"px"});
+    document.body.appendChild(f);
+    li.classList.add("segurando"); document.body.classList.add("arrastando");
+    arr={li, f, dy:e.clientY-r.top, origem:ul.dataset.g, id:li.dataset.id, y:e.clientY};
+    try{ h.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  document.addEventListener("pointermove", e=>{
+    if(!arr) return; e.preventDefault();
+    arr.y=e.clientY; arr.f.style.top=(e.clientY-arr.dy)+"px";
+    const alvo=document.elementFromPoint(e.clientX,e.clientY);
+    const g=alvo&&alvo.closest(".coluna .grupo"); if(!g) return;
+    const ul=g.querySelector(".clista[data-g]");
+    if(ul.dataset.g==="atr" && arr.origem!=="atr") return; // não dá pra jogar algo pra atrasadas
+    const it=alvo.closest(".item");
+    if(it && it!==arr.li && it.parentNode===ul){ const rr=it.getBoundingClientRect(); ul.insertBefore(arr.li, e.clientY<rr.top+rr.height/2?it:it.nextSibling); }
+    else if(!it && arr.li.parentNode!==ul){ if(alvo.closest(".gtit")) ul.insertBefore(arr.li, ul.firstChild); else ul.appendChild(arr.li); }
+  }, {passive:false});
+  setInterval(()=>{ if(!arr) return; if(arr.y<70) scrollBy(0,-14); else if(arr.y>innerHeight-70) scrollBy(0,14); }, 16);
+  function soltar(){
+    if(!arr) return;
+    const {li,f,origem,id}=arr; arr=null;
+    f.remove(); li.classList.remove("segurando"); document.body.classList.remove("arrastando");
+    const ul=li.parentNode, g=ul&&ul.dataset.g, t=tarefas.find(x=>x.id===id);
+    if(!t || !g){ render(); return; }
+    const mud=new Set();
+    if(g!==origem){
+      const h=hojeISO();
+      if(g==="hoje") t.data=h;
+      else if(g==="amanha") t.data=addDias(h,1);
+      else if(g==="sem"){ t.data=""; t.hora=""; }
+      else { const viz=[...ul.children].find(el=>el!==li && el.dataset.id); const vt=viz&&tarefas.find(x=>x.id===viz.dataset.id); if(vt&&vt.data) t.data=vt.data; }
+      if(t.data && atr(t)) t.hora=""; // se o horário já passou, vale até o fim do dia
+      mud.add(t);
+    }
+    [...ul.querySelectorAll(":scope > .item")].forEach((el,i)=>{ const x=tarefas.find(y=>y.id===el.dataset.id); if(x && x.ordem!==i){ x.ordem=i; mud.add(x); } });
+    render(); mud.forEach(gravar);
+  }
+  document.addEventListener("pointerup", soltar);
+  document.addEventListener("pointercancel", soltar);
 
   // ---------- prazos, lembretes e notificações ----------
   const ANTECEDENCIA = 30*60000;   // avisa 30 min antes
@@ -1226,6 +1300,7 @@ setTimeout(function(){sp.classList.add("sai");setTimeout(function(){sp.remove()}
     const b=e.target.closest("[data-ca]"); if(!b) return;
     const acao=b.dataset.ca, nome=b.dataset.cat ?? b.closest(".coluna")?.dataset.cat;
     if(acao==="sel"){ catSel=nome; guardar("org-catsel",catSel); render(); return; }
+    if(acao==="auto"){ const ts=tarefas.filter(t=>(t.cat||"")===nome && t.ordem!=null); ts.forEach(t=>delete t.ordem); render(); ts.forEach(gravar); return; }
     if(acao==="nova"){
       abrirModal("Nova categoria", `<div class="campos"><label>Nome</label><input maxlength="40" placeholder="Ex.: Site, La Prata, Kombi"><label>Cor</label>${paleta(CORES[categorias.length%CORES.length])}</div>`, "Criar", n=>{
         if(!n || categorias.some(c=>c.nome.toLowerCase()===n.toLowerCase())) return;
